@@ -1,3 +1,6 @@
+class KopalPreference < ActiveRecord::Base
+end
+
 class KopalPref
   def self.method_missing(method, *args)
     if method =~ /=$/
@@ -11,3 +14,4 @@ class KopalPref
     end
   end
 end
+

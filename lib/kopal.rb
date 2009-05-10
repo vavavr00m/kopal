@@ -27,6 +27,7 @@ module Kopal
       create_config_file
     end
     Dir.foreach(migration_folder) { |m|
+
       next if m.to_i <= last_revision
       require migration_folder + '/' + m
       #TODO: Replace it with some Rails's method if exists.
