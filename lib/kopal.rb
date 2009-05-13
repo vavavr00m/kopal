@@ -25,7 +25,7 @@
 # * +:page_bottom_content+
 # * +:surface_right_content+
 
-module Kopal
+class Kopal
   DISCOVERY_PROTOCOL_REVISION = "0.1.alpha"
   FEED_PROTOCOL_REVISION = "0.1.alpha"
   CONFIG_FILE_ADDRESS = RAILS_ROOT + '/config/kopal.yml'
@@ -49,8 +49,20 @@ module Kopal
   end
   class << self; alias_method :reload_config_file, :read_config_file; end
 
-  def self.[] index
+  def self.config index
     read_config_file unless @@config
     @@config[index]
+  end
+
+  def self.[] index
+    k = KopalPreference.find_by_preference_name(index)
+    return k.preference_text if k
+    return nil
+  end
+
+  def self.[]= index, value
+    k = KopalPreference.find_or_initialize_by_preference_name(index)
+    k.preference_text = value
+    k.save!
   end
 end
