@@ -6,7 +6,7 @@
   <table>
     <tr>
       <td><%=  t :name %></td>
-      <td><%= KopalPref.feed_name %></td>
+      <td><%= Kopal["feed_name"] %></td>
     </tr>
     <tr>
       <td><%= t :aliases %></td>
@@ -14,19 +14,19 @@
     </tr>
     <tr>
       <td><%= t :about_me %></td>
-      <td><%= KopalPref.feed_description %></td>
+      <td><%= Kopal["feed_description"] %></td>
     </tr>
     <tr>
       <td><%= t :gender %></td>
-      <td><%= KopalPref.feed_gender %></td>
+      <td><%= Kopal["feed_gender"] %></td>
     </tr>
     <tr>
       <td><%= t :date_of_birth %></td>
-      <td><%= KopalPref.feed_birth_time %></td>
+      <td><%= Kopal["feed_birth_time"] %></td>
     </tr>
     <tr>
       <td><%= t :country %></td>
-      <td><%= KopalPref.feed_country_living_code %></td>
+      <td><%= Kopal["feed_country_living_code"] %></td>
     </tr>
   </table>
 <% end %>

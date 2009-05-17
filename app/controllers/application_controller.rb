@@ -3,6 +3,7 @@
 require 'ostruct'
 class ApplicationController < ActionController::Base
   helper :all # include all helpers, all the time
+  include ApplicationHelper #Helper methods in controller too.
   protect_from_forgery # See ActionController::RequestForgeryProtection for details
   before_filter :initialise
 
@@ -14,20 +15,22 @@ class ApplicationController < ActionController::Base
   end
 
   def authorise
-    redirect_to({:controller => '/home', :action => 'signin'}) and
+    redirect_to({:controller => '/home', :action => 'signin', :and_return_to =>
+        request.request_uri}) and
       return false unless signed_user?
     true
   end
   
 private
   def initialise
+    Kopal.initialise
     I18n.locale = params[:culture]
     @signed = true if session[:signed]
     @page = OpenStruct.new
     #When theme support is implemented, these should go to theme controller.
     @page.title = "Kopal Profile"
-    @page.description = "Profile for #{KopalPref.feed_preferred_calling_name}" if
-      KopalPref.feed_preferred_calling_name
+    @page.description = "Profile for #{Kopal["feed_preferred_calling_name"]}" if
+      Kopal["feed_preferred_calling_name"]
     @page.stylesheets = ['home']
   end
 end

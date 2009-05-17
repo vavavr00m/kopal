@@ -4,7 +4,7 @@
     <title><%= @page.title %></title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	  <meta http-equiv="Content-Language" content="<%= I18n.locale.to_s.upcase %>" />
-	  <% if(fclc = KopalPref.feed_country_living_code) %><meta name="geo.country" content="<%= fclc %>" /><% end %>
+	  <% if(fclc = Kopal["feed_country_living_code"]) %><meta name="geo.country" content="<%= fclc %>" /><% end %>
 	  <% if @page.description %><meta name="Description" content="<%= @page.description %>"><% end %>
     
     <% if @page.stylesheets; for stylesheet in @page.stylesheets %>
@@ -19,10 +19,10 @@
     <div id="Surface">
       <div id="SurfaceFront">
         <% if flash[:highlight] -%>
-	        <div id="FlashHighlight"><%= flash[:highlight] %></div>
+	        <div id="FlashHighlight" class="flash highlight"><%= flash[:highlight] %></div>
         <% end -%>
         <% if flash[:notice] -%>
-          <div id="FlashNotice"><%= flash[:notice] %></div>
+          <div id="FlashNotice" class="flash notice"><%= flash[:notice] %></div>
         <% end -%>
 	        
         <%= @content_for_layout %>

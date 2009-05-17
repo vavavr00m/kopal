@@ -29,6 +29,11 @@ class Kopal
   DISCOVERY_PROTOCOL_REVISION = "0.1.alpha"
   FEED_PROTOCOL_REVISION = "0.1.alpha"
   CONFIG_FILE_ADDRESS = RAILS_ROOT + '/config/kopal.yml'
+  @@pref_cache = {}
+
+  def self.initialise
+    read_config_file
+  end
 
   def self.create_config_file
     return if File.exists?(CONFIG_FILE_ADDRESS)
@@ -46,23 +51,27 @@ class Kopal
     #No call to create_config_file from here, an Invalid file error will
     # => make sure that Kopal is not installed.
     @@config = YAML::load_file(CONFIG_FILE_ADDRESS)
+    #TODO: Cast all keys of @@config to symbols.
   end
   class << self; alias_method :reload_config_file, :read_config_file; end
 
   def self.config index
-    read_config_file unless @@config
-    @@config[index]
+    @@config[index.to_sym]
   end
 
   def self.[] index
-    k = KopalPreference.find_by_preference_name(index)
-    return k.preference_text if k
-    return nil
+    index = index.to_s
+    @@pref_cache[index] = KopalPreference.get_field(index) unless @@pref_cache[index]
+    @@pref_cache[index]
   end
 
   def self.[]= index, value
-    k = KopalPreference.find_or_initialize_by_preference_name(index)
-    k.preference_text = value
-    k.save!
+    index = index.to_s
+    @@pref_cache[index] = KopalPreference.save_field(index, value)
+  end
+
+  #Will we ever need it?
+  def self.reload_preferences!
+    @@pref_cache = {}
   end
 end
