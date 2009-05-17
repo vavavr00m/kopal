@@ -1,4 +1,4 @@
-/* Taken from Rails error pages. */
+/* Copied from Rails error pages. */
 body { background-color: #fff; color: #333; }
 
 body, p, ol, ul, td {
@@ -7,6 +7,11 @@ body, p, ol, ul, td {
   line-height: 18px;
 }
 
+td:first-child {
+  vertical-align:top;
+  text-align:right;
+  padding-right:20px;
+}
 pre {
   background-color: #eee;
   padding: 10px;
@@ -19,3 +24,38 @@ a:hover { color: #fff; background-color:#000; }
 
 /* Structure */
 
+/* Colours */
+div.flash { /* Copied from redmine */
+  padding: 2px 2px 2px 30px;
+  margin-bottom: 12px;
+  margin-top: 8px;
+  border: 1px solid;
+}
+
+div.highlight {
+  color: #005F00;
+  border-color:#9FCF9F;
+  background: #DFFFDF;
+}
+
+div.notice {
+  color: #550000;
+  border-color: #DD0000;
+  background: #FFE3E3;
+}
+
+input[type="text"] {
+  width: 270px;
+}
+
+input[type="submit"] {
+  font-weight: bold;
+  padding: 4px 8px;
+  width: auto;
+  overflow: visible;
+}
+
+textarea {
+  width: 270px;
+  height: 80px;
+}

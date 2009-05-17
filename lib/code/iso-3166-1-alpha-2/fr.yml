@@ -1,250 +1,251 @@
 ---
 # Extracted from http://www.iso.org/iso/list-fr1-semic.txt
-iso_3166_1_alpha_2:
-  AD: Andorre
-  AE: Émirats Arabes Unis
-  AF: Afghanistan
-  AG: Antigua Et Barbuda
-  AI: Anguilla
-  AL: Albanie
-  AM: ArmÉnie
-  AN: Antilles NÉerlandaises
-  AO: Angola
-  AQ: Antarctique
-  AR: Argentine
-  AS: Samoa AmÉricaines
-  AT: Autriche
-  AU: Australie
-  AW: Aruba
-  AX: Åland, Îles
-  AZ: AzerbaÏdjan
-  BA: Bosnie HerzÉgovine
-  BB: Barbade
-  BD: Bangladesh
-  BE: Belgique
-  BF: Burkina Faso
-  BG: Bulgarie
-  BH: BahreÏn
-  BI: Burundi
-  BJ: BÉnin
-  BL: Saint BarthÉlemy
-  BM: Bermudes
-  BN: BrunÉi Darussalam
-  BO: Bolivie
-  BR: BrÉsil
-  BS: Bahamas
-  BT: Bhoutan
-  BV: Bouvet, Île
-  BW: Botswana
-  BY: BÉlarus
-  BZ: Belize
-  CA: Canada
-  CC: Cocos (Keeling), Îles
-  CD: Congo, La RÉpublique DÉmocratique Du
-  CF: Centrafricaine, RÉpublique
-  CG: Congo
-  CH: Suisse
-  CI: CÔte D'ivoire
-  CK: Cook, Îles
-  CL: Chili
-  CM: Cameroun
-  CN: Chine
-  CO: Colombie
-  CR: Costa Rica
-  CU: Cuba
-  CV: Cap Vert
-  CX: Christmas, Île
-  CY: Chypre
-  CZ: TchÈque, RÉpublique
-  DE: Allemagne
-  DJ: Djibouti
-  DK: Danemark
-  DM: Dominique
-  DO: Dominicaine, RÉpublique
-  DZ: AlgÉrie
-  EC: Équateur
-  EE: Estonie
-  EG: Égypte
-  EH: Sahara Occidental
-  ER: ÉrythrÉe
-  ES: Espagne
-  ET: Éthiopie
-  FI: Finlande
-  FJ: Fidji
-  FK: Falkland, Îles (Malvinas)
-  FM: MicronÉsie, États FÉdÉrÉs De
-  FO: FÉroÉ, Îles
-  FR: France
-  GA: Gabon
-  GB: Royaume Uni
-  GD: Grenade
-  GE: GÉorgie
-  GF: Guyane FranÇaise
-  GG: Guernesey
-  GH: Ghana
-  GI: Gibraltar
-  GL: Groenland
-  GM: Gambie
-  GN: GuinÉe
-  GP: Guadeloupe
-  GQ: GuinÉe Équatoriale
-  GR: GrÈce
-  GS: GÉorgie Du Sud Et Les Îles Sandwich Du Sud
-  GT: Guatemala
-  GU: Guam
-  GW: GuinÉe Bissau
-  GY: Guyana
-  HK: Hong Kong
-  HM: Heard, Île Et Mcdonald, Îles
-  HN: Honduras
-  HR: Croatie
-  HT: HaÏti
-  HU: Hongrie
-  ID: IndonÉsie
-  IE: Irlande
-  IL: IsraËl
-  IM: Île De Man
-  IN: Inde
-  IO: OcÉan Indien, Territoire Britannique De L'
-  IQ: Iraq
-  IR: Iran, RÉpublique Islamique D'
-  IS: Islande
-  IT: Italie
-  JE: Jersey
-  JM: JamaÏque
-  JO: Jordanie
-  JP: Japon
-  KE: Kenya
-  KG: Kirghizistan
-  KH: Cambodge
-  KI: Kiribati
-  KM: Comores
-  KN: Saint Kitts Et Nevis
-  KP: CorÉe, RÉpublique Populaire DÉmocratique De
-  KR: CorÉe, RÉpublique De
-  KW: KoweÏt
-  KY: CaÏmanes, Îles
-  KZ: Kazakhstan
-  LA: Lao, RÉpublique DÉmocratique Populaire
-  LB: Liban
-  LC: Sainte Lucie
-  LI: Liechtenstein
-  LK: Sri Lanka
-  LR: LibÉria
-  LS: Lesotho
-  LT: Lituanie
-  LU: Luxembourg
-  LV: Lettonie
-  LY: Libyenne, Jamahiriya Arabe
-  MA: Maroc
-  MC: Monaco
-  MD: Moldova, RÉpublique De
-  ME: MontÉnÉgro
-  MF: Saint Martin
-  MG: Madagascar
-  MH: Marshall, Îles
-  MK: MacÉdoine, L'ex RÉpublique Yougoslave De
-  ML: Mali
-  MM: Myanmar
-  MN: Mongolie
-  MO: Macao
-  MP: Mariannes Du Nord, Îles
-  MQ: Martinique
-  MR: Mauritanie
-  MS: Montserrat
-  MT: Malte
-  MU: Maurice
-  MV: Maldives
-  MW: Malawi
-  MX: Mexique
-  MY: Malaisie
-  MZ: Mozambique
-  NA: Namibie
-  NC: Nouvelle CalÉdonie
-  NE: Niger
-  NF: Norfolk, Île
-  NG: NigÉria
-  NI: Nicaragua
-  NL: Pays Bas
-  NO: NorvÈge
-  NP: NÉpal
-  NR: Nauru
-  NU: NiuÉ
-  NZ: Nouvelle ZÉlande
-  OM: Oman
-  PA: Panama
-  PE: PÉrou
-  PF: PolynÉsie FranÇaise
-  PG: Papouasie Nouvelle GuinÉe
-  PH: Philippines
-  PK: Pakistan
-  PL: Pologne
-  PM: Saint Pierre Et Miquelon
-  PN: Pitcairn
-  PR: Porto Rico
-  PS: Palestinien OccupÉ, Territoire
-  PT: Portugal
-  PW: Palaos
-  PY: Paraguay
-  QA: Qatar
-  RE: RÉunion
-  RO: Roumanie
-  RS: Serbie
-  RU: Russie, FÉdÉration De
-  RW: Rwanda
-  SA: Arabie Saoudite
-  SB: Salomon, Îles
-  SC: Seychelles
-  SD: Soudan
-  SE: SuÈde
-  SG: Singapour
-  SH: Sainte HÉlÈne
-  SI: SlovÉnie
-  SJ: Svalbard Et Île Jan Mayen
-  SK: Slovaquie
-  SL: Sierra Leone
-  SM: Saint Marin
-  SN: SÉnÉgal
-  SO: Somalie
-  SR: Suriname
-  ST: Sao TomÉ Et Principe
-  SV: El Salvador
-  SY: Syrienne, RÉpublique Arabe
-  SZ: Swaziland
-  TC: Turks Et CaÏques, Îles
-  TD: Tchad
-  TF: Terres Australes FranÇaises
-  TG: Togo
-  TH: ThaÏlande
-  TJ: Tadjikistan
-  TK: Tokelau
-  TL: Timor Leste
-  TM: TurkmÉnistan
-  TN: Tunisie
-  TO: Tonga
-  TR: Turquie
-  TT: TrinitÉ Et Tobago
-  TV: Tuvalu
-  TW: TaÏwan, Province De Chine
-  TZ: Tanzanie, RÉpublique Unie De
-  UA: Ukraine
-  UG: Ouganda
-  UM: Îles Mineures ÉloignÉes Des États Unis
-  US: États Unis
-  UY: Uruguay
-  UZ: OuzbÉkistan
-  VA: Saint SiÈge (État De La CitÉ Du Vatican)
-  VC: Saint Vincent Et Les Grenadines
-  VE: Venezuela, RÉpublique Bolivarienne Du
-  VG: Îles Vierges Britanniques
-  VI: Îles Vierges Des États Unis
-  VN: Viet Nam
-  VU: Vanuatu
-  WF: Wallis Et Futuna
-  WS: Samoa
-  YE: YÉmen
-  YT: Mayotte
-  ZA: Afrique Du Sud
-  ZM: Zambie
-  ZW: Zimbabwe
+fr:
+  iso_3166_1_alpha_2:
+    AD: Andorre
+    AE: Émirats Arabes Unis
+    AF: Afghanistan
+    AG: Antigua Et Barbuda
+    AI: Anguilla
+    AL: Albanie
+    AM: ArmÉnie
+    AN: Antilles NÉerlandaises
+    AO: Angola
+    AQ: Antarctique
+    AR: Argentine
+    AS: Samoa AmÉricaines
+    AT: Autriche
+    AU: Australie
+    AW: Aruba
+    AX: Åland, Îles
+    AZ: AzerbaÏdjan
+    BA: Bosnie HerzÉgovine
+    BB: Barbade
+    BD: Bangladesh
+    BE: Belgique
+    BF: Burkina Faso
+    BG: Bulgarie
+    BH: BahreÏn
+    BI: Burundi
+    BJ: BÉnin
+    BL: Saint BarthÉlemy
+    BM: Bermudes
+    BN: BrunÉi Darussalam
+    BO: Bolivie
+    BR: BrÉsil
+    BS: Bahamas
+    BT: Bhoutan
+    BV: Bouvet, Île
+    BW: Botswana
+    BY: BÉlarus
+    BZ: Belize
+    CA: Canada
+    CC: Cocos (Keeling), Îles
+    CD: Congo, La RÉpublique DÉmocratique Du
+    CF: Centrafricaine, RÉpublique
+    CG: Congo
+    CH: Suisse
+    CI: CÔte D'ivoire
+    CK: Cook, Îles
+    CL: Chili
+    CM: Cameroun
+    CN: Chine
+    CO: Colombie
+    CR: Costa Rica
+    CU: Cuba
+    CV: Cap Vert
+    CX: Christmas, Île
+    CY: Chypre
+    CZ: TchÈque, RÉpublique
+    DE: Allemagne
+    DJ: Djibouti
+    DK: Danemark
+    DM: Dominique
+    DO: Dominicaine, RÉpublique
+    DZ: AlgÉrie
+    EC: Équateur
+    EE: Estonie
+    EG: Égypte
+    EH: Sahara Occidental
+    ER: ÉrythrÉe
+    ES: Espagne
+    ET: Éthiopie
+    FI: Finlande
+    FJ: Fidji
+    FK: Falkland, Îles (Malvinas)
+    FM: MicronÉsie, États FÉdÉrÉs De
+    FO: FÉroÉ, Îles
+    FR: France
+    GA: Gabon
+    GB: Royaume Uni
+    GD: Grenade
+    GE: GÉorgie
+    GF: Guyane FranÇaise
+    GG: Guernesey
+    GH: Ghana
+    GI: Gibraltar
+    GL: Groenland
+    GM: Gambie
+    GN: GuinÉe
+    GP: Guadeloupe
+    GQ: GuinÉe Équatoriale
+    GR: GrÈce
+    GS: GÉorgie Du Sud Et Les Îles Sandwich Du Sud
+    GT: Guatemala
+    GU: Guam
+    GW: GuinÉe Bissau
+    GY: Guyana
+    HK: Hong Kong
+    HM: Heard, Île Et Mcdonald, Îles
+    HN: Honduras
+    HR: Croatie
+    HT: HaÏti
+    HU: Hongrie
+    ID: IndonÉsie
+    IE: Irlande
+    IL: IsraËl
+    IM: Île De Man
+    IN: Inde
+    IO: OcÉan Indien, Territoire Britannique De L'
+    IQ: Iraq
+    IR: Iran, RÉpublique Islamique D'
+    IS: Islande
+    IT: Italie
+    JE: Jersey
+    JM: JamaÏque
+    JO: Jordanie
+    JP: Japon
+    KE: Kenya
+    KG: Kirghizistan
+    KH: Cambodge
+    KI: Kiribati
+    KM: Comores
+    KN: Saint Kitts Et Nevis
+    KP: CorÉe, RÉpublique Populaire DÉmocratique De
+    KR: CorÉe, RÉpublique De
+    KW: KoweÏt
+    KY: CaÏmanes, Îles
+    KZ: Kazakhstan
+    LA: Lao, RÉpublique DÉmocratique Populaire
+    LB: Liban
+    LC: Sainte Lucie
+    LI: Liechtenstein
+    LK: Sri Lanka
+    LR: LibÉria
+    LS: Lesotho
+    LT: Lituanie
+    LU: Luxembourg
+    LV: Lettonie
+    LY: Libyenne, Jamahiriya Arabe
+    MA: Maroc
+    MC: Monaco
+    MD: Moldova, RÉpublique De
+    ME: MontÉnÉgro
+    MF: Saint Martin
+    MG: Madagascar
+    MH: Marshall, Îles
+    MK: MacÉdoine, L'ex RÉpublique Yougoslave De
+    ML: Mali
+    MM: Myanmar
+    MN: Mongolie
+    MO: Macao
+    MP: Mariannes Du Nord, Îles
+    MQ: Martinique
+    MR: Mauritanie
+    MS: Montserrat
+    MT: Malte
+    MU: Maurice
+    MV: Maldives
+    MW: Malawi
+    MX: Mexique
+    MY: Malaisie
+    MZ: Mozambique
+    NA: Namibie
+    NC: Nouvelle CalÉdonie
+    NE: Niger
+    NF: Norfolk, Île
+    NG: NigÉria
+    NI: Nicaragua
+    NL: Pays Bas
+    NO: NorvÈge
+    NP: NÉpal
+    NR: Nauru
+    NU: NiuÉ
+    NZ: Nouvelle ZÉlande
+    OM: Oman
+    PA: Panama
+    PE: PÉrou
+    PF: PolynÉsie FranÇaise
+    PG: Papouasie Nouvelle GuinÉe
+    PH: Philippines
+    PK: Pakistan
+    PL: Pologne
+    PM: Saint Pierre Et Miquelon
+    PN: Pitcairn
+    PR: Porto Rico
+    PS: Palestinien OccupÉ, Territoire
+    PT: Portugal
+    PW: Palaos
+    PY: Paraguay
+    QA: Qatar
+    RE: RÉunion
+    RO: Roumanie
+    RS: Serbie
+    RU: Russie, FÉdÉration De
+    RW: Rwanda
+    SA: Arabie Saoudite
+    SB: Salomon, Îles
+    SC: Seychelles
+    SD: Soudan
+    SE: SuÈde
+    SG: Singapour
+    SH: Sainte HÉlÈne
+    SI: SlovÉnie
+    SJ: Svalbard Et Île Jan Mayen
+    SK: Slovaquie
+    SL: Sierra Leone
+    SM: Saint Marin
+    SN: SÉnÉgal
+    SO: Somalie
+    SR: Suriname
+    ST: Sao TomÉ Et Principe
+    SV: El Salvador
+    SY: Syrienne, RÉpublique Arabe
+    SZ: Swaziland
+    TC: Turks Et CaÏques, Îles
+    TD: Tchad
+    TF: Terres Australes FranÇaises
+    TG: Togo
+    TH: ThaÏlande
+    TJ: Tadjikistan
+    TK: Tokelau
+    TL: Timor Leste
+    TM: TurkmÉnistan
+    TN: Tunisie
+    TO: Tonga
+    TR: Turquie
+    TT: TrinitÉ Et Tobago
+    TV: Tuvalu
+    TW: TaÏwan, Province De Chine
+    TZ: Tanzanie, RÉpublique Unie De
+    UA: Ukraine
+    UG: Ouganda
+    UM: Îles Mineures ÉloignÉes Des États Unis
+    US: États Unis
+    UY: Uruguay
+    UZ: OuzbÉkistan
+    VA: Saint SiÈge (État De La CitÉ Du Vatican)
+    VC: Saint Vincent Et Les Grenadines
+    VE: Venezuela, RÉpublique Bolivarienne Du
+    VG: Îles Vierges Britanniques
+    VI: Îles Vierges Des États Unis
+    VN: Viet Nam
+    VU: Vanuatu
+    WF: Wallis Et Futuna
+    WS: Samoa
+    YE: YÉmen
+    YT: Mayotte
+    ZA: Afrique Du Sud
+    ZM: Zambie
+    ZW: Zimbabwe
 
