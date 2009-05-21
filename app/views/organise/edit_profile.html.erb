@@ -1,5 +1,5 @@
-
-<h2>Edit your profile -</h2>
+<%= render :partial => 'navigation'  %>
+<h2>Edit your profile </h2>
 <% form_tag do %>
     <table>
     <tr>
@@ -17,10 +17,14 @@
     </tr>
     <tr>
       <td><%= t :preferred_calling_name %></td>
-      <td><%= select_tag :preferred_calling_name,
-        options_for_select(Kopal[:feed_aliases].to_a("\n").
-          unshift(Kopal["feed_name"]).map {|s| s.strip},
-          Kopal[:preferred_calling_name]) %></td>
+      <td><%= select_tag :feed_preferred_calling_name,
+        options_for_select(Kopal[:feed_aliases].to_s.to_a("\n").
+          unshift(Kopal["feed_name"].to_s).map {|s| s.strip},
+          Kopal[:feed_preferred_calling_name]) %></td>
+    </tr>
+    <tr>
+      <td><%= t(:status_message) %></td>
+      <td><%= text_area_tag :user_status_message, Kopal["user_status_message"] %></td>
     </tr>
     <tr>
       <td><%= t :about_me %></td>
@@ -33,26 +37,37 @@
     </tr>
     <tr>
       <td><%= t :date_of_birth %></td>
-      <td><%= date_select :feed_birth_time, Kopal["feed_birth_time"],
+      <td><%= date_select :feed_birth_time, nil,
             :order => [:day, :month, :year], :start_year => Time.now.year-140,
             :end_year => Time.now.year,
             :default => Kopal["feed_birth_time"] %></td>
     </tr>
     <tr>
       <td><%= t :show_date_of_birth %>?</td>
-      <td><%= select_tag :birth_time_pref,
+      <td><%= select_tag :feed_birth_time_pref,
         options_for_select({:ymd => t(:show_full_dob), :y => t(:show_only_age),
           :md => t(:show_only_month_and_date), :nothing => t(:dont_show)}.invert,
-          Kopal["birth_time_pref"] || :ymd) %></td>
+          Kopal["feed_birth_time_pref"].blank?() ? :ymd : Kopal["feed_birth_time_pref"].to_sym) %></td>
+    </tr>
+    <tr>
+      <td><%= t :email %></td>
+      <td><%= text_field_tag :feed_email, Kopal[:feed_email] %></td>
+    </tr>
+    <tr>
+      <td><%= t :show_email %></td>
+      <td><%= select_tag :feed_show_email,
+        options_for_select({:yes => t(:yes), :no => t(:no)}.invert, 
+        Kopal['feed_show_email'].blank?() ? :yes : Kopal['feed_show_email'].to_sym) %></td>
     </tr>
     <tr>
       <td><%= t :country %></td>
       <td><%= select_tag(:feed_country_living_code, options_for_select(country_list.invert.sort,
-        Kopal["feed_country_living_code"].to_sym)) %></td>
+        Kopal["feed_country_living_code"].blank?() ? nil : Kopal["feed_country_living_code"].to_sym)) %></td>
     </tr>
     <tr>
       <td><%= t :city %></td>
-      <td><%= text_field_tag :city, city_list[Kopal[:feed_city].to_sym] || Kopal[:feed_city] %></td>
+      <td><%= text_field_tag :feed_city, Kopal[:feed_city].blank?() ? nil :
+        city_list[Kopal[:feed_city].to_sym] || Kopal[:feed_city] %></td>
     </tr>
     <tr>
       <td>&nbsp;</td>

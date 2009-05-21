@@ -1,32 +1,41 @@
-<% content_for :surface_right_content do %>
-  <%= image_tag home_path(:action => 'profile_image') %>
-<% end %>
+<%= render :partial => 'navigation' %>
 
-<% if true or KopalPref.feed_name %>
+<h2>Identity</h2>
+<% if @signed %>
+  <p class="helper"><%= link_to(t(:edit_profile), edit_profile_path,
+    {:title => t(:edit_your_profile)}) %></p>
+<% end %>
+<% if @profile_user.created_identity? %>
   <table>
     <tr>
       <td><%=  t :name %></td>
-      <td><%= Kopal["feed_name"] %></td>
+      <td><%= @profile_user.name %></td>
     </tr>
     <tr>
       <td><%= t :aliases %></td>
-      <td><%#KopalPref.feed_name_aliases.join('<br />') %></td>
+      <td><%= @profile_user.aliases.join("<br />") %></td>
     </tr>
     <tr>
       <td><%= t :about_me %></td>
-      <td><%= Kopal["feed_description"] %></td>
+      <td><%= @profile_user.description%></td>
     </tr>
     <tr>
       <td><%= t :gender %></td>
-      <td><%= Kopal["feed_gender"] %></td>
+      <td><%= @profile_user.gender %></td>
     </tr>
     <tr>
       <td><%= t :date_of_birth %></td>
-      <td><%= Kopal["feed_birth_time"] %></td>
+      <td><%= @profile_user.dob_string %></td>
     </tr>
     <tr>
       <td><%= t :country %></td>
-      <td><%= Kopal["feed_country_living_code"] %></td>
+      <td><%= @profile_user.country_with_code %></td>
+    </tr>
+    <tr>
+      <td><%= t :city %></td>
+      <td><%= @profile_user.city_with_code %></td>
     </tr>
   </table>
+<% else %>
+  <p><%= t :user_has_not_yet_created_her_identity %></p>
 <% end %>

@@ -11,27 +11,31 @@
       <%= stylesheet_link_tag stylesheet[:name] || stylesheet, :media => stylesheet[:media] || 'all' %>
     <% end; end %>
 	  
-    <%= yield :page_head_meta_content %>
+    <%= yield :page_head %>
     
   </head>
   
   <body>
     <div id="Surface">
+      <div id="SurfaceAbove">
+        <%= yield :surface_above %>
+      </div>
+      <div id="SurfaceLeft">
+        <%= yield :surface_left %>
+      </div>
       <div id="SurfaceFront">
         <% if flash[:highlight] -%>
-	        <div id="FlashHighlight" class="flash highlight"><%= flash[:highlight] %></div>
+          <div id="FlashHighlight" class="flash highlight"><%= flash[:highlight] %></div>
         <% end -%>
         <% if flash[:notice] -%>
           <div id="FlashNotice" class="flash notice"><%= flash[:notice] %></div>
         <% end -%>
-	        
+
         <%= @content_for_layout %>
       </div>
-
-      <div id="SurfaceRight">
-        <%= yield :surface_right_content %>
+      <div id="SurfaceDown"> <!-- footer -->
+        <%= yield :surface_down %>
       </div>
-
     </div>
   </body>
 </html>

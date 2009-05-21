@@ -1,9 +1,20 @@
 class HomeController < ApplicationController
+
+  #TODO: in place editor for "Status message".
   def index
   end
   
+  #Provide more than just Gravatar, including any picture over internet, or 
+  #let user upload one if supported gems, RMagick for example are installed.
   def profile_image
-    render :nothing => true, :status => 404
+    require 'md5'
+    if params[:of].blank? #self
+      hash = MD5::md5(Kopal['feed_email'])
+      redirect_to "http://www.gravatar.com/avatar/#{hash}.jpeg?s=120"
+    else
+      #redirect to url or send raw data
+      redirect_to "http://www.gravatar.com/avatar/a.jpeg?s=120" #testing
+    end
   end
 
   def signin

@@ -1,6 +1,9 @@
 ActionController::Routing::Routes.draw do |map|
   map.root :controller => "home", :action => 'index'
-  map.home '/home/:action/:id', :controller => 'home'
+  map.home '/home/:action/:id', :controller => 'home', :trailing_slash => true
+  map.edit_profile '/organise/edit-profile/', :controller => 'organise', 
+    :action => 'edit_profile', :trailing_slash => true
+  map.organise '/organise/:action/:id', :controller => 'organise', :trailing_slash => true
   # The priority is based upon order of creation: first created -> highest priority.
 
   # Sample of regular route:

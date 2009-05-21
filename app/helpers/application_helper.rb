@@ -1,6 +1,5 @@
 # Methods added to this helper will be available to all templates in the application.
 module ApplicationHelper
-
   #Returns list of countries names in current locale as a Hash indexed by country codes.
   #OPTIMIZE: Fallbacks directly to English.
   def country_list
@@ -27,4 +26,6 @@ module ApplicationHelper
     }
     return c
   end
+  module_function :country_list, :city_list #They shouldn't be here, move these
+  #methods somewhere better.
 end
