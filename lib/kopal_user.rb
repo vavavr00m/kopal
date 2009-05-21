@@ -1,0 +1,2 @@
+class KopalUser
+end

@@ -1,5 +1,5 @@
 /* Copied from Rails error pages. */
-body { background-color: #fff; color: #333; }
+body { background-color: #fff; color: #333; margin-left:20px; }
 
 body, p, ol, ul, td {
   font-family: verdana, arial, helvetica, sans-serif;
@@ -22,8 +22,33 @@ a { color: #000; }
 a:visited { color: #666; }
 a:hover { color: #fff; background-color:#000; }
 
-/* Structure */
+h2:after{
+  content: " —";
+}
 
+/* Structure */
+div#SurfaceAbove{
+  margin-bottom:25px;
+}
+div#SurfaceFront{
+	min-height:620px;
+  float:left;
+	padding:8px;
+}
+
+div#SurfaceLeft{
+	float:left;
+	width:184px;
+	padding-left:4px;
+  padding-top:8px;
+  margin-right:20px;
+}
+
+div#SurfaceLeft ul{
+	list-style:none;
+	margin-left:0;
+	padding-left:0;
+}
 /* Colours */
 div.flash { /* Copied from redmine */
   padding: 2px 2px 2px 30px;
@@ -58,4 +83,42 @@ input[type="submit"] {
 textarea {
   width: 270px;
   height: 80px;
+}
+p.helper {
+  font-family: 'Trebuchet MS',Myriad,Arial,Tahoma,Verdana;
+  font-weight:bold;
+  text-align: right;
+  margin:0;
+  padding:0;
+}
+p.helper a{
+	font-size:14px;
+  color:#484848;
+  letter-spacing:-0.2px;
+	text-decoration:underline;
+	}
+p.helper a:hover {
+  background-color: #333;
+  color:white;
+}
+div.friend-ribbon{
+  border: solid 1px gray;
+  width:570px;
+  padding:7px;
+  margin:4px;
+}
+div.friend-ribbon img{
+  float:left;
+  padding-right:8px;
+}
+div.friend-ribbon span.name{
+  display:block;
+  font-size:17px;
+  padding:0;
+  margin:0;
+}
+div.friend-ribbon span.action{
+  display:block;
+  text-align:right;
+  padding-top:4px;
 }

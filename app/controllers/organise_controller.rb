@@ -1,3 +1,4 @@
+#This controller is mainly for Administrative tasks.
 class OrganiseController < ApplicationController
   before_filter :authorise
 
@@ -17,10 +18,13 @@ class OrganiseController < ApplicationController
       begin
         [ :feed_name,
           :feed_aliases,
-          :preferred_calling_name,
+          :feed_preferred_calling_name,
+          :user_status_message,
           :feed_description,
           :feed_gender,
-          :birth_time_pref,
+          :feed_birth_time_pref,
+          :feed_email,
+          :feed_show_email,
           :feed_country_living_code
         ].each { |e|
             Kopal[e] = params[e]
@@ -29,16 +33,18 @@ class OrganiseController < ApplicationController
         flash.now[:notice] = e.message
         return
       end
+      Kopal[:feed_birth_time] = DateTime.new(params[:feed_birth_time]['(1i)'].to_i,
+        params[:feed_birth_time]['(2i)'].to_i, params[:feed_birth_time]['(3i)'].to_i)
       #better method exists?
-      Kopal[:city_has_code] = "no"
+      Kopal[:feed_city_has_code] = "no"
       city_list.each { |k,v| #60,000 rounds in worst case!!
-        if v.to_s.downcase == params[:city].downcase
+        if v.to_s.downcase == params[:feed_city].downcase
           Kopal[:feed_city] = k.to_s #From symbol
-          Kopal[:city_has_code] = "yes"
+          Kopal[:feed_city_has_code] = "yes"
           break
         end
       }
-      Kopal[:feed_city] = params[:city] if Kopal[:city_has_code] == "no"
+      Kopal[:feed_city] = params[:feed_city] if Kopal[:feed_city_has_code] == "no"
     end
   end
 end
