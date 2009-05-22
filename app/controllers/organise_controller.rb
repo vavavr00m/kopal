@@ -36,6 +36,9 @@ class OrganiseController < ApplicationController
       Kopal[:feed_birth_time] = DateTime.new(params[:feed_birth_time]['(1i)'].to_i,
         params[:feed_birth_time]['(2i)'].to_i, params[:feed_birth_time]['(3i)'].to_i)
       #better method exists?
+      #{}.index or {}.rassoc(Ruby 1.9), but we need a case insenstive search!
+      #Create new method city_list_downcased and use like this?
+      #<tt>city_list_downcased.index params[:feed_city].downcase</tt>
       Kopal[:feed_city_has_code] = "no"
       city_list.each { |k,v| #60,000 rounds in worst case!!
         if v.to_s.downcase == params[:feed_city].downcase

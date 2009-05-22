@@ -1,16 +1,29 @@
 #Users, whom this application belongs to.
 class ProfileUser < KopalUser
+  include ApplicationHelper #Bad?
+  
+  def kopal_identity
+    Kopal[:kopal_identity]
+  end
+  alias profile_identity kopal_identity
+  alias profile_homepage profile_identity
+
   #User has created her Identity?
-  #Identity is the core part of user's profile.
+  #Identity is the core part of user's profile. (not to be confused with
+  #profile_identity.)
   def created_identity?
     !!Kopal[:feed_name]
   end
   
   def name
-    Kopal['preferred_calling_name'] || Kopal['feed_name'] ||
+    Kopal['preferred_calling_name'] || real_name
       'Profile user'
   end
 
+  def real_name
+    Kopal['feed_name'] || 'Profile user'
+  end
+  
   def aliases
     Kopal[:feed_aliases].split("\n")
   end
@@ -62,18 +75,18 @@ class ProfileUser < KopalUser
   end
 
   def country
-    ApplicationHelper.country_list[Kopal[:feed_country_living_code].to_sym]
+    country_list[Kopal[:feed_country_living_code].to_sym]
   end
 
   #Country living in format => Country (CODE)
   def country_with_code
     code = Kopal[:feed_country_living_code]
-    ApplicationHelper.country_list[code.to_sym] + " (#{code})" unless code.blank?
+    country_list[code.to_sym] + " (#{code})" unless code.blank?
   end
 
   def city
     if Kopal[:feed_city_has_code] == 'yes'
-      return ApplicationHelper.city_list[Kopal[:feed_city].to_sym]
+      return city_list[Kopal[:feed_city].to_sym]
     end
     Kopal[:feed_city]
   end

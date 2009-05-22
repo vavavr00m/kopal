@@ -5,7 +5,8 @@ require 'ostruct'
 #      negative margin CSS technique in <tt>layout.html.erb</tt>
 class ApplicationController < ActionController::Base
   helper :all # include all helpers, all the time
-  include ApplicationHelper #Helper methods in controller too.
+  helper KopalHelper
+  include KopalHelper
   protect_from_forgery # See ActionController::RequestForgeryProtection for details
   before_filter :initialise
 
