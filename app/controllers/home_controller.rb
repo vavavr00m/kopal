@@ -24,7 +24,7 @@ class HomeController < ApplicationController
   def signin
     session[:and_return_to] ||= params[:and_return_to] || root_path
     if request.post?
-      if params[:password] == Kopal.config(:account_password)
+      if Kopal.authenticate_simple(params[:password])
         session[:signed] = true
         redirect_to( session[:and_return_to])
         session.delete :and_return_to
