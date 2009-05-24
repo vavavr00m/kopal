@@ -1,6 +1,5 @@
 #Users, whom this application belongs to.
 class ProfileUser < KopalUser
-  include ApplicationHelper #Bad?
   
   def kopal_identity
     Kopal[:kopal_identity]
@@ -17,7 +16,6 @@ class ProfileUser < KopalUser
   
   def name
     Kopal['preferred_calling_name'] || real_name
-      'Profile user'
   end
 
   def real_name
