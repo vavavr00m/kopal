@@ -26,13 +26,14 @@
 # * +:surface_right_content+
 
 module Kopal
-class << self
+  #protocol right word?
   DISCOVERY_PROTOCOL_REVISION = "0.1.alpha"
   FEED_PROTOCOL_REVISION = "0.1.alpha"
   PLATFORM = "kopal.googlecode.com"
-  CONFIG_FILE_ADDRESS = RAILS_ROOT + '/config/kopal.yml'
   @@pref_cache = {}
   @@initialised = false
+
+class << self
   #Anything that needs to be run at the startup, goes here.
   def initialise
     return if @@initialised
@@ -78,4 +79,4 @@ class << self
 end
 end
 
-
+class Kopal::InvalidKopalIdentity < StandardError; end;

@@ -1,5 +1,6 @@
 #Holds all the data of user too, since there is only one user, No need for UserAccount model.
 class KopalPreference < ActiveRecord::Base
+  class FieldNotFound < StandardError; end;
   set_table_name :kopal_preference
   serialize :preference_text
 
@@ -20,15 +21,20 @@ class KopalPreference < ActiveRecord::Base
       #or <tt>nothing</tt>. <tt>y, m, d</tt> stand for <tt>year, month, date</tt> resp.
     :feed_country_living_code, #Code for living country.
     :feed_city, #Name of the city or its code. Determined by <tt>city_has_code</tt>
-    :feed_city_has_code #Must be either <tt>yes</tt> or <tt>no</tt> downcase.
+    :feed_city_has_code, #Must be either <tt>yes</tt> or <tt>no</tt> downcase.
+    :kopal_identity
   ]
   DEPRECATED_FIELDS = {
     #:deprecated_field => "message"
   }
+  def self.all_fields
+    (FIELDS.dup.concat(DEPRECATED_FIELDS.keys)).map { |k| k.to_s }
+  end
+  
   validates_presence_of :preference_name
   validates_uniqueness_of :preference_name
   validates_inclusion_of :preference_name,
-    :in => (FIELDS.dup.concat(DEPRECATED_FIELDS.keys)).map { |k| k.to_s },
+    :in => self.all_fields,
     :message => "{{value}} is not in the list."
   before_validation :preference_name_in_lowercase
 
@@ -85,6 +91,8 @@ class KopalPreference < ActiveRecord::Base
   end
 
   def self.deprecated? name
+    raise KopalPreference::FieldNotFound, 'Preference name ' + name.to_s +
+      ' is not valid.' unless all_fields.include? name.to_s
     DeprecatedMethod.here DEPRECATED_FIELDS[name.to_sym] if
       DEPRECATED_FIELDS.has_key? name.to_sym
   end

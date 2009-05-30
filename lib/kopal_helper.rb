@@ -27,4 +27,21 @@ module KopalHelper
     }
     return c
   end
+
+  #modified from OpenIdAuthentication::normalize_identifier
+  def normalise_url identifier
+    identifier = identifier.to_s.strip
+    identifier = "http://#{identifier}" unless identifier =~ /^[^.]+:\/\//i
+    identifier.gsub!(/\?(.*)$/, '') #strip query string
+    identifier.gsub!(/\#(.*)$/, '') # strip any fragments
+    identifier += '/' unless identifier[-1].chr == '/'
+    begin
+      uri = URI.parse(identifier)
+      uri.scheme = uri.scheme.downcase  # URI should do this
+      identifier = uri.normalize.to_s
+    rescue URI::InvalidURIError
+      raise Kopal::InvalidKopalIdentity, "#{identifier} is not a valid Kopal Identity."
+    end
+    return identifier
+  end
 end
