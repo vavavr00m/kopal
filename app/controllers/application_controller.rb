@@ -19,9 +19,16 @@ class ApplicationController < ActionController::Base
       return false unless @signed
     true
   end
+
+  #Get ActionController::Request object in lib/
+  #good thing?
+  def self.request
+    @@request
+  end
   
 private
   def initialise
+    @@request = request
     kopal_config
     I18n.locale = params[:culture]
     @signed = true if session[:signed]

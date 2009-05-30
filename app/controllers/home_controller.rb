@@ -2,10 +2,14 @@ class HomeController < ApplicationController
 
   #TODO: in place editor for "Status message".
   def index
-    unless params[:"kopal.discovery"].blank?
+    unless params[:"kopal.talk"].blank?
       params[:controller] = 'discovery'
       redirect_to params
     end
+  end
+
+  def feed
+    render :layout => false
   end
   
   #Provide more than just Gravatar, including any picture over internet, or 
