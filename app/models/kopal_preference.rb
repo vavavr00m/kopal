@@ -1,6 +1,6 @@
 #Holds all the data of user too, since there is only one user, No need for UserAccount model.
 class KopalPreference < ActiveRecord::Base
-  class FieldNotFound < StandardError; end;
+  class InvalidFieldName < StandardError; end;
   set_table_name :kopal_preference
   serialize :preference_text
 
@@ -22,7 +22,11 @@ class KopalPreference < ActiveRecord::Base
     :feed_country_living_code, #Code for living country.
     :feed_city, #Name of the city or its code. Determined by <tt>city_has_code</tt>
     :feed_city_has_code, #Must be either <tt>yes</tt> or <tt>no</tt> downcase.
-    :kopal_identity
+    :kopal_identity,
+    #Encode Private key with Base64 before saving to database. Since private key starts with "--" and
+    #value is serialised and ActiveRecord screws up and replaces "\n"
+    #with " ".
+    :kopal_encoded_private_key
   ]
   DEPRECATED_FIELDS = {
     #:deprecated_field => "message"
@@ -91,7 +95,7 @@ class KopalPreference < ActiveRecord::Base
   end
 
   def self.deprecated? name
-    raise KopalPreference::FieldNotFound, 'Preference name ' + name.to_s +
+    raise KopalPreference::InvalidFieldName, 'Preference name ' + name.to_s +
       ' is not valid.' unless all_fields.include? name.to_s
     DeprecatedMethod.here DEPRECATED_FIELDS[name.to_sym] if
       DEPRECATED_FIELDS.has_key? name.to_sym

@@ -4,6 +4,7 @@ class HomeController < ApplicationController
   def index
     unless params[:"kopal.talk"].blank?
       params[:controller] = 'discovery'
+      params[:action] = params[:"kopal.subject"]
       redirect_to params
     end
   end

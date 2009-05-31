@@ -168,4 +168,41 @@ class ProfileUser < KopalUser
     end
     Kopal[:feed_city]
   end
+
+  #USE WITH CAUTION!
+  #Returns an instance of OpenSSL::PKey::RSA
+  def private_key!
+    if Kopal[:kopal_encoded_private_key].blank?
+      regenerate_private_key!
+    end
+    OpenSSL::PKey::RSA.new Base64::decode64(Kopal[:kopal_encoded_private_key])
+  end
+
+  def public_key
+    private_key!.public_key
+  end
+
+  #Default is 2048, recommended by RSA see -
+  #http://www.rsa.com/rsalabs/node.asp?id=2004#table1
+  #http://www.rsa.com/rsalabs/node.asp?id=2218
+  #We don't need to be very future-proof beccause
+  #We ain't encrypting any private data, where eve stores cipher text today, and analyses
+  #it when technology becomes feasible.
+  #Also, Private key can be changed over time so age of value of a cipher text of today is
+  #as long as user changes the Private key.
+  #Also note that identity of a user is tied with her Kopal Identity (profile url)
+  #and not with her private key.
+  def private_key_length
+    #Kopal[:kopal_private_key_length] ||
+      2048
+  end
+
+  #Will invalidate everything done in past!
+  #Encode Private key before saving to database. Since private key starts with "--" and
+  #value is serialised ActiveRecord screws up and replaces "\n"
+  #with " ".
+  def regenerate_private_key!
+    Kopal[:kopal_encoded_private_key] =
+      Base64::encode64(OpenSSL::PKey::RSA.new(private_key_length).to_pem)
+  end
 end
