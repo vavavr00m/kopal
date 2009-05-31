@@ -1,4 +1,5 @@
 xml.instruct!
+xml.comment! "DTD at http://kopal.googlecode.com/svn/static/DTD/kopal-feed.r1.0.dtd"
 xml.KopalFeed :revision => Kopal::FEED_PROTOCOL_REVISION,
   :platform => Kopal::PLATFORM do
   xml.Identity do

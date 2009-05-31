@@ -1,6 +1,3 @@
 class DiscoveryController < ApplicationController
-
-  def index
-    respond_to :xml
-  end
+  layout 'discovery.xml.builder'
 end
