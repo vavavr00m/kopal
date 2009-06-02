@@ -36,6 +36,9 @@ module KopalHelper
     identifier.gsub!(/\#(.*)$/, '') # strip any fragments
     identifier += '/' unless identifier[-1].chr == '/'
     begin
+      #URLs must have atleast on dot.
+      raise URI::InvalidURIError unless identifier =~
+        /^[^.]+:\/\/[0-9a-z]+\.[0-9a-z]+/i #Internationalised domains?, IPv6 addresses?
       uri = URI.parse(identifier)
       uri.scheme = uri.scheme.downcase  # URI should do this
       identifier = uri.normalize.to_s
@@ -43,5 +46,25 @@ module KopalHelper
       raise Kopal::InvalidKopalIdentity, "#{identifier} is not a valid Kopal Identity."
     end
     return identifier
+  end
+
+  #Argument n is the length of resulting hexadecimal string
+  def random_hexadecimal n = 32
+    ActiveSupport::SecureRandom.hex(n/2)
+  end
+
+  #Argument n is the length of resulting Base32 string
+  def random_base32 n = 32
+    ActiveSupport::SecureRandom.random_number(32 ** n).to_base32
+    #Or, ActiveSupport::SecureRandom.hex(n).to_i(16).to_base32
+  end
+
+  def valid_hexadecimal? s
+    s =~ /^[a-f0-9]*$/i #Empty string is valid Hexadecimal.
+  end
+
+  #Validtidity of Base32 according RFC-4648
+  def valid_base32? s
+    s =~ /^[a-z2-7]*$/i
   end
 end
