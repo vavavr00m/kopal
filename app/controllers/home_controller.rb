@@ -9,6 +9,19 @@ class HomeController < ApplicationController
     end
   end
 
+  #Redirects to Visitor's Profile Homepage.
+  def foreign
+    if request.post?
+      r = false
+      case params[:subject]
+      when 'friendship-request':
+        r = render_to_string :inline =>
+          '<%= generate_friendship_request_link(normalise_url(params[:identity])) %>'
+      end
+      redirect_to r if r
+    end
+  end
+
   def feed
     render :layout => false
   end

@@ -13,4 +13,11 @@
     <li><%= link_to(t(:sign_in), signin_path, {:title => t(:sign_in)}) %></li>
     <li><%= link_to(t(:sign_out), signout_path, {:title => t(:sign_out)}) %></li>
   </ul>
+  <hr />
+  <ul>
+    <li><%= link_to("Add as friend", home_path(:action => 'foreign',
+      :subject => 'friendship-request'),
+      {:title => "Add #{@profile_user.name} as your friend."}) %></li>
+    <!-- <li><%= link_to("Send a message") %></li> -->
+  </ul>
 <% end %>
