@@ -1,1 +1,9 @@
 nbproject/
+log/
+tmp/
+doc/app/
+doc/api/
+vendor/rails/
+
+syntax: glob
+db/*.sqlite3
