@@ -205,4 +205,12 @@ class ProfileUser < KopalUser
     Kopal[:kopal_encoded_private_key] =
       Base64::encode64(OpenSSL::PKey::RSA.new(private_key_length).to_pem)
   end
+
+  def friends
+    UserFriend.all
+  end
+
+  def friend? friend_identity
+    !!UserFriend.find_by_kopal_identity(normalise_url(friend_identity))
+  end
 end

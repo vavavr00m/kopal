@@ -29,6 +29,9 @@ module KopalHelper
   end
 
   #modified from OpenIdAuthentication::normalize_identifier
+  #Must be _identity function_ after first normalise_url(id).
+  #i.e., normalise_url(normalise_url(id)) == normalise_url(id) #=> true
+  #TODO: Write tests.
   def normalise_url identifier
     identifier = identifier.to_s.strip
     identifier = "http://#{identifier}" unless identifier =~ /^[^.]+:\/\//i

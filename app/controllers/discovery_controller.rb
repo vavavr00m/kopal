@@ -15,6 +15,10 @@ class DiscoveryController < ApplicationController
       #Reply with encryption of random-number of private key for verification?
       #:"kopal.random-number" => Proc.new {|x| valid_hexadecimal?(x)}
     )
+    friend_identity = normalise_url(params[:'kopal.friend-identity'])
+    if @profile_user.friend? friend_identity
+      @state = 'friend'
+    end
     @state = 'pending'
     render :friendship_state
   end

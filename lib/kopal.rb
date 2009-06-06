@@ -25,7 +25,9 @@
 # * +:page_bottom_content+
 # * +:surface_right_content+
 
+require 'kopal/exception'
 module Kopal
+  SOFTWARE_VERSION = "2009.0.1.alpha"
   #protocol right word?
   DISCOVERY_PROTOCOL_REVISION = "0.1.alpha"
   FEED_PROTOCOL_REVISION = "0.1.alpha"
@@ -76,7 +78,9 @@ class << self
   def reload_preferences!
     @@pref_cache = {}
   end
+  
+  def fetch url
+    Antenna.broadcast(Signal::Request.new(url))
+  end
 end
 end
-
-class Kopal::InvalidKopalIdentity < StandardError; end;
