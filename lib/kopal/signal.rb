@@ -1,33 +1,35 @@
 #Objects, which hold the response or data to be transmitted via Kopal::Antenna
 module Kopal::Signal
   include KopalHelper
-  attr_accessor :headers
+
+  def headers
+    @headers_
+  end
 end
 
 class Kopal::Signal::Request
   include Kopal::Signal
-  
-  attr_accessor :request_uri, :request_port, :http_method
+  attr_accessor :uri, :http_method
 
   def initialize request_uri
-    @request_uri = normalise_url(request_uri)
+    @uri = URI.parse(normalise_url(request_uri))
     @http_method = 'GET'
-    @request_uri =~ /^https:\/\// ? 
-      @request_port = 443 : @request_port = 80
-    @headers = {}
+    @headers_ = {}
   end
-  
 end
 
 class Kopal::Signal::Response
   include Kopal::Signal #makes me.is_a? Kopal::Signal
-  
-  attr_reader :response
-  
+
+  #Some kind of Rails deprecation warning for @response and @headers
   #Response is a Net::HTTPResponse object
   def initialize response
-    @response = response
-    @headers = @response.headers
+    @response_ = response
+    @headers_ = @response_.to_hash
+  end
+
+  def response
+    @response_
   end
   
   #Returns true if body is an XML with root element Kopal
@@ -40,7 +42,7 @@ class Kopal::Signal::Response
   end
   
   def body_raw
-    @response.body
+    @response_.body
   end
   
   def body_xml
