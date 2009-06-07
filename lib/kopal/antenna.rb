@@ -15,7 +15,7 @@ class Kopal::Antenna
   def self.broadcast signal #or receive?
     raise ArgumentError, "Expected an object of Kopal::Signal::Request but is " +
       signal.class.to_s unless signal.is_a? Kopal::Signal::Request
-    signal.headers['User-agent'] ||= USER_AGENT
+    signal.headers_['User-agent'] ||= USER_AGENT
     transmit signal, 0
   end
 
@@ -23,11 +23,11 @@ private
   
   def self.transmit signal, redirects_total
     begin
-      connection = Net::HTTP.new(signal.request_uri)
+      connection = Net::HTTP.new(signal.uri.host)
       connection.read_timeout =
         connection.open_timeout = TIMEOUT
       response = connection.start { 
-        connection.request_get(signal.request_uri, signal.headers)
+        connection.request_get(signal.uri.request_uri, signal.headers_)
       }
       case response
       when Net::HTTPRedirection
@@ -37,11 +37,11 @@ private
         signal.request_uri = response['location']
         transmit signal, redirects_total.next
       else
-        return Signal::Response.new(response)
+        return Kopal::Signal::Response.new(response)
       end
     rescue => e
       raise FetchingError, "Exception #{e.class} raised while fetching " +
-        signal.request_uri + ". Message recieved - \n" + e.message
+        signal.uri.request_uri + ". Message recieved - \n" + e.message
     end
   end
 end
