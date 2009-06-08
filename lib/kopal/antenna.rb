@@ -15,7 +15,7 @@ class Kopal::Antenna
   def self.broadcast signal #or receive?
     raise ArgumentError, "Expected an object of Kopal::Signal::Request but is " +
       signal.class.to_s unless signal.is_a? Kopal::Signal::Request
-    signal.headers_['User-agent'] ||= USER_AGENT
+    signal.headers['User-agent'] ||= USER_AGENT
     transmit signal, 0
   end
 
@@ -27,7 +27,7 @@ private
       connection.read_timeout =
         connection.open_timeout = TIMEOUT
       response = connection.start { 
-        connection.request_get(signal.uri.request_uri, signal.headers_)
+        connection.request_get(signal.uri.request_uri, signal.headers)
       }
       case response
       when Net::HTTPRedirection

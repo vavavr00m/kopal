@@ -1,5 +1,6 @@
 class DiscoveryController < ApplicationController
   layout 'discovery.xml.builder'
+  before_filter :initialise
 
   def index
     redirect_to root_path
@@ -18,8 +19,15 @@ class DiscoveryController < ApplicationController
     friend_identity = normalise_url(params[:'kopal.friend-identity'])
     if @profile_user.friend? friend_identity
       @state = 'friend'
+    else
+      f = UserIdentity.new
+      f.kopal_identity = friend_identity
+      fd = Kopal.fetch(f.url_kopal_feed)
+      if fd.kopal_feed?
+        #Get name, age etc.
+      end
+      @state = 'pending'
     end
-    @state = 'pending'
     render :friendship_state
   end
 
@@ -51,5 +59,11 @@ private
           true == v.call(params[k])
       end
     }
+  end
+
+private
+
+  #TODO: Make header content-type to "application/x-kopal-discovery+xml"
+  def initialise
   end
 end
