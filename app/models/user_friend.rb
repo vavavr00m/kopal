@@ -21,4 +21,12 @@ class UserFriend < ActiveRecord::Base
   def remove_friend_group group_name
     
   end
+
+  def url_kopal_discovery
+    self[:identity] + "?kopal.discovery=true&kopal.subject=discovery"
+  end
+
+  def url_kopal_feed
+    
+  end
 end

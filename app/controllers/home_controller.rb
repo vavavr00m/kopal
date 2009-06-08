@@ -2,7 +2,7 @@ class HomeController < ApplicationController
 
   #TODO: in place editor for "Status message".
   def index
-    unless params[:"kopal.talk"].blank?
+    unless params[:"kopal.discovery"].blank?
       params[:controller] = 'discovery'
       params[:action] = params[:"kopal.subject"].to_s.gsub("-", "_")
       redirect_to params
