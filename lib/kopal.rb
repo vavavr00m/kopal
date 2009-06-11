@@ -28,14 +28,18 @@
 require 'kopal/exception'
 module Kopal
   SOFTWARE_VERSION = "2009.0.1.alpha"
-  #protocol right word?
-  DISCOVERY_PROTOCOL_REVISION = "0.1.alpha"
+  #protocol right word? Or standard? sepcification?
+  CONNECT_PROTOCOL_REVISION = "0.1.alpha"
   FEED_PROTOCOL_REVISION = "0.1.alpha"
   PLATFORM = "kopal.googlecode.com"
   @@pref_cache = {}
   @@initialised = false
 
 class << self
+  def DISCOVERY_PROTOCOL_REVISION
+    DeprecatedMethod.here "Use CONNECT_PROTOCOL_REVISION instead."
+    CONNECT_PROTOCOL_REVISION
+  end
   #Anything that needs to be run at the startup, goes here.
   def initialise
     return if @@initialised

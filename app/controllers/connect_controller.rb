@@ -1,5 +1,5 @@
-class DiscoveryController < ApplicationController
-  layout 'discovery.xml.builder'
+class ConnectController < ApplicationController
+  layout 'connect.xml.builder'
   before_filter :initialise
 
   def index
