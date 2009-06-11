@@ -1,3 +1,16 @@
+#== UserFriend Fields
+# * <tt>kopal_identity (string, not null, unique)</tt>
+# * <tt>friendship_state (string, not null)</tt>
+# * <tt>gender (string, length => 1)</tt>
+# * <tt>name (string)</tt>
+# * <tt>description (string)</tt>
+# * <tt>country_living_code (string, length => 2)</tt>
+# * <tt>city (string)</tt>
+# * <tt>friend_group (string / friend ids by comma)</tt>
+#
+#== UserFriend Indicies
+# * <tt>kopal_identity, unique</tt>
+#
 class UserFriend < ActiveRecord::Base
 
   FRIENDSHIP_STATES = [
@@ -27,6 +40,6 @@ class UserFriend < ActiveRecord::Base
   end
 
   def url_kopal_feed
-    
+    self[:identity] + "?kopal.discovery=true&kopal.subject=feed"
   end
 end

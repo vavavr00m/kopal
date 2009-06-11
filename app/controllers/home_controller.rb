@@ -3,6 +3,10 @@ class HomeController < ApplicationController
   #TODO: in place editor for "Status message".
   def index
     unless params[:"kopal.discovery"].blank?
+      if "feed" == params[:"kopal.subject"].to_s.downcase
+        redirect_to home_path(:action => 'feed')
+        return
+      end
       params[:controller] = 'discovery'
       params[:action] = params[:"kopal.subject"].to_s.gsub("-", "_")
       redirect_to params
