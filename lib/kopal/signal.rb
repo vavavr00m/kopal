@@ -33,16 +33,20 @@ class Kopal::Signal::Response
   end
   
   #Returns true if body is an XML with root element Kopal
-  def kopal_discovery?
+  def kopal_connect?
     body_xml? && body_xml.root.name == 'Kopal' &&
       kopal_revision #Make sure it is present
+  end
+
+  def kopal_discovery?
+    DeprecatedMethod.here "Use kopal_connect?() instead."
+    kopal_connect?
   end
   
   #Returns true if body is an XML with root element KopalFeed.
   #Raises Kopal::KopalXmlError if required attributes are not present.
   def kopal_feed?
-    body_xml? && body_xml.root.name == "KopalFeed" &&
-      kopal_revision
+    !!(body_xml? && body_xml.root.name == "KopalFeed" && kopal_revision)
   end
   
   def body_raw
@@ -52,7 +56,8 @@ class Kopal::Signal::Response
   def body_xml?
     !body_xml.root.nil?
   end
-  
+
+  #Returns an instance of REXML::Document
   def body_xml
     @body_xml ||= body_xml!
   end

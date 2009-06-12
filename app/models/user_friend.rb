@@ -35,11 +35,12 @@ class UserFriend < ActiveRecord::Base
     
   end
 
-  def url_kopal_discovery
-    self[:identity] + "?kopal.discovery=true&kopal.subject=discovery"
+  def kopal_identity
+    Kopal::Identity.new self[:kopal_identity]
   end
 
-  def url_kopal_feed
-    self[:identity] + "?kopal.discovery=true&kopal.subject=feed"
+  #Value can be a String or Kopal::Identity
+  def kopal_identity= value
+    self[:kopal_identity] = value.to_s
   end
 end

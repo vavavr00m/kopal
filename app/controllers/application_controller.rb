@@ -5,6 +5,7 @@ require 'ostruct'
 ActiveRecord::Base.send('include', KopalHelper)
 #TODO: Place <tt>div#SurfaceLeft</tt> after <tt>div#SurfaceFront</tt> using some
 #      negative margin CSS technique in <tt>layout.html.erb</tt>
+#TODO: Hook in mercurial to run all test successfully before commit.
 class ApplicationController < ActionController::Base
   helper :all # include all helpers, all the time
   helper KopalHelper #in views
