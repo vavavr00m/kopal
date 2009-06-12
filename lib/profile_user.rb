@@ -9,7 +9,7 @@ class ProfileUser < KopalUser
       i += r.port_string unless((r.protocol == 'htp://' && r.port == 80) ||
         (r.protocol == 'https://' && r.port == 443))
     end
-    normalise_url(i)
+    Kopal::Identity.new i
   end
   alias profile_identity kopal_identity
   alias profile_homepage kopal_identity
@@ -17,7 +17,8 @@ class ProfileUser < KopalUser
   alias profile_url kopal_identity
 
   def kopal_feed_url
-    kopal_identity + 'home/feed/' #Can't use kopal_feed_url or url_for
+    DeprecatedMethod.here "Use .kopal_identity.feed_url() instead."
+    kopal_identity.feed_url
   end
 
   #User has created her Identity?
@@ -26,18 +27,25 @@ class ProfileUser < KopalUser
   def created_identity?
     !!Kopal[:feed_name]
   end
+
+  def feed
+    @kopal_feed ||= Kopal::Feed.new
+  end
   
   def name
-    (Kopal[:feed_preferred_calling_name] || real_name).strip
+    DeprecatedMethod.here "Use .feed.name() instead."
+    feed.name
   end
   alias preferred_calling_name name
 
   def real_name
-    (Kopal[:feed_name] || 'Profile user').strip
+    DeprecatedMethod.here "Use .feed.real_name() instead."
+    feed.real_name
   end
   
   def aliases
-    Kopal[:feed_aliases].to_s.split("\n").map { |e| e.strip}
+    DeprecatedMethod.here "Use .feed.aliases() instead."
+    feed.aliases
   end
 
   #Duplication? !DRY?
@@ -46,7 +54,8 @@ class ProfileUser < KopalUser
   end
 
   def description
-    Kopal[:feed_description]
+    DeprecatedMethod.here "Use .feed.description() instead?"
+    feed.description
   end
 
   def image_path
@@ -56,15 +65,13 @@ class ProfileUser < KopalUser
   end
 
   def gender
-    if(Kopal[:feed_show_gender] == 'yes')
-      Kopal[:feed_gender].to_s.titlecase
-    end
+    DeprecatedMethod.here "Use .feed.gender() instead."
+    feed.gender
   end
 
   def email
-    if(Kopal[:feed_show_email] == 'yes')
-      Kopal[:feed_email].to_s
-    end
+    DeprecatedMethod.here "Use .feed.email() instead."
+    feed.email
   end
 
   def show_dob?
@@ -78,19 +85,13 @@ class ProfileUser < KopalUser
   end
 
   def age
-    return nil if Kopal[:feed_birth_time].blank?
-    next_birthday.year - Kopal[:feed_birth_time].year - 1
+    DeprecatedMethod.here "Use .feed.age() instead."
+    feed.age
   end
 
-  def birth_time #In ISO 8601
-    unless Kopal[:feed_birth_time].blank?
-      return case Kopal[:feed_birth_time_pref]
-      when 'y':
-        Kopal[:feed_birth_time].year.to_s
-      when 'ymd':
-        Kopal[:feed_birth_time].to_time.strftime("%Y-%m-%d")
-      end
-    end
+  def birth_time
+    DeprecatedMethod.here "Use .feed.birth_time_string() instead."
+    feed.birth_time_string
   end
 
   def dob_string
@@ -111,9 +112,9 @@ class ProfileUser < KopalUser
   #Returns the date of birth as string, followed by age in brackets.
   #Respects date of birth preference in +Kopal[:feed_birth_time_pref]+
   def dob_with_age
-    unless Kopal[:feed_birth_time].blank?
+    unless feed.birth_time.blank?
       #age_string = " (#{age} #{t(:year, :count => year).downcase})"
-      age_string = " (#{age} years)"
+      age_string = " (#{feed.age} years)"
       return case Kopal[:feed_birth_time_pref]
       when /y|md/:
         dob_string + age_string
@@ -125,48 +126,45 @@ class ProfileUser < KopalUser
   end
 
   def next_birthday
-    return nil if Kopal[:feed_birth_time].blank?
-    birthday = Date.new(Date.today.year, Kopal[:feed_birth_time].month,
-      Kopal[:feed_birth_time].day)
-    return birthday if birthday >= Date.today
-    return birthday.next_year
+    DeprecatedMethod.here "Use .feed.next_birthday() instead."
+    feed.next_birthday
   end
 
   def country_living_code
-    Kopal[:feed_country_living_code].to_s.upcase
+    DeprecatedMethod.here "Use .feed.country_living_code() instead."
+    feed.country_living_code
   end
 
   def country_living
-    country_list[Kopal[:feed_country_living_code].to_sym]
+    DeprecatedMethod.here "Use .feed.country_living() instead."
+    feed.country_living
   end
 
   #Country living in format => Country (CODE)
   def country_living_with_code
-    code = Kopal[:feed_country_living_code]
-    country_list[code.to_sym] + " (#{code})" unless code.blank?
+    DeprecatedMethod.here "Use .feed.country_living_with_code() instead."
+    feed.country_living_with_code
   end
 
   def city_has_code?
-    Kopal[:feed_city_has_code] == 'yes'
+    DeprecatedMethod.here "Use .feed.city_has_code?() instead."
+    feed.city_has_code?
   end
 
   #Name of the city.
   def city
-    if city_has_code?
-      return city_list[Kopal[:feed_city].to_sym]
-    end
-    Kopal[:feed_city]
+    DeprecatedMethod.here "Use .feed.city_name() instead."
+    feed.city_name
   end
 
   def city_code
-    Kopal[:feed_city].to_s if city_has_code?
+    DeprecatedMethod.here "Use .feed.city_code() instead."
+    feed.city_code
   end
 
   def city_with_code
-    if Kopal[:feed_city_has_code] == 'yes'
-      return city + " (#{Kopal[:feed_city]})"
-    end
-    Kopal[:feed_city]
+    DeprecatedMethod.here "Use .feed.city_with_code() instead."
+    feed.city_with_code
   end
 
   #USE WITH CAUTION!
@@ -210,7 +208,10 @@ class ProfileUser < KopalUser
     UserFriend.all
   end
 
+  #Returns false if not friend, else the friendship state
   def friend? friend_identity
-    !!UserFriend.find_by_kopal_identity(normalise_url(friend_identity))
+    f = UserFriend.find_by_kopal_identity(normalise_url(friend_identity.to_s))
+    return false if f.nil?
+    return f.friendship_state
   end
 end

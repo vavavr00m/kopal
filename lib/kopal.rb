@@ -27,6 +27,7 @@
 
 require 'kopal/exception'
 module Kopal
+  include KopalHelper
   SOFTWARE_VERSION = "2009.0.1.alpha"
   #protocol right word? Or standard? sepcification?
   CONNECT_PROTOCOL_REVISION = "0.1.alpha"
@@ -84,7 +85,7 @@ class << self
   end
   
   def fetch url
-    Antenna.broadcast(Signal::Request.new(url))
+    Kopal::Antenna.broadcast(Kopal::Signal::Request.new(url))
   end
 end
 end

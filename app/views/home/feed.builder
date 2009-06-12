@@ -5,7 +5,7 @@ xml.KopalFeed :revision => Kopal::FEED_PROTOCOL_REVISION,
   xml.Identity do
     xml.Homepage @profile_user.profile_url
     xml.KopalIdentity @profile_user.kopal_identity
-    xml.Name @profile_user.real_name
+    xml.RealName @profile_user.real_name
     xml.Aliases do
       @profile_user.aliases.each {|a|
         if @profile_user.name == a

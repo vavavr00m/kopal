@@ -1,4 +1,4 @@
-module DiscoveryHelper
+module ConnectHelper
 
   def generate_friendship_request_link identity
     p = ProfileUser.new

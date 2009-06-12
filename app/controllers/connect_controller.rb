@@ -24,7 +24,8 @@ class ConnectController < ApplicationController
       f.kopal_identity = friend_identity
       fd = Kopal.fetch(f.url_kopal_feed)
       if fd.kopal_feed?
-        #Get name, age etc.
+        feed = Kopal::Feed.new fd.body_xml
+        f.name = feed.name
       end
       @state = 'pending'
     end

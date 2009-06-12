@@ -23,7 +23,7 @@ private
   
   def self.transmit signal, redirects_total
     begin
-      connection = Net::HTTP.new(signal.uri.host)
+      connection = Net::HTTP.new(signal.uri.host, signal.uri.port)
       connection.read_timeout =
         connection.open_timeout = TIMEOUT
       response = connection.start { 
