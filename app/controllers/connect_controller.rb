@@ -1,6 +1,6 @@
 class ConnectController < ApplicationController
   layout 'connect.xml.builder'
-  before_filter :initialise
+  before_filter :connect_initialise
 
   def index
     redirect_to root_path
@@ -17,17 +17,26 @@ class ConnectController < ApplicationController
       #:"kopal.random-number" => Proc.new {|x| valid_hexadecimal?(x)}
     )
     friend_identity = normalise_url(params[:'kopal.friend-identity'])
-    if @profile_user.friend? friend_identity
-      @state = 'friend'
+    if u = UserFriend.find_by_kopal_identity(friend_identity)
+      @state = u.friendship_state
     else
-      f = UserIdentity.new
+      f = UserFriend.new
       f.kopal_identity = friend_identity
-      fd = Kopal.fetch(f.url_kopal_feed)
+      fd = Kopal.fetch(f.kopal_identity.feed_url)
       if fd.kopal_feed?
-        feed = Kopal::Feed.new fd.body_xml
-        f.name = feed.name
+        begin
+          feed = Kopal::Feed.new fd.body_xml
+          f.name = feed.name
+          f.description = feed.description
+          f.gender = feed.gender
+          f.country_living_code = feed.country_living_code
+          f.city_name = feed.city_name
+          @state = f.friendship_state = 'pending'
+          f.save!
+        rescue Kopal::InvalidKopalFeed
+          #render_kopal_error "Invalid Kopal Feed."
+        end
       end
-      @state = 'pending'
     end
     render :friendship_state
   end
@@ -65,6 +74,6 @@ private
 private
 
   #TODO: Make header content-type to "application/x-kopal-discovery+xml"
-  def initialise
+  def connect_initialise
   end
 end

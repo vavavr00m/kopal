@@ -5,7 +5,7 @@
 # * <tt>name (string)</tt>
 # * <tt>description (string)</tt>
 # * <tt>country_living_code (string, length => 2)</tt>
-# * <tt>city (string)</tt>
+# * <tt>city_name (string)</tt>
 # * <tt>friend_group (string / friend ids by comma)</tt>
 #
 #== UserFriend Indicies

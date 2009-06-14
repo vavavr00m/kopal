@@ -16,7 +16,7 @@ class OrganiseController < ApplicationController
     if request.post?
       #OPTIMIZE: presently, one database save per field. Take it all in one go.
       begin
-        [ :feed_name,
+        [ :feed_real_name,
           :feed_aliases,
           :feed_preferred_calling_name,
           :user_status_message,

@@ -7,7 +7,7 @@ class KopalPreference < ActiveRecord::Base
   #Only these values can be stored in the <tt>preference_name</tt> field. (extreme programming?).
   #It is up to Controller to choose a default value for fields.
   FIELDS = [
-    :feed_name, #Name of the user
+    :feed_real_name, #Name of the user
     :feed_aliases, #Aliases of the user separated by "\n"
     :feed_preferred_calling_name,
     :user_status_message,

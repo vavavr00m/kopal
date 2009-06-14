@@ -12,19 +12,26 @@ class Kopal::Signal::Request
   attr_accessor :uri, :http_method
 
   def initialize request_uri
-    @uri = URI.parse(request_uri)
+    self.uri = request_uri
     @http_method = 'GET'
     @headers_ = {}
+  end
+
+  def uri= value
+    @uri = URI.parse(value)
   end
 end
 
 class Kopal::Signal::Response
   include Kopal::Signal #makes me.is_a? Kopal::Signal
 
+  attr_reader :response_uri
+
   #Some kind of Rails deprecation warning for @response and @headers
   #Response is a Net::HTTPResponse object
-  def initialize response
+  def initialize response, response_uri
     @response_ = response
+    @response_uri = response_uri
     @headers_ = @response_.to_hash
   end
 
