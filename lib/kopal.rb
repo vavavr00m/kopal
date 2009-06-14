@@ -37,6 +37,9 @@ module Kopal
   @@initialised = false
 
 class << self
+  #It doesn't work.
+  #Kopal.CONST and Kopal::CONST are different. Remove this method after this
+  #message becomes part of a commit.
   def DISCOVERY_PROTOCOL_REVISION
     DeprecatedMethod.here "Use CONNECT_PROTOCOL_REVISION instead."
     CONNECT_PROTOCOL_REVISION

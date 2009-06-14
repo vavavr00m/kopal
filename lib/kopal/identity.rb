@@ -16,11 +16,11 @@ class Kopal::Identity
     raise NotImplementedError
   end
 
-  def feed_url
+  def connect_url
     @identity + '?kopal.connect=true'
   end
 
-  def connect_url
+  def feed_url
     @identity + '?kopal.feed=true'
   end
   

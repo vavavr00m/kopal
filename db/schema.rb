@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20090511114230) do
+ActiveRecord::Schema.define(:version => 20090603120113) do
 
   create_table "kopal_preference", :force => true do |t|
     t.string   "preference_name"
@@ -19,5 +19,20 @@ ActiveRecord::Schema.define(:version => 20090511114230) do
   end
 
   add_index "kopal_preference", ["preference_name"], :name => "index_kopal_preference_on_preference_name", :unique => true
+
+  create_table "user_friend", :force => true do |t|
+    t.string   "kopal_identity",      :null => false
+    t.string   "friendship_state",    :null => false
+    t.string   "gender"
+    t.string   "country_living_code"
+    t.string   "name"
+    t.string   "description"
+    t.string   "city_name"
+    t.string   "friend_group"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "user_friend", ["kopal_identity"], :name => "index_user_friend_on_kopal_identity", :unique => true
 
 end

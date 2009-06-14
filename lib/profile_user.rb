@@ -23,9 +23,9 @@ class ProfileUser < KopalUser
 
   #User has created her Identity?
   #Identity is the core part of user's profile. (not to be confused with
-  #profile_identity.)
+  #kopal_identity.)
   def created_identity?
-    !!Kopal[:feed_name]
+    !!Kopal[:feed_real_name]
   end
 
   def feed
@@ -59,8 +59,8 @@ class ProfileUser < KopalUser
   end
 
   def image_path
-    kopal_identity + 'home/profile_image/' +
-      name.titlecase.gsub(/[\/\\\!\@\#\$\%\^\*\&\-\.\,\?]+/, ' ').
+    kopal_identity.to_s + 'home/profile_image/' +
+      feed.name.titlecase.gsub(/[\/\\\!\@\#\$\%\^\*\&\-\.\,\?]+/, ' ').
       gsub(' ', '').underscore + '.jpeg'
   end
 
@@ -205,13 +205,13 @@ class ProfileUser < KopalUser
   end
 
   def friends
-    UserFriend.all
+    UserFriend.find_all_by_friendship_state("friend")
   end
 
   #Returns false if not friend, else the friendship state
   def friend? friend_identity
     f = UserFriend.find_by_kopal_identity(normalise_url(friend_identity.to_s))
     return false if f.nil?
-    return f.friendship_state
+    return f.friendship_state == 'friend'
   end
 end

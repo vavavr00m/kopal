@@ -34,10 +34,10 @@ private
         raise HTTPTooManyRedirects, "Too many redirects, not fetching " + 
           response['location'] + '. Redirect limit is ' + 
           REDIRECT_LIMIT.to_s if redirects_total >= REDIRECT_LIMIT
-        signal.request_uri = response['location']
+        signal.uri = response['location']
         transmit signal, redirects_total.next
       else
-        return Kopal::Signal::Response.new(response)
+        return Kopal::Signal::Response.new(response, signal.uri.to_s)
       end
     rescue => e
       raise FetchingError, "Exception #{e.class} raised while fetching " +

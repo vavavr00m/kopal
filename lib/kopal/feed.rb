@@ -3,7 +3,7 @@
 #
 #This is a read-only class, and does not modifies Kopal Feeds.
 class Kopal::Feed
-  include KopalHelper
+  include Kopal
 
   def initialize object = nil
     @of_profile_user = false
@@ -24,9 +24,41 @@ class Kopal::Feed
     end
   end
 
+  def homepage
+    kopal_identity if of_profile_user?
+  end
+
+  def kopal_identity
+    @kopal_identity
+  end
+
   #This Kopal Feed for profile user?
   def of_profile_user?
     @of_profile_user
+  end
+
+  def name
+    @name
+  end
+
+  def real_name
+    @real_name
+  end
+
+  def aliases
+    @aliases
+  end
+
+  def description
+    @description
+  end
+
+  def gender
+    @gender
+  end
+
+  def email
+    @email
   end
 
   def birth_time_has_year?
@@ -101,8 +133,13 @@ class Kopal::Feed
     end
   end
 
+  def country_living_code
+    @country_living_code
+  end
+
   def country_living
-    country_list[country_living_code.to_sym] unless country_living_code.blank?
+    @country_living ||=
+      country_list[country_living_code.to_sym] unless country_living_code.blank?
   end
 
   def country_living_with_code
@@ -112,6 +149,19 @@ class Kopal::Feed
 
   def city_has_code?
     !!city_code
+  end
+
+  def city_code
+    @city_code
+  end
+
+  def city_name
+    return @city_name ||= if city_has_code?
+      city_list[city_code.to_sym]
+    elsif of_profile_user?
+      Kopal[:feed_city]
+    else
+    end
   end
 
   def city_with_code
@@ -127,14 +177,83 @@ class Kopal::Feed
 
 private
 
-  def initialise_for_rexml
-
+  def initialise_for_rexml object
+    @of_profile_user = false
+    raise InvalidKopalFeed, "Argument is not a valid Kopal Feed." unless
+      object.root.name == "KopalFeed"
+    raise InvalidKopalFeed, "Attribute \"revision\" for KopalFeed is required." if
+      object.root.attributes["revision"].blank?
+    e = object.root.elements
+    i = e["Identity"]
+    ie = i.elements
+    raise InvalidKopalFeed, "Element Homepage is required." if
+      ie["Homepage"].blank?
+    raise InvalidKopalFeed, "Element RealName is required." if
+      ie["RealName"].blank?
+    @homepage = ie["Homepage"].text
+    @kopal_identity = ie["KopalIdentity"].text if ie["KopalIdentity"]
+    @name = @real_name = ie["RealName"].text
+    unless ie["Aliases"].nil?
+      @aliases = []
+      ie["Aliases"].each { |a|
+        next unless a.node_type == :element
+        raise InvalidKopalFeed, "Identity.Aliases has invalid element " +
+          "\"#{a.name}\"" unless a.name == "Alias"
+        @aliases << a.text
+        @name = a.text if a.attributes["preferred_calling_name"]
+      }
+    end
+    @description = ie["Description"].text if ie["Description"]
+    @image = ie["Image"] if ie["Image"] and ie["Image"].attributes["type"] == "url"
+    if ie["Gender"]
+      raise InvalidKopalFeed, "Gender must be \"Male\" or \"Female\"." unless
+        ie["Gender"].text =~ /^(M|Fem)ale$/
+      @gender = ie["Gender"].text
+    end
+    if ie["Email"]
+      begin
+        e = TMail::Address.parse(ie["Email"].text)
+        @email = e.address # Vi <vi@example.net> => vi@example.net
+      rescue TMail::SyntaxError
+        raise InvalidKopalFeed, "Email does not has a valid syntax."
+      end
+    end
+    if ie["BirthTime"]
+      case ie["BirthTime"].text
+      when /^[0-9]{4}$/ #YYYY
+        @birth_time_has_month = @birth_time_has_day = false
+        @birth_time = DateTime.new ie["BirthTime"].text.to_i
+      when /^[0-9]{4}-[0-9]{2}$/ #YYYY-MM
+        @birth_time_has_month = true
+        @birth_time_has_day = false
+        @birth_time = DateTime.new ie["BirthTime"].text[0,4].to_i,
+          ie["BirthTime"].text[5,2].to_i
+      when /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/ #YYYY-MM-DD
+        @birth_time_has_month = @birth_time_has_day = true
+        @birth_time = DateTime.new ie["BirthTime"].text[0,4].to_i,
+          ie["BirthTime"].text[5,2].to_i, ie["BirthTime"].text[8,2].to_i
+      when /^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{2,}Z$/
+        #TODO: Write me.
+      else
+        raise InvalidKopalFeed, "BirthTime does not has a valid syntax."
+      end
+    end
+    if ie["Address"]
+      if ie["Country"]
+        if ie["Living"]
+          @country_living_code = ie["Living"].text
+          raise InvalidKopalFeed, "Identity.Address.Country.Living " +
+            "\"#{@country_living_code}\" is not valid country code." unless
+          country_living
+        end
+      end
+    end
   end
 
   def initialise_for_profile_user
     @of_profile_user = true
-    @real_name = (Kopal[:feed_real_name].strip || "Profile user")
-    @name = (Kopal[:feed_preferred_calling_name].strip || @real_name)
+    @real_name = (Kopal[:feed_real_name] || "Profile user").strip
+    @name = (Kopal[:feed_preferred_calling_name] || @real_name).strip
     @aliases = Kopal[:feed_aliases].to_s.split("\n").map { |e| e.strip}
     @description = Kopal[:feed_description]
     @gender = if(Kopal[:feed_show_gender] == 'yes')
@@ -146,9 +265,6 @@ private
     @country_living_code = Kopal[:feed_country_living_code].to_s.upcase
     if 'yes' == Kopal[:feed_city_has_code]
       @city_code = Kopal[:feed_city]
-      @city_name = city_list[@city_code.to_sym]
-    else
-      @city_name = Kopal[:feed_city]
     end
   end
 

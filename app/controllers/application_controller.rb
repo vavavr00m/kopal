@@ -39,7 +39,7 @@ private
     @visitor = VisitingUser.new
     @page = OpenStruct.new
     #When theme support is implemented, these should go to theme controller.
-    @page.title = @profile_user.name + " &ndash; Kopal Profile"
+    @page.title = @profile_user.feed.name + " &ndash; Kopal Profile"
     @page.description = "Profile for #{Kopal["feed_preferred_calling_name"]}" if
       Kopal["feed_preferred_calling_name"]
     @page.stylesheets = ['home']
