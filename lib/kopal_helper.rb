@@ -46,7 +46,7 @@ module KopalHelper
       uri.scheme = uri.scheme.downcase  # URI should do this
       identifier = uri.normalize.to_s
     rescue URI::InvalidURIError
-      raise Kopal::InvalidKopalIdentity, "#{identifier} is not a valid Kopal Identity."
+      raise Kopal::KopalIdentityInvalid, "#{identifier} is not a valid Kopal Identity."
     end
     return identifier
   end

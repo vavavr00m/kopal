@@ -183,16 +183,16 @@ private
 
   def initialise_for_rexml object
     @of_profile_user = false
-    raise InvalidKopalFeed, "Argument is not a valid Kopal Feed." unless
+    raise KopalFeedInvalid, "Argument is not a valid Kopal Feed." unless
       object.root.name == "KopalFeed"
-    raise InvalidKopalFeed, "Attribute \"revision\" for KopalFeed is required." if
+    raise KopalFeedInvalid, "Attribute \"revision\" for KopalFeed is required." if
       object.root.attributes["revision"].blank?
     e = object.root.elements
     i = e["Identity"]
     ie = i.elements
-    raise InvalidKopalFeed, "Element Homepage is required." if
+    raise KopalFeedInvalid, "Element Homepage is required." if
       ie["Homepage"].blank?
-    raise InvalidKopalFeed, "Element RealName is required." if
+    raise KopalFeedInvalid, "Element RealName is required." if
       ie["RealName"].blank?
     @homepage = ie["Homepage"].text
     @kopal_identity = ie["KopalIdentity"].text if ie["KopalIdentity"]
@@ -201,7 +201,7 @@ private
       @aliases = []
       ie["Aliases"].each { |a|
         next unless a.node_type == :element
-        raise InvalidKopalFeed, "Identity.Aliases has invalid element " +
+        raise KopalFeedInvalid, "Identity.Aliases has invalid element " +
           "\"#{a.name}\"" unless a.name == "Alias"
         @aliases << a.text
         @name = a.text if a.attributes["preferred_calling_name"]
@@ -210,7 +210,7 @@ private
     @description = ie["Description"].text if ie["Description"]
     @image_path = ie["Image"].text if ie["Image"] and ie["Image"].attributes["type"] == "url"
     if ie["Gender"]
-      raise InvalidKopalFeed, "Gender must be \"Male\" or \"Female\"." unless
+      raise KopalFeedInvalid, "Gender must be \"Male\" or \"Female\"." unless
         ie["Gender"].text =~ /^(M|Fem)ale$/
       @gender = ie["Gender"].text
     end
@@ -219,7 +219,7 @@ private
         e = TMail::Address.parse(ie["Email"].text)
         @email = e.address # Vi <vi@example.net> => vi@example.net
       rescue TMail::SyntaxError
-        raise InvalidKopalFeed, "Email does not has a valid syntax."
+        raise KopalFeedInvalid, "Email does not has a valid syntax."
       end
     end
     if ie["BirthTime"]
@@ -239,14 +239,14 @@ private
       when /^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{2,}Z$/
         #TODO: Write me.
       else
-        raise InvalidKopalFeed, "BirthTime does not has a valid syntax."
+        raise KopalFeedInvalid, "BirthTime does not has a valid syntax."
       end
     end
     if ie["Address"]
       if ie["Country"]
         if ie["Living"]
           @country_living_code = ie["Living"].text
-          raise InvalidKopalFeed, "Identity.Address.Country.Living " +
+          raise KopalFeedInvalid, "Identity.Address.Country.Living " +
             "\"#{@country_living_code}\" is not valid country code." unless
           country_living
         end

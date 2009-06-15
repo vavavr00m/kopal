@@ -1,8 +1,8 @@
 module Kopal
   
   class KopalError < StandardError; end;
-  class InvalidKopalIdentity < KopalError; end;
+  class KopalIdentityInvalid < KopalError; end;
   class KopalXmlError < KopalError; end;
-  class InvalidKopalConnect < KopalXmlError; end;
-  class InvalidKopalFeed < KopalXmlError; end;
+  class KopalConnectInvalid < KopalXmlError; end;
+  class KopalFeedInvalid < KopalXmlError; end;
 end

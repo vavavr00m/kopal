@@ -34,7 +34,7 @@ class ConnectController < ApplicationController
           f.city_name = feed.city_name
           @state = f.friendship_state = 'pending'
           f.save!
-        rescue Kopal::InvalidKopalFeed, ActiveRecord::RecordInvalid => e
+        rescue Kopal::KopalFeedInvalid, ActiveRecord::RecordInvalid => e
           render_kopal_error "Invalid Kopal Feed at #{fd.response_uri}. " + 
             "Message recieved - \n" + e.message
           return
