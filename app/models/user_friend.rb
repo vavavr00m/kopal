@@ -26,7 +26,7 @@ class UserFriend < ActiveRecord::Base
     begin
       normalise_url(self[:kopal_identity])
       URI.parse(image_path) unless image_path.blank?
-    rescue Kopal::InvalidKopalIdentity
+    rescue Kopal::KopalIdentityInvalid
       errors.add(:kopal_identity, "is not a valid Kopal Identity.")
     rescue URI::InvalidURIError
       errors.add(:image_path, "does not has valid syntax.")
