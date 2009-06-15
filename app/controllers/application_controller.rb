@@ -23,6 +23,15 @@ class ApplicationController < ActionController::Base
     true
   end
 
+  def render_kopal_error message = ''
+    xm = Builder::XmlMarkup.new
+    xm.instruct!
+    xml = xm.KopalError { |x|
+      x.ErrorMessage message
+    }
+    render :xml => xml, :staus => 400
+  end
+
   #Get ActionController::Request object in lib/
   #good thing?
   def self.request
@@ -43,6 +52,9 @@ private
     @page.description = "Profile for #{Kopal["feed_preferred_calling_name"]}" if
       Kopal["feed_preferred_calling_name"]
     @page.stylesheets = ['home']
+    flash.now[:notification] = "You have new friendship requests. <a href=\"" +
+      organise_path(:action => 'friend') + "\">View</a>." if
+      UserFriend.find_by_friendship_state('pending')
   end
   
   #How to get these settings in <tt>environment.rb</tt>?

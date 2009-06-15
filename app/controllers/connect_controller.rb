@@ -28,13 +28,16 @@ class ConnectController < ApplicationController
           feed = Kopal::Feed.new fd.body_xml
           f.name = feed.name
           f.description = feed.description
+          f.image_path = feed.image_path
           f.gender = feed.gender
           f.country_living_code = feed.country_living_code
           f.city_name = feed.city_name
           @state = f.friendship_state = 'pending'
           f.save!
-        rescue Kopal::InvalidKopalFeed
-          #render_kopal_error "Invalid Kopal Feed."
+        rescue Kopal::InvalidKopalFeed, ActiveRecord::RecordInvalid => e
+          render_kopal_error "Invalid Kopal Feed at #{fd.response_uri}. " + 
+            "Message recieved - \n" + e.message
+          return
         end
       end
     end

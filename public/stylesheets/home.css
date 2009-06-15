@@ -69,6 +69,12 @@ div.notice {
   background: #FFE3E3;
 }
 
+div.notification {
+  color: rgb(70,70,70);
+  background: rgb(224,224,242);
+  border-color: gray;
+}
+
 input[type="text"] {
   width: 270px;
 }
