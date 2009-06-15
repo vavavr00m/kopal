@@ -14,12 +14,24 @@
 class UserFriend < ActiveRecord::Base
 
   FRIENDSHIP_STATES = [
-    :pending,
+    :pending, #You need to accept/reject this request.
+    :waiting, #You send friendship request, waiting for approval.
     :friend
   ]
 
   validates_presence_of :kopal_identity, :name, :friendship_state
   validates_uniqueness_of :kopal_identity
+
+  def validate
+    begin
+      normalise_url(self[:kopal_identity])
+      URI.parse(image_path) unless image_path.blank?
+    rescue Kopal::InvalidKopalIdentity
+      errors.add(:kopal_identity, "is not a valid Kopal Identity.")
+    rescue URI::InvalidURIError
+      errors.add(:image_path, "does not has valid syntax.")
+    end
+  end
 
   def friend_groups
     ids = read_attribute(:friend_group).to_s.split(',')

@@ -53,6 +53,10 @@ class Kopal::Feed
     @description
   end
 
+  def image_path
+    @image_path
+  end
+
   def gender
     @gender
   end
@@ -204,7 +208,7 @@ private
       }
     end
     @description = ie["Description"].text if ie["Description"]
-    @image = ie["Image"] if ie["Image"] and ie["Image"].attributes["type"] == "url"
+    @image_path = ie["Image"].text if ie["Image"] and ie["Image"].attributes["type"] == "url"
     if ie["Gender"]
       raise InvalidKopalFeed, "Gender must be \"Male\" or \"Female\"." unless
         ie["Gender"].text =~ /^(M|Fem)ale$/

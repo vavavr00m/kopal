@@ -50,4 +50,9 @@ class OrganiseController < ApplicationController
       Kopal[:feed_city] = params[:feed_city] if Kopal[:feed_city_has_code] == "no"
     end
   end
+
+  def friend
+    @pending_friends = UserFriend.find_all_by_friendship_state("pending")
+    @waiting_friends = UserFriend.find_all_by_friendship_state("waiting")
+  end
 end

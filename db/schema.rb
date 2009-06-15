@@ -29,6 +29,7 @@ ActiveRecord::Schema.define(:version => 20090603120113) do
     t.string   "description"
     t.string   "city_name"
     t.string   "friend_group"
+    t.string   "image_path"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

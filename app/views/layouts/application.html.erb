@@ -30,6 +30,9 @@
         <% if flash[:notice] -%>
           <div id="FlashNotice" class="flash notice"><%= flash[:notice] %></div>
         <% end -%>
+        <% if flash[:notification] -%>
+          <div id="FlashNotification" class="flash notification"><%= flash[:notification] %></div>
+        <% end -%>
 
         <%= @content_for_layout %>
       </div>

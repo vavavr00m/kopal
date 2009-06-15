@@ -1,6 +1,8 @@
 <% content_for(:surface_left)  do %>
   <ul>
     <li><%= link_to(t(:edit_profile), edit_profile_path, {:title => t(:edit_your_profile)}) %></li>
+    <li><%= link_to "Organise friends", organise_path(:action => 'friend'),
+      {:title => "Manage your friends"} %>
     <li><%= link_to(t(:back_to_homepage), root_path, {:title => t(:go_back_to_homepage)}) %></li>
     <li><%= link_to(t(:sign_out), signout_path, {:title => t(:sign_out)}) %></li>
   </ul>
