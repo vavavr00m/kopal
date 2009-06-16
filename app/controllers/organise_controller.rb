@@ -52,7 +52,6 @@ class OrganiseController < ApplicationController
   end
 
   def friend
-    @pending_friends = UserFriend.find_all_by_friendship_state("pending")
-    @waiting_friends = UserFriend.find_all_by_friendship_state("waiting")
+    redirect_to home_path(:action => 'friend') if params[:action2].blank?
   end
 end

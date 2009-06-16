@@ -101,6 +101,7 @@ class Kopal::Feed
         @birth_time = nil
       end
     end
+    return @birth_time
   end
 
   def age
@@ -108,9 +109,14 @@ class Kopal::Feed
     next_birthday.year - birth_time.year - 1
   end
 
+  def asl
+    [gender, age, city_name, country_living_with_code].reject { |i| i.blank? }.
+      to_sentence(:last_word_connector => ", ")
+  end
+
   # If today is the birthday, It is still the next birthday.
   #next_birthday - today = days to go
-  #next_birthday = today, Happy Birthday!
+  #next_birthday = today?(really!), Happy Birthday!!
   def next_birthday
     #requires only month and day and not year.
     return nil unless birth_time_has_month? and birth_time_has_day?
@@ -164,7 +170,6 @@ class Kopal::Feed
       city_list[city_code.to_sym]
     elsif of_profile_user?
       Kopal[:feed_city]
-    else
     end
   end
 
@@ -177,12 +182,19 @@ class Kopal::Feed
   end
 
   def to_xml_string
+    if of_profile_user?
+      Kopal.fetch(ProfileUser.new.kopal_identity.feed_url).body_raw
+    else
+      @_rexml_object.to_s
+    end
   end
+  alias to_s to_xml_string
 
 private
 
   def initialise_for_rexml object
     @of_profile_user = false
+    @_rexml_object = object
     raise KopalFeedInvalid, "Argument is not a valid Kopal Feed." unless
       object.root.name == "KopalFeed"
     raise KopalFeedInvalid, "Attribute \"revision\" for KopalFeed is required." if
@@ -242,15 +254,19 @@ private
         raise KopalFeedInvalid, "BirthTime does not has a valid syntax."
       end
     end
-    if ie["Address"]
-      if ie["Country"]
-        if ie["Living"]
-          @country_living_code = ie["Living"].text
-          raise KopalFeedInvalid, "Identity.Address.Country.Living " +
-            "\"#{@country_living_code}\" is not valid country code." unless
-          country_living
-        end
-      end
+    address_e = ie["Address"]
+    if address_e && (country_e = ie["Address"].elements["Country"]) &&
+    (living_e = country_e.elements["Living"])
+      @country_living_code = living_e.text
+      raise KopalFeedInvalid, "Identity.Address.Country.Living " +
+        "\"#{@country_living_code}\" is not valid country code." unless
+      country_living
+    end
+    if(address_e && (city_e = address_e.elements["City"]))
+      city_e.attributes["standard"] == "un/locode" ?
+        @city_code = city_e.text : @city_name = city_e.text
+      raise KopalFeedInvalid, "Unknown city code #{@city_code}" unless
+          city_name if city_has_code?
     end
   end
 
