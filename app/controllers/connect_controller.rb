@@ -26,12 +26,7 @@ class ConnectController < ApplicationController
       if fd.kopal_feed?
         begin
           feed = Kopal::Feed.new fd.body_xml
-          f.name = feed.name
-          f.description = feed.description
-          f.image_path = feed.image_path
-          f.gender = feed.gender
-          f.country_living_code = feed.country_living_code
-          f.city_name = feed.city_name
+          f.kopal_feed = feed
           @state = f.friendship_state = 'pending'
           f.save!
         rescue Kopal::KopalFeedInvalid, ActiveRecord::RecordInvalid => e

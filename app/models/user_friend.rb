@@ -1,11 +1,7 @@
 #== UserFriend Fields
 # * <tt>kopal_identity (string, not null, unique)</tt>
+# * <tt>kopal_feed (text, not null)</tt>
 # * <tt>friendship_state (string, not null)</tt>
-# * <tt>gender (string, length => 1)</tt>
-# * <tt>name (string)</tt>
-# * <tt>description (string)</tt>
-# * <tt>country_living_code (string, length => 2)</tt>
-# * <tt>city_name (string)</tt>
 # * <tt>friend_group (string / friend ids by comma)</tt>
 #
 #== UserFriend Indicies
@@ -19,17 +15,23 @@ class UserFriend < ActiveRecord::Base
     :friend
   ]
 
-  validates_presence_of :kopal_identity, :name, :friendship_state
+  validates_presence_of :kopal_identity, :kopal_feed, :friendship_state
   validates_uniqueness_of :kopal_identity
+  validates_inclusion_of :friendship_state, :in => FRIENDSHIP_STATES.map { |i| i.to_s }
+
+  #Initialise a UserFriend instance that is not and can not be associated
+  #with a database row.
+  def new_readonly
+    r = self.new
+    r.readonly!
+    return r
+  end
 
   def validate
     begin
       normalise_url(self[:kopal_identity])
-      URI.parse(image_path) unless image_path.blank?
     rescue Kopal::KopalIdentityInvalid
       errors.add(:kopal_identity, "is not a valid Kopal Identity.")
-    rescue URI::InvalidURIError
-      errors.add(:image_path, "does not has valid syntax.")
     end
   end
 
@@ -54,5 +56,14 @@ class UserFriend < ActiveRecord::Base
   #Value can be a String or Kopal::Identity
   def kopal_identity= value
     self[:kopal_identity] = value.to_s
+  end
+
+  def kopal_feed
+    @_kopal_feed ||= Kopal::Feed.new self[:kopal_feed]
+  end
+  alias feed kopal_feed
+
+  def kopal_feed= value
+    self[:kopal_feed] = value.to_s
   end
 end

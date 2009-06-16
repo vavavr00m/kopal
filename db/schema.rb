@@ -21,15 +21,10 @@ ActiveRecord::Schema.define(:version => 20090603120113) do
   add_index "kopal_preference", ["preference_name"], :name => "index_kopal_preference_on_preference_name", :unique => true
 
   create_table "user_friend", :force => true do |t|
-    t.string   "kopal_identity",      :null => false
-    t.string   "friendship_state",    :null => false
-    t.string   "gender"
-    t.string   "country_living_code"
-    t.string   "name"
-    t.string   "description"
-    t.string   "city_name"
+    t.string   "kopal_identity",   :null => false
+    t.string   "friendship_state", :null => false
+    t.text     "kopal_feed",       :null => false
     t.string   "friend_group"
-    t.string   "image_path"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

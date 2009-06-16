@@ -1,7 +1,17 @@
 <%= render :partial => 'navigation' %>
 
-<h2>Friends</h2>
-
-<% for i in 1..5 %>
-  <%= render :partial => 'friend_ribbon' %>
+<% if @signed %>
+  <% if((pending = UserFriend.find_all_by_friendship_state('pending')).size.nonzero?) %>
+    <h2>Friends pending your approval </h2>
+    <%= render :partial => '_shared/friend_ribbon',
+      :collection => pending, :as => :friend %>
+  <% end %>
+  <% if((waiting = UserFriend.find_all_by_friendship_state('waiting')).size.nonzero?) %>
+    <h2>Requests waiting friends approval </h2>
+    <%= render :partial => '_shared/friend_ribbon',
+      :collection => waiting, :as => :friend %>
+  <% end %>
 <% end %>
+
+
+<h2>Friends</h2>
