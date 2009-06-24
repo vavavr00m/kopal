@@ -214,4 +214,11 @@ class ProfileUser < KopalUser
     return false if f.nil?
     return f.friendship_state == 'friend'
   end
+
+  #Validate the friendship state for all or specific friend.
+  #Ends with ! since requires network resource.
+  def validate_friendship! specific_friend = nil
+    #TODO: Write me
+    raise NoMetodError
+  end
 end

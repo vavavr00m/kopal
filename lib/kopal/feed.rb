@@ -15,8 +15,8 @@ class Kopal::Feed
     when String
       #String can be a URI or valid XML string.
       if data =~ /^https?:\/\//
-        r = Kopal.fetch normalise_url(data)
-        data = r.body_xml
+        r = Kopal.fetch data
+        data = r.body_raw
       end
       initialise_for_rexml REXML::Document.new(data)
     when ProfileUser, nil

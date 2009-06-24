@@ -23,12 +23,20 @@ class ApplicationController < ActionController::Base
     true
   end
 
-  def render_kopal_error message = ''
+  def render_kopal_error id_or_message = 0x0000, message_with_id = nil
+    case id_or_message
+    when Integer
+      id = id_or_message
+      message = message_with_id || Kopal::KOPAL_ERROR_ID[id]
+    else
+      message = id_or_message
+    end
     xml = Builder::XmlMarkup.new
     xml.instruct!
     xml = xml.Kopal(:revision => Kopal::CONNECT_PROTOCOL_REVISION,
       :platform => Kopal::PLATFORM) { |xm|
       xm.KopalError { |x|
+        x.ErrorID sprintf("0x%X", id) if id
         x.ErrorMessage message
       }
     }

@@ -11,10 +11,17 @@
 #
 class UserFriend < ActiveRecord::Base
 
+  #Valid friendship states that can go to database.
   FRIENDSHIP_STATES = [
     :pending, #You need to accept/reject this request.
     :waiting, #You send friendship request, waiting for approval.
     :friend
+  ]
+
+  #All possible friendship states
+  ALL_FRIENDSHIP_STATES = FRIENDSHIP_STATES.concat [
+    :none,
+    :rejected
   ]
 
   #At present, Kopal always creates a key of length 40, while accepting of any
@@ -46,8 +53,8 @@ class UserFriend < ActiveRecord::Base
     rescue OpenSSL::PKey::RSAError
       errors.add(:public_key, "Invalid Public Key.")
     end
-    errors.add(:friendship_key, "is not a valid 32-bit stream.") unless
-      valid_base32? friendship_key
+    errors.add(:friendship_key, "is not a valid hexadecimal stream.") unless
+      valid_hexadecimal? friendship_key
   end
 
   def friend_groups
@@ -62,6 +69,13 @@ class UserFriend < ActiveRecord::Base
 
   def remove_friend_group group_name
     
+  end
+
+  #Assigns key for new friends.
+  def assign_key!
+    if friendship_key.blank?
+      self[:friendship_key] = random_hexadecimal 40
+    end
   end
 
   def kopal_identity
