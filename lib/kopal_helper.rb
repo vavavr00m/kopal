@@ -56,6 +56,12 @@ module KopalHelper
     ActiveSupport::SecureRandom.hex(n/2)
   end
 
+  #And I thought a single Base32 digit represents 1 byte (8-bits) / equivalent
+  #to 2 hexadecimal numbers, but I was so wrong, it is just 5-bits.
+  #They aren't really that useful as much I thought. (useful in the sense that
+  #I thought that a Base32 string will be half of a Hexadecimal string to represent
+  #the same number).
+  #Removing all Base32 methods in next (or further) commits.
   #Argument n is the length of resulting Base32 string
   def random_base32 n = 32
     ActiveSupport::SecureRandom.random_number(32 ** n).to_base32
