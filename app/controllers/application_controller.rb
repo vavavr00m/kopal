@@ -24,10 +24,13 @@ class ApplicationController < ActionController::Base
   end
 
   def render_kopal_error message = ''
-    xm = Builder::XmlMarkup.new
-    xm.instruct!
-    xml = xm.KopalError { |x|
-      x.ErrorMessage message
+    xml = Builder::XmlMarkup.new
+    xml.instruct!
+    xml = xml.Kopal(:revision => Kopal::CONNECT_PROTOCOL_REVISION,
+      :platform => Kopal::PLATFORM) { |xm|
+      xm.KopalError { |x|
+        x.ErrorMessage message
+      }
     }
     render :xml => xml, :staus => 400
   end

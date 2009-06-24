@@ -23,7 +23,9 @@ ActiveRecord::Schema.define(:version => 20090603120113) do
   create_table "user_friend", :force => true do |t|
     t.string   "kopal_identity",   :null => false
     t.string   "friendship_state", :null => false
+    t.string   "friendship_key",   :null => false
     t.text     "kopal_feed",       :null => false
+    t.text     "public_key",       :null => false
     t.string   "friend_group"
     t.datetime "created_at"
     t.datetime "updated_at"

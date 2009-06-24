@@ -8,7 +8,7 @@
     <% case friend.friendship_state
      when 'pending' %>
       <span class="action">Friendship requested / <%= link_to "Accept",
-      organise_path(:action => 'friend', :action2 => 'accept', :identity =>
+      organise_path(:action => 'friend', :action2 => 'start', :identity =>
       friend.kopal_identity), :title => "Accept friendship request of #{friend.feed.name}"
       %>.</span>
     <% when 'friend' %>
