@@ -73,8 +73,7 @@ class << self
 
   def [] index
     index = index.to_s
-    @@pref_cache[index] = KopalPreference.get_field(index) unless @@pref_cache[index]
-    @@pref_cache[index]
+    @@pref_cache[index] ||= KopalPreference.get_field(index)
   end
 
   def []= index, value

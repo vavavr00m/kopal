@@ -51,29 +51,16 @@ module KopalHelper
     return identifier
   end
 
-  #Argument n is the length of resulting hexadecimal string
+  #Argument n is the length of resulting hexadecimal string or Range of length.
   def random_hexadecimal n = 32
+    if n.is_a? Range
+      #n.to_a[-1] = last element since (2..7).last == (2...7).last
+      n = rand(n.to_a[-1] - n.first + 1) + n.first
+    end
     ActiveSupport::SecureRandom.hex(n/2)
-  end
-
-  #And I thought a single Base32 digit represents 1 byte (8-bits) / equivalent
-  #to 2 hexadecimal numbers, but I was so wrong, it is just 5-bits.
-  #They aren't really that useful as much I thought. (useful in the sense that
-  #I thought that a Base32 string will be half of a Hexadecimal string to represent
-  #the same number).
-  #Removing all Base32 methods in next (or further) commits.
-  #Argument n is the length of resulting Base32 string
-  def random_base32 n = 32
-    ActiveSupport::SecureRandom.random_number(32 ** n).to_base32
-    #Or, ActiveSupport::SecureRandom.hex(n).to_i(16).to_base32
   end
 
   def valid_hexadecimal? s
     s =~ /^[a-f0-9]*$/i #Empty string is valid Hexadecimal.
-  end
-
-  #Validtidity of Base32 according RFC-4648
-  def valid_base32? s
-    s =~ /^[a-z2-7]*$/i
   end
 end

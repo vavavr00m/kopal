@@ -45,9 +45,12 @@ class Kopal::Signal::Response
       kopal_revision #Make sure it is present
   end
 
-  def kopal_discovery?
-    DeprecatedMethod.here "Use kopal_connect?() instead."
-    kopal_connect?
+  def kopal_connect_discovery
+    kopal_connect? && body_xml.root.elements["Discovery"]
+  end
+
+  def kopal_connect_discovery?
+    !!kopal_connect_discovery
   end
   
   #Returns true if body is an XML with root element KopalFeed.

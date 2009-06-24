@@ -52,6 +52,31 @@ class OrganiseController < ApplicationController
   end
 
   def friend
-    redirect_to home_path(:action => 'friend') if params[:action2].blank?
+    re = Proc.new { |message|
+      flash[:notice] = message
+      redirect_to home_path(:action => 'friend')
+      return
+    }
+    re.call("Identity not defined.") unless
+    u = UserFriend.find_or_initialize_by_kopal_identity(params[:identity])
+    case params[:action2]
+    when 'start'
+      r = Kopal.fetch(u.kopal_identity.friendship_request_url)
+      if r.kopal_discovery?
+        state = r.body_xml.root.elements["FriendshipState"].attributes["state"]
+        re.call("FriendshipState has invalid value.") unless ['pending', 'friend'].include? state
+        u.state = if state == 'pending' then 'waiting' else 'friend' end
+        if u.new_record?
+          u.kopal_feed = Kopal::Feed.new u.kopal_identity.feed_url
+        end
+        u.save!
+        flash[:highlight] = "Friendship state changed successfully"
+      end
+    when 'delete'
+      u.destroy
+      r = Kopal.fetch(u.kopal_identity.friendship_rejection_url)
+      flash[:highlight] = "Deleted friend #{u.kopal_identity}"
+    end
+    redirect_to home_path(:action => 'friend')
   end
 end

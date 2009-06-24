@@ -12,9 +12,7 @@ class ConnectController < ApplicationController
 
   def friendship_request
     required_params(:"kopal.subject" => 'friendship-request', #unnecessary?
-      :'kopal.friend-identity' => Proc.new {|x| normalise_url(x); true} #,
-      #Reply with encryption of random-number of private key for verification?
-      #:"kopal.random-number" => Proc.new {|x| valid_hexadecimal?(x)}
+      :'kopal.friend-identity' => Proc.new {|x| normalise_url(x); true}
     )
     friend_identity = normalise_url(params[:'kopal.friend-identity'])
     if u = UserFriend.find_by_kopal_identity(friend_identity)
@@ -22,11 +20,27 @@ class ConnectController < ApplicationController
     else
       f = UserFriend.new
       f.kopal_identity = friend_identity
-      fd = Kopal.fetch(f.kopal_identity.feed_url)
+      begin
+        f_d = Kopal.fetch(f.kopal_identity.discovery_url)
+      rescue Kopal::Antenna::FetchingError => e
+        render_kopal_error e.message
+        return
+      end
+      render_kopal_error f_d.response_uri + " is not a valid Kopal Connect discovery." and
+        return unless f_d.kopal_connect_discovery?
+      public_key = f_d.kopal_connect_discovery.elements["PublicKey"].text
+      begin
+        fd = Kopal.fetch(f.kopal_identity.feed_url)
+      rescue Kopal::Antenna::FetchingError => e
+        render_kopal_error e
+        return
+      end
       if fd.kopal_feed?
         begin
           feed = Kopal::Feed.new fd.body_xml
           f.kopal_feed = feed
+          @friendship_key = f.friendship_key = random_hexadecimal(40)
+          f.public_key = public_key
           @state = f.friendship_state = 'pending'
           f.save!
         rescue Kopal::KopalFeedInvalid, ActiveRecord::RecordInvalid => e
@@ -37,6 +51,14 @@ class ConnectController < ApplicationController
       end
     end
     render :friendship_state
+  end
+
+  def friendship_update
+    d
+  end
+
+  def friendship_state
+    
   end
 
 private

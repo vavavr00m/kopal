@@ -5,22 +5,24 @@
 class Kopal::Feed
   include Kopal
 
-  def initialize object = nil
+  def initialize data = nil
     @of_profile_user = false
-    case object
+    case data
     when REXML::Document
-      initialise_for_rexml object
+      initialise_for_rexml data
+    when Kopal::Signal::Response
+      initialise_for_rexml REXML::Document.new(data.body_raw)
     when String
-      if object =~ /^https?:\/\//
-        r = Kopal.fetch normalise_url(object)
-        object = r.body_xml
+      #String can be a URI or valid XML string.
+      if data =~ /^https?:\/\//
+        r = Kopal.fetch normalise_url(data)
+        data = r.body_xml
       end
-      initialise_for_rexml REXML::Document.new(object)
-    when ProfileUser
-    when nil
+      initialise_for_rexml REXML::Document.new(data)
+    when ProfileUser, nil
       initialise_for_profile_user
     else
-      raise ArgumentError, "Unknown type for a Kopal Feed."
+      raise ArgumentError, "Unknown type for a Kopal Feed - #{data.class}"
     end
   end
 
