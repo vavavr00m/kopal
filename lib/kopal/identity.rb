@@ -24,6 +24,7 @@ class Kopal::Identity
   def feed_url
     identity + '?kopal.feed=true'
   end
+  alias kopal_feed_url feed_url
 
   def discovery_url
     connect_url + '&kopal.subject=discovery'
@@ -33,12 +34,14 @@ class Kopal::Identity
     friendship_update_url 'request'
   end
 
-  def friendship_rejection_url
-    friendship_update_url 'rejected'
+  def friendship_state_url
+    connect_url_with_identity + '&kopal.subject=friendship-state'
   end
 
-  def friendship_update_url state
-    connect_url_with_identity + '&kopal.subject=friendship-update&kopal.state=' + state
+  def friendship_update_url state, friendship_key = nil
+    friendship_key ||= UserFriend.find_by_kopal_identity(identity).friendship_key
+    connect_url_with_identity + '&kopal.subject=friendship-update&kopal.state=' + 
+      state + '&kopal.friendship-key=' + friendship_key
   end
 
 private
@@ -49,7 +52,7 @@ private
 
   def connect_url_with_identity
     #raise NoMethodError, "Can't generate for Profile user" if of_profile_user?
-    connect_url + '&kopal.identity=' + @profile_user.kopal_identity
+    connect_url + '&kopal.identity=' + @profile_user.kopal_identity.to_s
   end
   
 end

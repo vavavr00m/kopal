@@ -1,6 +1,11 @@
 <%= render :partial => 'navigation' %>
 
 <% if @signed %>
+  <span>Add a friend, if you know profile address</span>
+  <% form_tag organise_path(:action => 'friend', :action2 => 'start') do %>
+    <%= text_field_tag :identity, 'http://' %>
+    <%= submit_tag 'Add friend!' %>
+  <% end %>
   <% if((pending = UserFriend.find_all_by_friendship_state('pending')).size.nonzero?) %>
     <h2>Friends pending your approval </h2>
     <%= render :partial => '_shared/friend_ribbon',

@@ -52,31 +52,72 @@ class OrganiseController < ApplicationController
   end
 
   def friend
-    re = Proc.new { |message|
-      flash[:notice] = message
+    re = Proc.new {
       redirect_to home_path(:action => 'friend')
       return
     }
-    re.call("Identity not defined.") unless
-    u = UserFriend.find_or_initialize_by_kopal_identity(params[:identity])
+    flash[:notice] = "Identity not defined." and re.call if params[:identity].blank?
+    friend = UserFriend.find_or_initialize_by_kopal_identity(
+      normalise_url params[:identity])
     case params[:action2]
     when 'start'
-      r = Kopal.fetch(u.kopal_identity.friendship_request_url)
-      if r.kopal_discovery?
-        state = r.body_xml.root.elements["FriendshipState"].attributes["state"]
-        re.call("FriendshipState has invalid value.") unless ['pending', 'friend'].include? state
-        u.state = if state == 'pending' then 'waiting' else 'friend' end
-        if u.new_record?
-          u.kopal_feed = Kopal::Feed.new u.kopal_identity.feed_url
+      case friend.friendship_state
+      when 'friend'
+        flash[:highlight] = "#{u.kopal_identity} is already your friend."
+        re.call
+      when 'pending'
+        Kopal.fetch(friend.kopal_identity.friendship_update_url('friend',
+          friend.friendship_key))
+        #TODO: Validations according to specs.
+        friend.friendship_state = 'friend'
+        friend.save!
+        flash[:highlight] = "#{friend.kopal_identity} is now your friend."
+        re.call
+      when 'waiting'
+        flash[:highlight] = "Waiting for approval from #{friend.kopal_identity}"
+        re.call
+      else
+        begin
+          r = Kopal.fetch friend.kopal_identity.discovery_url
+        rescue Kopal::Antenna::FetchingError => e
+          flash[:notice] = "Error making discovery on #{friend.kopal_identity}"
+          re.call
         end
-        u.save!
-        flash[:highlight] = "Friendship state changed successfully"
+        flash[:notice] = "Invalid Kopal Connect URI #{r.response_uri}" and re.call unless
+          r.kopal_connect_discovery?
+        friend.public_key = r.kopal_connect_discovery.elements["PublicKey"].text
+        begin
+          friend.kopal_feed = Kopal::Feed.new friend.kopal_identity.feed_url
+        rescue Kopal::Antenna::FetchingError => e
+          flash[:notice] = "Error fetching Kopal Feed for #{friend.kopal_identity}"
+          re.call
+        end
+        friend.friendship_state = 'waiting'
+        friend.assign_key!
+        friend.save!
+        r = Kopal.fetch(friend.kopal_identity.friendship_request_url)
+        if r.kopal_connect_discovery?
+          state = r.body_xml.root.elements["FriendshipState"].attributes["state"]
+          re.call("FriendshipState has invalid value.") unless
+            ['pending', 'friend', 'rejected'].include? state
+          if state == 'rejected'
+            friend.destroy
+            flash[:notice] = "Friendship declined by #{friend.kopal_identity}"
+            re.call
+          end
+          friend.state = if state == 'pending' then 'waiting' else 'friend' end
+          friend.save!
+          flash[:highlight] = "Friendship state of #{friend.kopal_identity} is now #{friend.state}"
+          re.call
+        end
       end
     when 'delete'
-      u.destroy
-      r = Kopal.fetch(u.kopal_identity.friendship_rejection_url)
-      flash[:highlight] = "Deleted friend #{u.kopal_identity}"
+      friend.destroy
+      Kopal.fetch(friend.kopal_identity.friendship_update_url 'rejected',
+        friend.friendship_key)
+      flash[:highlight] = "Deleted friend #{friend.kopal_identity}"
+      re.call
     end
-    redirect_to home_path(:action => 'friend')
+    re.call
   end
 end
