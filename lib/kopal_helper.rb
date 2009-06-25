@@ -35,10 +35,10 @@ module KopalHelper
   def normalise_url identifier
     identifier = identifier.to_s.strip
     identifier = "http://#{identifier}" unless identifier =~ /^[^.]+:\/\//i
-    identifier.gsub!(/\?(.*)$/, '') #strip query string
     identifier.gsub!(/\#(.*)$/, '') # strip any fragments
     identifier += '/' unless identifier[-1].chr == '/'
     begin
+      raise URI::InvalidURIError if identifier['?'] #No query string
       #URLs must have atleast on dot.
       raise URI::InvalidURIError unless identifier =~
         /^[^.]+:\/\/[0-9a-z]+\.[0-9a-z]+/i #Internationalised domains?, IPv6 addresses?
