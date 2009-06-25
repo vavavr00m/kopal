@@ -18,7 +18,7 @@ class KopalPreferenceTest < ActiveSupport::TestCase
     assert_equal 'Example.', KopalPreference.get_field('feed_name')
   end
 
-  def test_only_fields_of_FIELDS_are_allowed
+  test "test_only_fields_of_FIELDS_are_allowed" do
     a = KopalPreference.new
     a.preference_name = 'feed_name'
     a.preference_text = "Feed name should be blank."

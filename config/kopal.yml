@@ -1,4 +1,0 @@
---- 
-authentication_method: :builtin
-account_password: secret01
-kopal_identity: http://its.raining.in/
