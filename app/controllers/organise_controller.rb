@@ -10,6 +10,13 @@ class OrganiseController < ApplicationController
     redirect_to :action => :edit_profile #for now
   end
 
+  #TODO: Allow delegation of OpenID.
+  def preference
+    preference_4hackers if params[:"h@ck"] #Any interesting name with some technical meaning?
+    if request.post?
+    end
+  end
+
   #OPTIMIZE: Auto-completion for City field.
   #OPTIMIZE: Real-time updation in Preferred calling name with change in name/aliases.
   def edit_profile
@@ -56,7 +63,7 @@ class OrganiseController < ApplicationController
       redirect_to home_path(:action => 'friend')
       return
     }
-    flash[:notice] = "Identity not defined." and re.call if params[:identity].blank?
+    re.call if params[:identity].blank?
     friend = UserFriend.find_or_initialize_by_kopal_identity(
       normalise_url params[:identity])
     case params[:action2]
@@ -119,5 +126,12 @@ class OrganiseController < ApplicationController
       re.call
     end
     re.call
+  end
+
+private
+
+  #Advanced preferences.
+  def preference_4hackers
+    
   end
 end

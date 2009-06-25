@@ -78,6 +78,10 @@ class UserFriend < ActiveRecord::Base
     end
   end
 
+  def friendship_key= value
+    self[:friendship_key] = value.to_s.downcase
+  end
+
   def kopal_identity
     Kopal::Identity.new self[:kopal_identity]
   end

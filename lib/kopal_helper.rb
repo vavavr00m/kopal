@@ -32,7 +32,7 @@ module KopalHelper
   #Must be _identity function_ after first normalise_url(id).
   #i.e., normalise_url(normalise_url(id)) == normalise_url(id) #=> true
   #TODO: Write tests.
-  def normalise_url identifier
+  def normalise_kopal_identity identifier
     identifier = identifier.to_s.strip
     identifier = "http://#{identifier}" unless identifier =~ /^[^.]+:\/\//i
     identifier.gsub!(/\#(.*)$/, '') # strip any fragments
@@ -49,6 +49,12 @@ module KopalHelper
       raise Kopal::KopalIdentityInvalid, "#{identifier} is not a valid Kopal Identity."
     end
     return identifier
+  end
+
+  def normalise_url i
+    ActiveSupport::Deprecation.warn
+    #DeprecatedMethod.here "Use normalise_kopal_identity() instead."
+    normalise_kopal_identity i
   end
 
   #Argument n is the length of resulting hexadecimal string or Range of length.
