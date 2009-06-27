@@ -6,7 +6,14 @@ module Kopal
   class KopalConnectInvalid < KopalXmlError; end;
   class KopalFeedInvalid < KopalXmlError; end;
 
-  KOPAL_ERROR_ID = {
+  #LATER: This should list only very small number of very specific errors,
+  #which must be understood by machine for a good functioning of protocol.
+  #As of now it is just a prototype and should be redesigned to have only very
+  #specific (or generic?) errors. Also the error codes should be assigned in a technical
+  #fashion, for example doing an |, ^ or something something on two error codes
+  #produces an error code that contains both errors for example.
+  KOPAL_ERROR_CODE = {}
+  KOPAL_ERROR_CODE_PROTOTYPE = {
     0x0000 => "Generic Kopal error.",
     0x1000 => "Kopal Connect error.",
     0x1100 => "Kopal Connect discovery error.",

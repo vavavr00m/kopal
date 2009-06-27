@@ -23,11 +23,15 @@ class ApplicationController < ActionController::Base
     true
   end
 
+  #example usages -
+  #render_kopal_error("This is my error message")
+  #render_kopal_error(0x1234)
+  #render_kopal_error(0x1234, "show this error message instead of default with this error code")
   def render_kopal_error id_or_message = 0x0000, message_with_id = nil
     case id_or_message
     when Integer
       id = id_or_message
-      message = message_with_id || Kopal::KOPAL_ERROR_ID[id]
+      message = message_with_id || Kopal::KOPAL_ERROR_CODE_PROTOTYPE[id]
     else
       message = id_or_message
     end
