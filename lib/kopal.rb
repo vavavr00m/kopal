@@ -30,8 +30,8 @@ module Kopal
   include KopalHelper
   SOFTWARE_VERSION = "2009.0.1.alpha"
   #protocol right word? Or standard? sepcification?
-  CONNECT_PROTOCOL_REVISION = "0.1.alpha"
-  FEED_PROTOCOL_REVISION = "0.1.alpha"
+  CONNECT_PROTOCOL_REVISION = "0.1.draft"
+  FEED_PROTOCOL_REVISION = "0.1.draft"
   PLATFORM = "kopal.googlecode.com"
   @@pref_cache = {}
   @@initialised = false
