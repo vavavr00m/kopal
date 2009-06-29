@@ -18,7 +18,7 @@
     <tr>
       <td><%= t :preferred_calling_name %></td>
       <td><%= select_tag :feed_preferred_calling_name,
-        options_for_select(Kopal[:feed_aliases].to_s.to_a("\n").
+        options_for_select(Kopal[:feed_aliases].to_s.split("\n").
           unshift(Kopal[:feed_real_name].to_s).map {|s| s.strip},
           Kopal[:feed_preferred_calling_name]) %></td>
     </tr>
