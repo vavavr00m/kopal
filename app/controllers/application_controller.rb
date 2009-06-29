@@ -1,6 +1,7 @@
 # Filters added to this controller apply to all controllers in the application.
 # Likewise, all the methods added will be available for all controllers.
 require 'ostruct'
+require 'rexml/document' #Host server of its.raining.in is not loading REXML::Document automagically, while local server on my local machine does.
 #KopalHelper in models.
 ActiveRecord::Base.send('include', KopalHelper)
 #TODO: Place <tt>div#SurfaceLeft</tt> after <tt>div#SurfaceFront</tt> using some
@@ -40,7 +41,7 @@ class ApplicationController < ActionController::Base
     xml = xml.Kopal(:revision => Kopal::CONNECT_PROTOCOL_REVISION,
       :platform => Kopal::PLATFORM) { |xm|
       xm.KopalError { |x|
-        x.ErrorID sprintf("0x%X", id) if id
+        x.ErrorCode sprintf("0x%X", id) if id
         x.ErrorMessage message
       }
     }
