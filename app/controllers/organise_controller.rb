@@ -128,6 +128,17 @@ class OrganiseController < ApplicationController
     re.call
   end
 
+  def password
+    if request.post?
+      flash.now[:notice] = "Password is blank." and return if params[:password].blank?
+      flash.now[:notice] = "Passwords do not match." and return unless
+        params[:password] == params[:password_confirmation]
+      Kopal[:account_password] = params[:password]
+      flash[:highlight] = "Password changed!"
+      redirect_to root_path
+    end
+  end
+
 private
 
   #Advanced preferences.
