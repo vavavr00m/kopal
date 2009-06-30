@@ -31,7 +31,7 @@ div#SurfaceAbove{
   margin-bottom:25px;
 }
 div#SurfaceFront{
-	min-height:620px;
+	/*min-height:620px;*/
   float:left;
 	padding:8px;
 }
@@ -48,6 +48,11 @@ div#SurfaceLeft ul{
 	list-style:none;
 	margin-left:0;
 	padding-left:0;
+}
+
+div#SurfaceDown {
+  clear:both;
+  padding-top:40px;
 }
 /* Colours */
 div.flash { /* Copied from redmine */
