@@ -28,7 +28,8 @@ class KopalPreference < ActiveRecord::Base
     #Encode Private key with Base64 before saving to database. Since private key starts with "--" and
     #value is serialised and ActiveRecord screws up and replaces "\n"
     #with " ".
-    :kopal_encoded_private_key
+    :kopal_encoded_private_key,
+    :widget_google_analytics_code
   ]
   DEPRECATED_FIELDS = {
     #:deprecated_field => "message"
@@ -77,6 +78,8 @@ class KopalPreference < ActiveRecord::Base
     when "feed_country_living_code":
       errors.add_to_base('Country code must be of length 2 in upper-case.') unless
         text =~ /^[A-Z]{2}$/
+    when "widget_google_analytics_code"
+      errors.add_to_base("Wrong Google Analytics code") unless text =~ /^UA\-[a-zA-Z0-9]+\-[0-9]+$/
     end
   end
 
