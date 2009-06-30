@@ -7,6 +7,8 @@ class KopalPreference < ActiveRecord::Base
   #Only these values can be stored in the <tt>preference_name</tt> field. (extreme programming?).
   #It is up to Controller to choose a default value for fields.
   FIELDS = [
+    :authentication_method,
+    :account_password, #TODO: Hash it with salt.
     :feed_real_name, #Name of the user
     :feed_aliases, #Aliases of the user separated by "\n"
     :feed_preferred_calling_name,
@@ -30,6 +32,10 @@ class KopalPreference < ActiveRecord::Base
   ]
   DEPRECATED_FIELDS = {
     #:deprecated_field => "message"
+  }
+  DEFAULT_VALUE = {
+    :authentication_method => 'simple',
+    :account_password => 'secret01'
   }
   def self.all_fields
     (FIELDS.dup.concat(DEPRECATED_FIELDS.keys)).map { |k| k.to_s }
@@ -78,7 +84,7 @@ class KopalPreference < ActiveRecord::Base
   def self.get_field name
     deprecated? name
     s = self.find_by_preference_name(name)
-    return s.preference_text if s
+    return( s ? s.preference_text : DEFAULT_VALUE[name.to_sym])
   end
 
   #Saves a preference to the database. Also see Kopal#[]= for a shorthand.

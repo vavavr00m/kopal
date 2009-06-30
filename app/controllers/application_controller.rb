@@ -57,7 +57,7 @@ class ApplicationController < ActionController::Base
 private
   def initialise
     @@request = request
-    kopal_config
+    Kopal.initialise
     I18n.locale = params[:culture]
     @signed = true if session[:signed]
     @profile_user = ProfileUser.new
@@ -71,20 +71,5 @@ private
     flash.now[:notification] = "You have new friendship requests. <a href=\"" +
       organise_path(:action => 'friend') + "\">View</a>." if
       UserFriend.find_by_friendship_state('pending')
-  end
-  
-  #How to get these settings in <tt>environment.rb</tt>?
-  #Maybe <tt>Kopal.config</tt> or <tt>config.kopal</tt>?
-  #If I write <tt>Kopal.config.account_password</tt> in
-  #<tt>Rails::Initializer.run</tt> block, it reports missing constant <tt>Kopal</tt>
-  #and if I write it after <tt>Rails::Initializer.run</tt> block, it is read only
-  #for the first request after server start.
-  #If I write it in <tt>config/kopal.rb</tt>, and <tt>require</tt> it, it gets
-  #required only once for the first request.
-  #The only method could be is to create it as <tt>config/kopal.yml</tt>.
-  #Or should we push every configuration to database?
-  def kopal_config
-    Kopal.initialise
-    Kopal.config.account_password = 'secret01'
   end
 end
