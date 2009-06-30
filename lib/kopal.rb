@@ -37,17 +37,10 @@ module Kopal
   @@initialised = false
 
 class << self
-  #It doesn't work.
-  #Kopal.CONST and Kopal::CONST are different. Remove this method after this
-  #message becomes part of a commit.
-  def DISCOVERY_PROTOCOL_REVISION
-    DeprecatedMethod.here "Use CONNECT_PROTOCOL_REVISION instead."
-    CONNECT_PROTOCOL_REVISION
-  end
+  
   #Anything that needs to be run at the startup, goes here.
   def initialise
     return if @@initialised
-    @@config = Kopal::Config.new
     @@initialised = true
   end
 
@@ -55,19 +48,11 @@ class << self
     @@initialised
   end
 
-  def config
-    @@config
-  end
-
   def authenticate_simple password
     raise "Authentication method is not simple" unless
-      config.authentication_method == 'simple'
-    raise "Password is nil. Please specify a password in environment.rb, " +
-      "using Kopal.config.account_password = 'your-password' inside " +
-      "Rails::Initializer.run block and restart " +
-      "your server." if
-      config.account_password.nil?
-    return true if password == config.account_password
+      Kopal[:authentication_method] == 'simple'
+    raise "Password is nil!" if Kopal[:account_password].blank?
+    return true if password == Kopal[:account_password]
     return false
   end
 
