@@ -14,8 +14,38 @@
 #
 #At present only SQLite3 is supported.
 class Kopal::Database
+
+class << self
   
-  def self.migrate
+  #At present only SQLite3 is supported with default database path.
+  def connection
+   @connection = {
+    :adapter => 'sqlite3',
+    :database => RAILS_ROOT + '/db/kopal.' + RAILS_ENV + '.sqlite3'
+   }
+  end
+  
+  def self?
+    false #Application database is not yet supported.
+  end
+  
+  def table_prefix
+    @@table_prefix = self?() ? 'kopal_' : ''
   end
 
+  def migrate
+    establish_connection
+    ActiveRecord::Migration.verbose = ENV["VERBOSE"] ? ENV["VERBOSE"] == "true" : true
+    ActiveRecord::Migrator.migrate("#{KOPAL_ROOT}/lib/db/migrate/", ENV["VERSION"] ? ENV["VERSION"].to_i : nil)
+    if self?()
+      Rake::Task["db:schema:dump"].invoke if ActiveRecord::Base.schema_format == :ruby
+    end
+  end
+  
+  #Connect to Kopal databse in present environment
+  def establish_connection
+    ActiveRecord::Base.establish_connection connection
+  end
+
+end
 end
