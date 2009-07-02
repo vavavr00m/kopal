@@ -1,10 +1,7 @@
-$LOAD_PATH << File.dirname(__FILE__) + '/../lib'
-require 'kopal'
-require 'kopal/database'
 namespace :kopal do
   desc "Called automatically with db:migrate. Creates/upgrades the database for Kopal."
-  task :upgrade do
-    Kopal::Database.migrate()
+  task :upgrade => :environment do
+    Kopal::Database.migrate
   end
 
   #desc "Removes kopal specific tables from the database."
