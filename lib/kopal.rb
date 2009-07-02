@@ -27,7 +27,7 @@
 
 require 'core_extension'
 require 'kopal/exception'
-require 'kopal/routing'
+require 'routing'
 
 KOPAL_ROOT = File.expand_path(File.dirname(__FILE__) + '/..')
 
