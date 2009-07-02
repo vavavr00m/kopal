@@ -27,6 +27,7 @@
 
 require 'core_extension'
 require 'kopal/exception'
+require 'kopal_helper' #Required, rake tasks raise uninitialized constant error.
 require 'routing'
 
 KOPAL_ROOT = File.expand_path(File.dirname(__FILE__) + '/..')
