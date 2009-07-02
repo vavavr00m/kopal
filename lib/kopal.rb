@@ -25,10 +25,25 @@
 # * +:page_bottom_content+
 # * +:surface_right_content+
 
+require 'core_extension'
 require 'kopal/exception'
+require 'kopal/routing'
+
+KOPAL_ROOT = File.expand_path(File.dirname(__FILE__) + '/..')
+
+I18n.load_path += Dir[KOPAL_ROOT + '/lib/culture/*.{rb,yml}']
+I18n.load_path += Dir[KOPAL_ROOT + '/lib/culture/code/*/*.{rb,yml}']
+
+%w{ models controllers helpers }.each do |dir| 
+  path = File.join(File.dirname(__FILE__), 'app', dir)
+  $LOAD_PATH << path
+  ActiveSupport::Dependencies.load_paths << path
+  ActiveSupport::Dependencies.load_once_paths.delete(path)
+end 
+
 module Kopal
   include KopalHelper
-  SOFTWARE_VERSION = "2009.0.1.alpha"
+  SOFTWARE_VERSION = "2009.0.alpha.1"
   #protocol right word? Or standard? sepcification?
   CONNECT_PROTOCOL_REVISION = "0.1.draft"
   FEED_PROTOCOL_REVISION = "0.1.draft"
