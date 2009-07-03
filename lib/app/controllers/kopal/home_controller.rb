@@ -1,4 +1,4 @@
-class HomeController < KopalController
+class Kopal::HomeController < Kopal::ApplicationController
 
   #TODO: in place editor for "Status message".
   def index

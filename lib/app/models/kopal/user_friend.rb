@@ -9,7 +9,7 @@
 #== UserFriend Indices
 # * <tt>kopal_identity, unique</tt>
 #
-class UserFriend < KopalModel
+class Kopal::UserFriend < Kopal::KopalModel
 
   #Valid friendship states that can go to database.
   FRIENDSHIP_STATES = [

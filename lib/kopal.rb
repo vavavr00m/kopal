@@ -34,7 +34,7 @@ KOPAL_ROOT = File.expand_path(File.dirname(__FILE__) + '/..')
 I18n.load_path += Dir[KOPAL_ROOT + '/lib/culture/*.{rb,yml}']
 I18n.load_path += Dir[KOPAL_ROOT + '/lib/culture/code/*/*.{rb,yml}']
 
-%w{ models controllers helpers }.each do |dir| 
+%w{ models controllers }.each do |dir| 
   path = File.join(File.dirname(__FILE__), 'app', dir)
   $LOAD_PATH << path
   ActiveSupport::Dependencies.load_paths << path
@@ -73,12 +73,12 @@ class << self
 
   def [] index
     index = index.to_s
-    @@pref_cache[index] ||= KopalPreference.get_field(index)
+    @@pref_cache[index] ||= Kopal::KopalPreference.get_field(index)
   end
 
   def []= index, value
     index = index.to_s
-    @@pref_cache[index] = KopalPreference.save_field(index, value)
+    @@pref_cache[index] = Kopal::KopalPreference.save_field(index, value)
   end
 
   #Will we ever need it?

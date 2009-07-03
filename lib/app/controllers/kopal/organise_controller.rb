@@ -1,5 +1,5 @@
 #This controller is mainly for Administrative tasks.
-class OrganiseController < KopalController
+class Kopal::OrganiseController < Kopal::ApplicationController
   before_filter :authorise
 
   def index
