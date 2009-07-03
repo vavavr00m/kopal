@@ -5,7 +5,7 @@ require 'rexml/document' #Host server of its.raining.in is not loading REXML::Do
 #TODO: Place <tt>div#SurfaceLeft</tt> after <tt>div#SurfaceFront</tt> using some
 #      negative margin CSS technique in <tt>layout.html.erb</tt>
 #TODO: Hook in mercurial to run all test successfully before commit.
-class KopalController < ActionController::Base
+class Kopal::ApplicationController < ActionController::Base
   helper :all # include all helpers, all the time
   helper KopalHelper #in views
   include KopalHelper #in controllers
@@ -67,6 +67,6 @@ private
     @page.stylesheets = ['home']
     flash.now[:notification] = "You have new friendship requests. <a href=\"" +
       organise_path(:action => 'friend') + "\">View</a>." if
-      UserFriend.find_by_friendship_state('pending')
+      Kopal::UserFriend.find_by_friendship_state('pending')
   end
 end

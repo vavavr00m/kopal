@@ -205,12 +205,12 @@ class ProfileUser < KopalUser
   end
 
   def friends
-    UserFriend.find_all_by_friendship_state("friend")
+    Kopal::UserFriend.find_all_by_friendship_state("friend")
   end
 
   #Returns false if not friend, else the friendship state
   def friend? friend_identity
-    f = UserFriend.find_by_kopal_identity(normalise_url(friend_identity.to_s))
+    f = Kopal::UserFriend.find_by_kopal_identity(normalise_url(friend_identity.to_s))
     return false if f.nil?
     return f.friendship_state == 'friend'
   end

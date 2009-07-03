@@ -4,13 +4,16 @@ module Kopal
     @@base_route = base_route
     #Minimum routes should be defined here.
     ActionController::Routing::Routes.draw do |map|
-      map.kopal_root Kopal.base_route, :controller => "home", :action => 'index'
-      map.kopal_route "#{Kopal.base_route}/:controller/:action/:id",
-        :trailing_slash => true #OR, :defaults => {:trailing_slash => true}
-      map.kopal_route "#{Kopal.base_route}/:controller/:action/:id.:format",
-        :trailing_slash => false
-      map.kopal_feed "#{Kopal.base_route}/home/feed.kp.xml", :controller => 'home', :action => 'feed',
-        :format => 'xml', :trailing_slash => false
+      map.kopal_root Kopal.base_route, :controller => "kopal/home", :action => 'index',
+        :trailing_slash => true
+      map.kopal_route "#{Kopal.base_route}/home/:action/:id", :controller => 'kopal/home',
+        :trailing_slash => true
+      map.kopal_route "#{Kopal.base_route}/organise/:action/:id", :controller => 'kopal/organise',
+        :trailing_slash => true
+      map.kopal_route "#{Kopal.base_route}/connect/:action/", :controller => 'kopal/connect',
+        :trailing_slash => true
+      map.kopal_route_feed "#{Kopal.base_route}/home/feed.kp.xml", :controller => 'kopal/home',
+        :action => 'feed', :format => 'xml', :trailing_slash => false
     end
   end
   
@@ -32,13 +35,17 @@ class << self
   end
  
   def home parameters = {}
-    parameters[:controller] = 'home'
+    parameters[:controller] = 'kopal/home'
     return root if parameters[:action].blank? or parameters[:action] == 'index'
     kopal_route_path parameters
   end
+
+  def feed
+    kopal_route_feed_path
+  end
   
   def organise parameters = {}
-    parameters[:controller] = 'organise'
+    parameters[:controller] = 'kopal/organise'
     kopal_route_path parameters
   end
   

@@ -1,5 +1,5 @@
 #Holds all the data of user too, since there is only one user, No need for UserAccount model.
-class KopalPreference < KopalModel
+class Kopal::KopalPreference < Kopal::KopalModel
   class InvalidFieldName < StandardError; end;
   set_table_name :kopal_preference
   serialize :preference_text

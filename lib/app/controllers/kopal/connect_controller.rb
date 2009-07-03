@@ -1,4 +1,4 @@
-class ConnectController < KopalController
+class Kopal::ConnectController < Kopal::ApplicationController
   layout 'connect.xml.builder'
   before_filter :connect_initialise
 
