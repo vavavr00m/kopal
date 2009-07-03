@@ -29,8 +29,8 @@ class << self
     false #Application database is not yet supported.
   end
   
-  def table_prefix
-    @@table_prefix = self?() ? 'kopal_' : ''
+  def name_prefix
+    @@name_prefix = self?() ? 'kopal_' : ''
   end
 
   def migrate
