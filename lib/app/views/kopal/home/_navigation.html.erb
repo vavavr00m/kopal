@@ -4,18 +4,18 @@
 <% end %>
 
 <% content_for :surface_left do %>
-  <%= image_tag home_path(:action => 'profile_image') %>
+  <%= image_tag Kopal.route.home(:action => 'profile_image') %>
   <ul>
-    <li><%= link_to(t(:home), root_path,
+    <li><%= link_to(t(:home), Kopal.route.root,
           {:title => t(:profile_homepage_of_person, :person => @profile_user.feed.name)}) %></li>
-    <li><%= link_to(t(:friend, :count => 2), friend_path,
+    <li><%= link_to(t(:friend, :count => 2), Kopal.route.friend,
           :title => t(:view_friends_of_person, :person => @profile_user.feed.name)) %></li>
-    <li><%= link_to(t(:sign_in), signin_path, {:title => t(:sign_in)}) %></li>
-    <li><%= link_to(t(:sign_out), signout_path, {:title => t(:sign_out)}) %></li>
+    <li><%= link_to(t(:sign_in), Kopal.route.signin, {:title => t(:sign_in)}) %></li>
+    <li><%= link_to(t(:sign_out), Kopal.route.signout, {:title => t(:sign_out)}) %></li>
   </ul>
   <hr />
   <ul>
-    <li><%= link_to("Add as friend", home_path(:action => 'foreign',
+    <li><%= link_to("Add as friend", Kopal.route.home(:action => 'foreign',
       :subject => 'friendship-request'),
       {:title => "Add #{@profile_user.feed.name} as your friend."}) %></li>
     <!-- <li><%= link_to("Send a message") %></li> -->

@@ -10,6 +10,7 @@ class Kopal::ApplicationController < ActionController::Base
   helper KopalHelper #in views
   include KopalHelper #in controllers
   before_filter :initialise
+  layout "kopal_application"
 
   # Scrub sensitive parameters from your log
   # filter_parameter_logging :password
@@ -53,6 +54,8 @@ class Kopal::ApplicationController < ActionController::Base
   
 private
   def initialise
+    self.prepend_view_path Kopal.root.join('lib', 'app', 'views').to_s
+    Kopal::Routing.ugly_hack self.dup
     @@request = request
     Kopal.initialise
     I18n.locale = params[:culture]
