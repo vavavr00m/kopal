@@ -26,19 +26,16 @@
 # * +:surface_right_content+
 
 require 'core_extension'
-require 'kopal/exception'
-require 'routing'
+require_dependency 'kopal/exception'
+require_dependency 'routing'
 
 KOPAL_ROOT = File.expand_path(File.dirname(__FILE__) + '/..')
-
-I18n.load_path += Dir[KOPAL_ROOT + '/lib/culture/*.{rb,yml}']
-I18n.load_path += Dir[KOPAL_ROOT + '/lib/culture/code/*/*.{rb,yml}']
 
 %w{ models controllers }.each do |dir| 
   path = File.join(File.dirname(__FILE__), 'app', dir)
   $LOAD_PATH << path
   ActiveSupport::Dependencies.load_paths << path
-  ActiveSupport::Dependencies.load_once_paths.delete(path)
+  ActiveSupport::Dependencies.load_once_paths.delete(path) #if RAILS_ENV == 'development'
 end 
 
 module Kopal
@@ -61,6 +58,10 @@ class << self
 
   def initialised?
     @@initialised
+  end
+
+  def root
+    Pathname.new KOPAL_ROOT
   end
 
   def authenticate_simple password

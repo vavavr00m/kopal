@@ -61,4 +61,8 @@ class Kopal::HomeController < Kopal::ApplicationController
     redirect_to(params[:and_return_to] || root_path)
   end
 
+  def stylesheet
+    render :template => "stylesheet/#{params[:id]}.css", :layout => false
+  end
+
 end

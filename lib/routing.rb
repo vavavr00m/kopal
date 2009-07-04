@@ -4,14 +4,16 @@ module Kopal
     @@base_route = base_route
     #Minimum routes should be defined here.
     ActionController::Routing::Routes.draw do |map|
-      map.kopal_root Kopal.base_route, :controller => "kopal/home", :action => 'index',
+      map.kopal_route_root Kopal.base_route, :controller => "kopal/home", :action => 'index',
         :trailing_slash => true
-      map.kopal_route "#{Kopal.base_route}/home/:action/:id", :controller => 'kopal/home',
+      map.kopal_route_home "#{Kopal.base_route}/home/:action/:id", :controller => 'kopal/home',
         :trailing_slash => true
-      map.kopal_route "#{Kopal.base_route}/organise/:action/:id", :controller => 'kopal/organise',
+      map.kopal_route_organise "#{Kopal.base_route}/organise/:action/:id", :controller => 'kopal/organise',
         :trailing_slash => true
-      map.kopal_route "#{Kopal.base_route}/connect/:action/", :controller => 'kopal/connect',
+      map.kopal_route_connect "#{Kopal.base_route}/connect/:action/", :controller => 'kopal/connect',
         :trailing_slash => true
+      map.kopal_route_stylesheet "#{Kopal.base_route}/home/stylesheet/:id.css",
+        :controller => 'kopal/home', :action => 'stylesheet', :trailing_slash => false
       map.kopal_route_feed "#{Kopal.base_route}/home/feed.kp.xml", :controller => 'kopal/home',
         :action => 'feed', :format => 'xml', :trailing_slash => false
     end
@@ -22,22 +24,22 @@ module Kopal
   end
   
   def self.route
-    Kopal::Routing
+    @routing ||= Kopal::Routing.new
   end
 end
 
-module Kopal::Routing
- 
-class << self
+class Kopal::Routing
+  #include ActionController::Routing::Routes.named_routes.instance_variable_get :@module
+  ActionController::Routing::Routes.named_routes.install self
 
   def root
-    kopal_root_path
+    kopal_route_root_path
   end
  
   def home parameters = {}
     parameters[:controller] = 'kopal/home'
     return root if parameters[:action].blank? or parameters[:action] == 'index'
-    kopal_route_path parameters
+    kopal_route_home_path parameters
   end
 
   def feed
@@ -46,11 +48,11 @@ class << self
   
   def organise parameters = {}
     parameters[:controller] = 'kopal/organise'
-    kopal_route_path parameters
+    kopal_route_organise_path parameters
   end
   
-  def sylesheet name = 'home'
-    home({:action => 'stylesheet', :action => name, :format => 'css'})
+  def stylesheet name = 'home'
+    kopal_route_stylesheet_path({:id => name, :trailing_slash => false})
   end
 
   def signin
@@ -70,7 +72,19 @@ class << self
     parameters[:trailing_slash] = false unless parameters[:id].blank?
     home parameters
   end
+
+  def self.ugly_hack value
+    @@controller = value
+  end
+
+private
+
+  def url_for options = {}
+    def @@controller.params
+      {}
+    end
+    @@controller.url_for options
+  end
   
-end
 end
 
