@@ -1,6 +1,6 @@
 #Methods defined here are used everywhere and not only in views, so not in
 #<tt>/app/helper</tt> folder.
-module KopalHelper
+module Kopal::KopalHelper
   #Returns list of countries names in current locale as a Hash indexed by country codes.
   #OPTIMIZE: Fallbacks directly to English.
   def country_list

@@ -1,5 +1,5 @@
-class KopalUser
-  include KopalHelper
+class Kopal::KopalUser
+  include Kopal::KopalHelper
 
 #Should this be an abstract class?
 #  def profile_identity

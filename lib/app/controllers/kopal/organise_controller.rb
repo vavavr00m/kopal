@@ -61,7 +61,7 @@ class Kopal::OrganiseController < Kopal::ApplicationController
 
   def friend
     re = Proc.new {
-      redirect_to home_path(:action => 'friend')
+      redirect_to Kopal.route.friend
       return
     }
     re.call if params[:identity].blank?

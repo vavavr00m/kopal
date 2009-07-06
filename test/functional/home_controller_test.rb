@@ -1,8 +1,19 @@
 require 'test_helper'
 
-class HomeControllerTest < ActionController::TestCase
-  # Replace this with your real tests.
-  test "the truth" do
-    assert true
+class Kopal::HomeControllerTest < ActionController::TestCase
+  
+  def test_index_is_reachable
+    get :index
+    assert_response :success
+  end
+
+  def test_feed_is_reachable
+    get :feed
+    assert_response :success
+  end
+
+  def test_profile_image_is_reachable
+    get :profile_image
+    assert_response :success
   end
 end

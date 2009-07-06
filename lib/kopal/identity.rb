@@ -1,5 +1,5 @@
 class Kopal::Identity
-  include KopalHelper
+  include Kopal::KopalHelper
 
   attr_reader :identity, :uri
   alias to_s identity
@@ -7,7 +7,7 @@ class Kopal::Identity
   def initialize url
     @identity = normalise_url(url)
     @uri = URI.parse(@identity)
-    @profile_user = ProfileUser.new
+    @profile_user = Kopal::ProfileUser.new
   end
 
   def of_profile_user?
