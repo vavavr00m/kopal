@@ -1,15 +1,9 @@
 #Users, whom this application belongs to.
-class ProfileUser < KopalUser
+class Kopal::ProfileUser < Kopal::KopalUser
   
   def kopal_identity
-    r = ApplicationController.request
-    if((i = Kopal[:kopal_identity]).blank?())
-      i = r.protocol
-      i += r.host
-      i += r.port_string unless((r.protocol == 'htp://' && r.port == 80) ||
-        (r.protocol == 'https://' && r.port == 443))
-    end
-    Kopal::Identity.new i
+    Kopal[:kopal_identity] ||= Kopal.route.root :only_path => false
+    Kopal::Identity.new Kopal[:kopal_identity]
   end
   alias profile_identity kopal_identity
   alias profile_homepage kopal_identity
@@ -59,9 +53,7 @@ class ProfileUser < KopalUser
   end
 
   def image_path
-    kopal_identity.to_s + 'home/profile_image/' +
-      feed.name.titlecase.gsub(/[\/\\\!\@\#\$\%\^\*\&\-\.\,\?]+/, ' ').
-      gsub(' ', '').underscore + '.jpeg'
+    Kopal.route.profile_image :only_path => false
   end
 
   def gender

@@ -8,12 +8,12 @@ module Kopal
         :trailing_slash => true
       map.kopal_route_home "#{Kopal.base_route}/home/:action/:id", :controller => 'kopal/home',
         :trailing_slash => true
+      map.kopal_route_home "#{Kopal.base_route}/home/:action/:id.:format",
+        :controller => 'kopal/home', :trailing_slash => false
       map.kopal_route_organise "#{Kopal.base_route}/organise/:action/:id", :controller => 'kopal/organise',
         :trailing_slash => true
       map.kopal_route_connect "#{Kopal.base_route}/connect/:action/", :controller => 'kopal/connect',
         :trailing_slash => true
-      map.kopal_route_stylesheet "#{Kopal.base_route}/home/stylesheet/:id.css",
-        :controller => 'kopal/home', :action => 'stylesheet', :trailing_slash => false
       map.kopal_route_feed "#{Kopal.base_route}/home/feed.kp.xml", :controller => 'kopal/home',
         :action => 'feed', :format => 'xml', :trailing_slash => false
     end
@@ -33,8 +33,8 @@ class Kopal::Routing
   #include ActionController::Routing::Routes.named_routes.instance_variable_get :@module
   ActionController::Routing::Routes.named_routes.install self
 
-  def root
-    kopal_route_root_path
+  def root hash = {}
+    kopal_route_root_path hash
   end
  
   def home hash = {}
@@ -62,21 +62,35 @@ class Kopal::Routing
   def change_password
     organise :action => 'change_password'
   end
-  
-  def stylesheet name = 'home'
-    kopal_route_stylesheet_path({:id => name, :trailing_slash => false})
+
+  #Usage:
+  # * +Kopal.route.stylesheet 'home'+
+  # * +Kopal.route.stylesheet :id => 'home'+
+  def stylesheet hash = 'home'
+    hash = {:id => hash} if hash.is_a? String
+    home({:action => 'stylesheet', :id => hash, :trailing_slash => false})
   end
 
-  def signin
-    home(:action => 'signin')
+  #TODO: :format => recognise saved image format.
+  def profile_image hash = {}
+    hash.update :action => 'profile_image', :id =>
+      Kopal::ProfileUser.new.feed.name.titlecase.gsub(/[\/\\\!\@\#\$\%\^\*\&\-\.\,\?]+/, ' ').
+      gsub(' ', '').underscore, :format => 'jpeg', :trailing_slash => false
+    home(hash)
   end
 
-  def signout
-    home(:action => 'signout')
+  def signin hash = {}
+    hash.update :action => 'signin'
+    home(hash)
+  end
+
+  def signout hash = {}
+    hash.update :action => 'signout'
+    home(hash)
   end
   
-  def kopal_feed
-    kopal_feed_path
+  def kopal_feed hash = {}
+    kopal_feed_path hash
   end
   
   def friend hash = {}

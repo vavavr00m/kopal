@@ -104,7 +104,7 @@ class Kopal::KopalPreference < Kopal::KopalModel
   end
 
   def self.deprecated? name
-    raise KopalPreference::InvalidFieldName, 'Preference name ' + name.to_s +
+    raise Kopal::KopalPreference::InvalidFieldName, 'Preference name ' + name.to_s +
       ' is not valid.' unless all_fields.include? name.to_s
     DeprecatedMethod.here DEPRECATED_FIELDS[name.to_sym] if
       DEPRECATED_FIELDS.has_key? name.to_sym

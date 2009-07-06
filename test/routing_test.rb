@@ -3,13 +3,11 @@ require "#{File.dirname(__FILE__)}/test_helper"
 class RoutingTest < Test::Unit::TestCase
 
   def setup
-    ActionController::Routing::Routes.draw do |map|
-      map.kopal '/profile2/'
-    end
+    Kopal.draw_routes '/profile2/'
   end
   
   def test_kopal_route
-    assert_recognition :get, '/home/', :controller => 'home_controller', :action => 'index'
+    assert_recognition :get, '/home/', :controller => 'home', :action => 'index'
   end
   
 private

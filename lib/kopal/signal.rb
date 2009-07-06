@@ -1,6 +1,6 @@
 #Objects, which hold the response or data to be transmitted via Kopal::Antenna
 module Kopal::Signal
-  include KopalHelper
+  include Kopal::KopalHelper
 
   def headers
     @headers_

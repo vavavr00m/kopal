@@ -7,8 +7,8 @@ require 'rexml/document' #Host server of its.raining.in is not loading REXML::Do
 #TODO: Hook in mercurial to run all test successfully before commit.
 class Kopal::ApplicationController < ActionController::Base
   helper :all # include all helpers, all the time
-  helper KopalHelper #in views
-  include KopalHelper #in controllers
+  helper Kopal::KopalHelper #in views
+  include Kopal::KopalHelper #in controllers
   before_filter :initialise
   layout "kopal_application"
 
@@ -45,12 +45,6 @@ class Kopal::ApplicationController < ActionController::Base
     }
     render :xml => xml, :staus => 400
   end
-
-  #Get ActionController::Request object in lib/
-  #good thing?
-  def self.request
-    @@request
-  end
   
 private
   def initialise
@@ -60,8 +54,8 @@ private
     Kopal.initialise
     I18n.locale = params[:culture]
     @signed = true if session[:signed]
-    @profile_user = ProfileUser.new
-    @visitor = VisitingUser.new
+    @profile_user = Kopal::ProfileUser.new
+    @visitor = Kopal::VisitingUser.new
     @page = OpenStruct.new
     #When theme support is implemented, these should go to theme controller.
     @page.title = @profile_user.feed.name + " &ndash; Kopal Profile"

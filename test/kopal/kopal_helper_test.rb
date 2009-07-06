@@ -1,7 +1,7 @@
 require "test_helper"
 
-class KopalHelperTest < ActiveSupport::TestCase
-  include KopalHelper
+class Kopal::KopalHelperTest < ActiveSupport::TestCase
+  include Kopal::KopalHelper
   
   test "normalise_url is a identity function for normalised url" do
    [

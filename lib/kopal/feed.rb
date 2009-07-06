@@ -3,7 +3,7 @@
 #
 #This is a read-only class, and does not modifies Kopal Feeds.
 class Kopal::Feed
-  include Kopal
+  include Kopal::KopalHelper
 
   def initialize data = nil
     @of_profile_user = false
@@ -19,7 +19,7 @@ class Kopal::Feed
         data = r.body_raw
       end
       initialise_for_rexml REXML::Document.new(data)
-    when ProfileUser, nil
+    when Kopal::ProfileUser, nil
       initialise_for_profile_user
     else
       raise ArgumentError, "Unknown type for a Kopal Feed - #{data.class}"
@@ -185,7 +185,7 @@ class Kopal::Feed
 
   def to_xml_string
     if of_profile_user?
-      Kopal.fetch(ProfileUser.new.kopal_identity.feed_url).body_raw
+      Kopal.fetch(Kopal::ProfileUser.new.kopal_identity.feed_url).body_raw
     else
       @_rexml_object.to_s
     end
