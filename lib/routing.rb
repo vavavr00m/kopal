@@ -4,8 +4,14 @@ module Kopal
     @@base_route = base_route
     #Minimum routes should be defined here.
     ActionController::Routing::Routes.draw do |map|
-      map.kopal_route_root Kopal.base_route, :controller => "kopal/home", :action => 'index',
-        :trailing_slash => true
+      if Kopal.base_route.blank?
+        #Or else it will redirect to http://127.0.0.1:3500//
+        map.kopal_route_root Kopal.base_route, :controller => 'kopal/home', :action => 'index',
+          :trailing_slash => false
+      else
+        map.kopal_route_root Kopal.base_route, :controller => "kopal/home", :action => 'index',
+          :trailing_slash => true
+      end
       map.kopal_route_home "#{Kopal.base_route}/home/:action/:id", :controller => 'kopal/home',
         :trailing_slash => true
       map.kopal_route_home "#{Kopal.base_route}/home/:action/:id.:format",
