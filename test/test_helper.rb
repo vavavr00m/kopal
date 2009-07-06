@@ -10,9 +10,7 @@ def load_schema
   Kopal::Database.migrate
 end
 
-load_schema
-
 class ActiveSupport::TestCase
-
+  load_schema
   # Add more helper methods to be used by all tests here...
 end

@@ -39,13 +39,16 @@ class Kopal::Routing
  
   def home hash = {}
     hash[:controller] = 'kopal/home'
+    #FIXME: By default it goes false, in route_organise it stays true.
+    hash[:trailing_slash].nil?() ? hash[:trailing_slash] = true : nil
     return root if hash[:action].blank? or hash[:action] == 'index'
     kopal_route_home_path hash
   end
 
-  def feed
+  def kopal_feed
     kopal_route_feed_path
   end
+  alias feed kopal_feed
   
   def organise hash = {}
     hash[:controller] = 'kopal/organise'
@@ -55,20 +58,21 @@ class Kopal::Routing
   #LATER: As per http://www.google.com/support/webmasters/bin/answer.py?answer=76329
   #"edit-profile" should be preferred over "edit_profile", Rails should have some
   #in-built support for matching :action => "edit-profile" to method edit_profile.
-  def edit_profile
-    organise :action => 'edit_profile'
+  def edit_profile hash = {}
+    organise hash.update :action => 'edit_profile'
   end
 
-  def change_password
-    organise :action => 'change_password'
+  def change_password hash = {}
+    organise hash.update :action => 'change_password'
   end
 
   #Usage:
   # * +Kopal.route.stylesheet 'home'+
-  # * +Kopal.route.stylesheet :id => 'home'+
+  # * +Kopal.route.stylesheet :id => 'home', :dont_cache => Time.now+
   def stylesheet hash = 'home'
     hash = {:id => hash} if hash.is_a? String
-    home({:action => 'stylesheet', :id => hash, :trailing_slash => false})
+    hash.update :action => 'stylesheet', :format => 'css', :trailing_slash => false
+    home(hash)
   end
 
   #TODO: :format => recognise saved image format.

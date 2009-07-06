@@ -14,6 +14,6 @@ class Kopal::HomeControllerTest < ActionController::TestCase
 
   def test_profile_image_is_reachable
     get :profile_image
-    assert_response :success
+    assert_response :redirect #As of now
   end
 end
