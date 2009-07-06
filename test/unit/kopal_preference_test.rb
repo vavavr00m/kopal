@@ -3,7 +3,7 @@ require 'test_helper'
 class Kopal::KopalPreferenceTest < ActiveSupport::TestCase
   
   def test_schema_has_loaded
-    assert_equal [], Kopal::KopalPreference.all
+    assert_equal 1, Kopal::KopalPreference.all.size
   end
 
   def test_preference_name_are_always_lowercase
