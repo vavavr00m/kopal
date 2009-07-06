@@ -1,10 +1,10 @@
 <% content_for(:surface_left)  do %>
   <ul>
-    <li><%= link_to(t(:edit_profile), edit_profile_path, {:title => t(:edit_your_profile)}) %></li>
-    <li><%= link_to("Change password", organise_path(:action => 'password'), {:title => "Chane your password"}) %></li>
-    <li><%= link_to "Organise friends", organise_path(:action => 'friend'),
+    <li><%= link_to(t(:edit_profile), Kopal.route.edit_profile, {:title => t(:edit_your_profile)}) %></li>
+    <li><%= link_to("Change password", Kopal.route.change_password, {:title => "Chane your password"}) %></li>
+    <li><%= link_to "Organise friends", Kopal.route.organise_friend,
       {:title => "Manage your friends"} %>
-    <li><%= link_to(t(:back_to_homepage), root_path, {:title => t(:go_back_to_homepage)}) %></li>
-    <li><%= link_to(t(:sign_out), signout_path, {:title => t(:sign_out)}) %></li>
+    <li><%= link_to("&laquo; " + t(:back_to_homepage), Kopal.route.root, {:title => t(:go_back_to_homepage)}) %></li>
+    <li><%= link_to(t(:sign_out), Kopal.route.signout, {:title => t(:sign_out)}) %></li>
   </ul>
 <% end %>

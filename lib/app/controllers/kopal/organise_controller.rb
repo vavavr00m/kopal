@@ -55,6 +55,7 @@ class Kopal::OrganiseController < Kopal::ApplicationController
         end
       }
       Kopal[:feed_city] = params[:feed_city] if Kopal[:feed_city_has_code] == "no"
+      flash.now[:highlight] = "Profile updated!" if flash[:notice].blank?
     end
   end
 
@@ -64,7 +65,7 @@ class Kopal::OrganiseController < Kopal::ApplicationController
       return
     }
     re.call if params[:identity].blank?
-    friend = UserFriend.find_or_initialize_by_kopal_identity(
+    friend = Kopal::UserFriend.find_or_initialize_by_kopal_identity(
       normalise_url params[:identity])
     case params[:action2]
     when 'start'
@@ -128,14 +129,14 @@ class Kopal::OrganiseController < Kopal::ApplicationController
     re.call
   end
 
-  def password
+  def change_password
     if request.post?
       flash.now[:notice] = "Password is blank." and return if params[:password].blank?
       flash.now[:notice] = "Passwords do not match." and return unless
         params[:password] == params[:password_confirmation]
       Kopal[:account_password] = params[:password]
       flash[:highlight] = "Password changed!"
-      redirect_to root_path
+      redirect_to Kopal.route.root
     end
   end
 

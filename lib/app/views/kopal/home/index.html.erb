@@ -2,7 +2,7 @@
 
 <h2>Identity</h2>
 <% if @signed %>
-  <p class="helper"><%= link_to(t(:edit_profile), edit_profile_path,
+  <p class="helper"><%= link_to(t(:edit_profile), Kopal.route.edit_profile,
     {:title => t(:edit_your_profile)}) %></p>
 <% end %>
 <% if @profile_user.created_identity? %>

@@ -28,6 +28,7 @@ module Kopal
   end
 end
 
+#Wrapper around named routes.
 class Kopal::Routing
   #include ActionController::Routing::Routes.named_routes.instance_variable_get :@module
   ActionController::Routing::Routes.named_routes.install self
@@ -36,19 +37,30 @@ class Kopal::Routing
     kopal_route_root_path
   end
  
-  def home parameters = {}
-    parameters[:controller] = 'kopal/home'
-    return root if parameters[:action].blank? or parameters[:action] == 'index'
-    kopal_route_home_path parameters
+  def home hash = {}
+    hash[:controller] = 'kopal/home'
+    return root if hash[:action].blank? or hash[:action] == 'index'
+    kopal_route_home_path hash
   end
 
   def feed
     kopal_route_feed_path
   end
   
-  def organise parameters = {}
-    parameters[:controller] = 'kopal/organise'
-    kopal_route_organise_path parameters
+  def organise hash = {}
+    hash[:controller] = 'kopal/organise'
+    kopal_route_organise_path hash
+  end
+
+  #LATER: As per http://www.google.com/support/webmasters/bin/answer.py?answer=76329
+  #"edit-profile" should be preferred over "edit_profile", Rails should have some
+  #in-built support for matching :action => "edit-profile" to method edit_profile.
+  def edit_profile
+    organise :action => 'edit_profile'
+  end
+
+  def change_password
+    organise :action => 'change_password'
   end
   
   def stylesheet name = 'home'
@@ -67,12 +79,18 @@ class Kopal::Routing
     kopal_feed_path
   end
   
-  def friend parameters = {}
-    parameters[:action] = 'friend'
-    parameters[:trailing_slash] = false unless parameters[:id].blank?
-    home parameters
+  def friend hash = {}
+    hash[:action] = 'friend'
+    hash[:trailing_slash] = false unless hash[:id].blank?
+    home hash
   end
 
+  def organise_friend hash = {}
+    hash[:action] = 'friend'
+    organise hash
+  end
+
+  #Get the controller instance.
   def self.ugly_hack value
     @@controller = value
   end

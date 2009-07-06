@@ -44,7 +44,7 @@ class Kopal::HomeController < Kopal::ApplicationController
   end
 
   def signin
-    session[:and_return_to] ||= params[:and_return_to] || root_path
+    session[:and_return_to] ||= params[:and_return_to] || Kopal.route.root
     if request.post?
       if Kopal.authenticate_simple(params[:password])
         session[:signed] = true
