@@ -1,17 +1,17 @@
 class Kopal::ConnectController < Kopal::ApplicationController
-  layout 'connect.xml.builder'
+  layout 'kopal_connect.xml.builder'
   before_filter :connect_initialise
 
   def index
-    redirect_to root_path
+    redirect_to Kopal.route.root
   end
 
   def discovery
-    required_params(:"kopal.subject" => 'discovery')
+    
   end
 
   def friendship_request
-    required_params(:"kopal.subject" => 'friendship-request', #unnecessary?
+    required_params(
       :'kopal.identity' => Proc.new {|x| normalise_url(x); true}
     )
     friend_identity = normalise_url(params[:'kopal.identity'])
@@ -73,8 +73,7 @@ class Kopal::ConnectController < Kopal::ApplicationController
   end
 
   def friendship_update
-    required_params( :"kopal.subject" => 'friendship-update',
-      :"kopal.friendship-state" => true,
+    required_params( :"kopal.friendship-state" => true,
       :"kopal.friendship-key" => true,
       :"kopal.identity" => Proc.new {|x| normalise_url(x); true}
     )
@@ -96,10 +95,10 @@ class Kopal::ConnectController < Kopal::ApplicationController
   end
 
   def friendship_state
-    required_params( :"kopal.subject" => /friendship-(request|update|state)/,
+    required_params(
       :"kopal.identity" => Proc.new {|x| normalise_url(x); true}
     )
-    @friend ||= UserFriend.find_by_kopal_identity normalise_url params[:"kopal.identity"]
+    @friend ||= Kopal::UserFriend.find_or_initialise_readonly normalise_url params[:"kopal.identity"]
     render :friendship_state #necessary, since called by other methods.
   end
 

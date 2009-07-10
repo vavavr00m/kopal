@@ -31,7 +31,7 @@ class Kopal::Identity
   end
 
   def friendship_request_url
-    friendship_update_url 'request'
+    connect_url + '&kopal.subject=friend'
   end
 
   def friendship_state_url
@@ -39,9 +39,9 @@ class Kopal::Identity
   end
 
   def friendship_update_url state, friendship_key = nil
-    friendship_key ||= UserFriend.find_by_kopal_identity(identity).friendship_key
+    friendship_key ||= Kopal::UserFriend.find_or_initialise_readonly(identity).friendship_key
     connect_url_with_identity + '&kopal.subject=friendship-update&kopal.state=' + 
-      state + '&kopal.friendship-key=' + friendship_key
+      state + '&kopal.friendship-key=' + friendship_key.to_s
   end
 
 private

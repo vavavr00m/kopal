@@ -1,9 +1,14 @@
 require 'test_helper'
 
 class Kopal::KopalPreferenceTest < ActiveSupport::TestCase
+
+  def setup
+    #TODO: Need to reset database schema before every test in test_helper.rb.
+    Kopal::KopalPreference.delete_all #alternative for now.
+  end
   
   def test_schema_has_loaded
-    assert_equal 1, Kopal::KopalPreference.all.size
+    assert_equal [], Kopal::KopalPreference.all
   end
 
   def test_preference_name_are_always_lowercase

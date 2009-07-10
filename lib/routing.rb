@@ -51,10 +51,15 @@ class Kopal::Routing
     kopal_route_home_path hash
   end
 
-  def kopal_feed
-    kopal_route_feed_path
+  def kopal_feed hash = {}
+    kopal_route_feed_path hash
   end
   alias feed kopal_feed
+
+  def kopal_connect hash = {}
+    kopal_route_connect_path hash
+  end
+  alias connect kopal_connect
   
   def organise hash = {}
     hash[:controller] = 'kopal/organise'
@@ -122,9 +127,6 @@ class Kopal::Routing
 private
 
   def url_for options = {}
-    def @@controller.params
-      {}
-    end
     @@controller.url_for options
   end
   
