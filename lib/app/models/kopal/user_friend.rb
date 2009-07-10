@@ -36,8 +36,8 @@ class Kopal::UserFriend < Kopal::KopalModel
 
   #Initialise a UserFriend instance that is not and can not be associated
   #with a database row.
-  def new_readonly
-    r = self.new
+  def self.find_or_initialise_readonly kopal_identity
+    r = self.find_or_initialize_by_kopal_identity kopal_identity
     r.readonly!
     return r
   end
@@ -76,6 +76,10 @@ class Kopal::UserFriend < Kopal::KopalModel
     if friendship_key.blank?
       self[:friendship_key] = random_hexadecimal 40
     end
+  end
+
+  def friendship_state
+    self[:friendship_state] || 'none'
   end
 
   def friendship_key= value

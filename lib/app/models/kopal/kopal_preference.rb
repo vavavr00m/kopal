@@ -36,7 +36,8 @@ class Kopal::KopalPreference < Kopal::KopalModel
   }
   DEFAULT_VALUE = {
     :authentication_method => 'simple',
-    :account_password => 'secret01'
+    :account_password => 'secret01',
+    :feed_show_gender => 'yes'
   }
   def self.all_fields
     (FIELDS.dup.concat(DEPRECATED_FIELDS.keys)).map { |k| k.to_s }
@@ -64,8 +65,8 @@ class Kopal::KopalPreference < Kopal::KopalModel
         errors.add_to_base('"feed_email" is not a valid Email')
       end
     when "feed_gender":
-      errors.add_to_base('Gender must be "male" or "female"') unless
-        text =~ /^male|female$/ #case sensitive
+      errors.add_to_base('Gender must be "Male" or "Female"') unless
+        text =~ /^Male|Female$/ #case sensitive
     when /^feed_show_email|feed_show_gender|feed_city_has_code$/:
       errors.add_to_base('"' + name + '" must be either <tt>yes</tt> or <tt>no</tt>') unless
         text =~ /^yes|no$/
@@ -78,6 +79,8 @@ class Kopal::KopalPreference < Kopal::KopalModel
     when "feed_country_living_code":
       errors.add_to_base('Country code must be of length 2 in upper-case.') unless
         text =~ /^[A-Z]{2}$/
+      errors.add_to_base('Country code is not a valid country code') unless
+        country_list.include? text.to_sym
     when "widget_google_analytics_code"
       errors.add_to_base("Wrong Google Analytics code") unless text =~ /^UA\-[a-zA-Z0-9]+\-[0-9]+$/
     end

@@ -15,9 +15,11 @@ class Kopal::ApplicationController < ActionController::Base
   # Scrub sensitive parameters from your log
   # filter_parameter_logging :password
 
+  #FIXME: Save from Replay attack. a session[:last_signin] timestamp may work.
+  #Which expires say, after 2 days. (But session cookies only stay as long as session)?
   def authorise
-    redirect_to({:controller => '/home', :action => 'signin', :and_return_to =>
-        request.request_uri}) and
+    #:status => 401 (Unauthorised)
+    redirect_to(Kopal.route.signin(:and_return_to => request.request_uri)) and
       return false unless @signed
     true
   end

@@ -70,3 +70,10 @@ module Kopal::KopalHelper
     s =~ /^[a-f0-9]*$/i #Empty string is valid Hexadecimal.
   end
 end
+
+#For class methods, "include Kopal::KopalHelper" will do no effect, so we can
+#write Kopal::KopalHelperWrapper.new.country_list, instead of writing module_function
+#for each method.
+class Kopal::KopalHelperWrapper
+  include Kopal::KopalHelper
+end

@@ -32,7 +32,9 @@ class RoutingTest < Test::Unit::TestCase
   end
 
   def test_kopal_route_profile_image
-    assert_equal Kopal.base_route + '/home/profile_image/profile_user.jpeg', Kopal.route.profile_image
+    #It's world.jpeg and not profile_user.jpeg (default) since another test is modifying
+    #database, and at present database doesn't reset after every test. Got to fix it.
+    assert_equal Kopal.base_route + '/home/profile_image/world.jpeg', Kopal.route.profile_image
     assert_recognition :get, '/home/profile_image', :controller => 'kopal/home',
       :action => 'profile_image', :trailing_slash => true #FIXME: trailing slash should come false.
   end
@@ -41,6 +43,13 @@ class RoutingTest < Test::Unit::TestCase
     assert_equal Kopal.base_route + '/home/feed.kp.xml', Kopal.route.feed
     assert_recognition :get, '/home/feed.kp.xml', :controller => 'kopal/home',
       :action => 'feed', :format => 'xml', :trailing_slash => false
+  end
+
+  def test_kopal_route_connect
+    assert_equal Kopal.base_route + '/connect/requested_subject/',
+      Kopal.route.connect(:action => 'requested_subject')
+    assert_recognition :get, '/connect/requested_subject/', :controller => 'kopal/connect',
+      :action => 'requested_subject', :trailing_slash => true
   end
 
   def test_kopal_route_signin

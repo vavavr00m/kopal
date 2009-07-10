@@ -3,26 +3,30 @@ class Kopal::HomeController < Kopal::ApplicationController
   #TODO: in place editor for "Status message".
   def index
     unless params[:"kopal.feed"].blank?
-      redirect_to home_path(:action => 'feed')
+      redirect_to Kopal.route.feed
       return
     end
     unless params[:"kopal.connect"].blank?
-      params[:controller] = 'connect'
+      render_kopal_error "GET parameter \"kopal.subject\" is blank." and return if
+        params[:"kopal.subject"].blank?
       params[:action] = params[:"kopal.subject"].to_s.gsub("-", "_")
-      redirect_to params
+      params.delete :controller
+      params.delete :"kopal.connect"
+      params.delete :"kopal.subject"
+      #Kopal.route.connect(params) won't work. Got to change string keys to symbols.
+      redirect_to Kopal.route.connect Hash[*(params.map { |k,v| [k.to_sym, v] }.flatten)]
     end
   end
 
   #Redirects to Visitor's Profile Homepage.
   def foreign
     if request.post?
-      r = false
+      identity = Kopal::Identity.new(params[:identity])
       case params[:subject]
-      when 'friendship-request':
-        r = render_to_string :inline =>
-          '<%= generate_friendship_request_link(normalise_url(params[:identity])) %>'
+      when 'friendship-request'
+        redirect_to identity.friendship_request_url
+        return
       end
-      redirect_to r if r
     end
   end
 
@@ -58,7 +62,7 @@ class Kopal::HomeController < Kopal::ApplicationController
 
   def signout
     session[:signed] = false
-    redirect_to(params[:and_return_to] || root_path)
+    redirect_to(params[:and_return_to] || Kopal.route.root)
   end
 
   def stylesheet
