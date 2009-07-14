@@ -18,6 +18,8 @@ module Kopal
         :controller => 'kopal/home', :trailing_slash => false
       map.kopal_route_organise "#{Kopal.base_route}/organise/:action/:id", :controller => 'kopal/organise',
         :trailing_slash => true
+      map.kopal_route_openid "#{Kopal.base_route}/openid/:action/:id", :controller => 'Kopal::OpenID',
+        :trailing_slash => true
       map.kopal_route_connect "#{Kopal.base_route}/connect/:action/", :controller => 'kopal/connect',
         :trailing_slash => true
       map.kopal_route_feed "#{Kopal.base_route}/home/feed.kp.xml", :controller => 'kopal/home',
@@ -64,6 +66,10 @@ class Kopal::Routing
   def organise hash = {}
     hash[:controller] = 'kopal/organise'
     kopal_route_organise_path hash
+  end
+
+  def openid hash = {}
+    kopal_route_openid_path hash.update :controller => 'kopal/connect'
   end
 
   #LATER: As per http://www.google.com/support/webmasters/bin/answer.py?answer=76329
