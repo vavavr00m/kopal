@@ -10,6 +10,10 @@ class Kopal::OrganiseController < Kopal::ApplicationController
     redirect_to :action => :edit_profile #for now
   end
 
+  def openid_server
+    
+  end
+
   #TODO: Allow delegation of OpenID.
   def preference
     preference_4hackers if params[:"h@ck"] #Any interesting name with some technical meaning?
