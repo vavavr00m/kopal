@@ -30,8 +30,8 @@ KOPAL_ROOT = File.expand_path(File.dirname(__FILE__) + '/..')
 require_dependency 'core_extension'
 require_dependency KOPAL_ROOT + '/config_dependency'
 require_dependency 'kopal/exception'
+require_dependency 'kopal/openid'
 require_dependency 'routing'
-require_or_load 'app/controllers/kopal/openid_controller' #deiiference between _dependency and _or_load? which to prefer?
 
 %w{ models controllers }.each do |dir| 
   path = File.join(File.dirname(__FILE__), 'app', dir)
@@ -64,6 +64,10 @@ class << self
 
   def root
     Pathname.new KOPAL_ROOT
+  end
+
+  def identity
+    @identity ||= ProfileUser.new.kopal_identity
   end
 
   def authenticate_simple password
