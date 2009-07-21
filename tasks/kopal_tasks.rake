@@ -8,6 +8,16 @@ namespace :kopal do
   task :clear_database do
   end
 
+  #desc "Always call with \"--silent\" option. Backup the database in XML format." +
+  #  "Example: rake --silent kopal:backup > kopal_backup.xml"
+  task :backup do
+    Kopal::Database.backup
+  end
+
+  task :restore do
+    Kopal::Database.restore
+  end
+
   #LATER: This should be a hidden task, shouldn't be available in the list.
   #desc "Changes prefix of the kopal tables for a given database. Pass old prefix as argument. Reads new prefix from kopal.databse.yml"
   task :change_prefix do
