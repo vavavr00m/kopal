@@ -68,5 +68,31 @@ class Kopal::HomeController < Kopal::ApplicationController
   def stylesheet
     render :template => "stylesheet/#{params[:id]}.css", :layout => false
   end
+  
+  def openid
+    
+  end
+
+  def openid_server
+    hash = {:signed => @signed, :openid_request => session.delete(:openid_last_request),
+      :params => params.dup
+    }
+    begin
+      s = Kopal::OpenID::Server.new hash
+      case s.web_response.code
+      when 200 #OpenID::Server::HTTP_OK
+        render :text => s.web_response.body, :status => 200
+      when 302 #OpenID::Server::HTTP_REDIRECT
+        redirect_to s.web_response.headers['location']
+      else #OpenID::Server::HTTP_ERROR => 400
+        render :test => s.web_response.body, :status => 400
+      end
+    rescue Kopal::OpenID::AuthenticationRequired
+      session[:openid_last_request] = s.openid_request
+      redirect_to Kopal.route.signin
+    rescue Kopal::OpenID::OpenIDError => e
+      render :text => e.message, :status => 500
+    end
+  end
 
 end

@@ -1,42 +1,43 @@
+require 'openid/store/filesystem'
 #Based on example in Gem 'ruby-openid'
 class Kopal::OpenID::Server
   include ::OpenID::Server
 
   def initialize hash = {}
-    params = hash[:params]
     begin
-      openid_request = server.decode_request(params)
+      @openid_request = hash[:openid_request] || server.decode_request(hash[:params])
     rescue ProtocolError => e
-      raise Kopal::OpenIDError, e
+      raise Kopal::OpenID::OpenIDError, e
     end
 
-    unless openid_request
-      raise Kopal::OpenIDError, "This is an OpenID server endpoint." #This situation is exceptionable?
+    unless @openid_request
+      raise Kopal::OpenID::OpenIDError, "This is an OpenID server endpoint." #This situation is exceptionable?
     end
 
-    openid_response = nil
-
-    if openid_request.kind_of? CheckIDRequest
+    if @openid_request.kind_of? CheckIDRequest
       
-      if openid_request.id_select
-        if openid_request.immediate
-          openid_response = openid_request.answer false
+      if @openid_request.id_select
+        if @openid_request.immediate
+          @openid_response = @openid_request.answer false
         elsif hash[:signed].nil?
           raise AuthenticationRequired
         end
       end
 
-      if openid_response
+      if @openid_response
         nil
-      elsif openid_request.immediate
-        openid_response = openid_request.answer false, Kopal.route.openid_server
+      elsif @openid_request.immediate
+        @openid_response = @openid_request.answer false, Kopal.route.openid_server
       else #Always authorised for now.
-        openid_response = openid_request.answer true, nil, Kopal.identity
+        @openid_response = @openid_request.answer true, nil, Kopal.identity.to_s
       end
     else
-      openid_response = server.handle_request(openid_request)
+      @openid_response = server.handle_request(@openid_request)
     end
-    return openid_response
+  end
+
+  def web_response
+    @web_response ||= server.encode_response(@openid_response)
   end
 
   #TODO: Change to session or database.
@@ -49,6 +50,6 @@ class Kopal::OpenID::Server
 
 private
   def server
-    @server ||= Server.new(store, Kopal.identity)
+    @server ||= Server.new(store, Kopal.route.openid_server)
   end
 end

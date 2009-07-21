@@ -71,7 +71,8 @@ class Kopal::Routing
   end
 
   def openid_server hash = {}
-    organise hash.update :action => 'openid_server'
+    hash[:only_path] = !!hash[:only_path] #Default is false.
+    home hash.update :action => 'openid_server'
   end
 
   #LATER: As per http://www.google.com/support/webmasters/bin/answer.py?answer=76329
