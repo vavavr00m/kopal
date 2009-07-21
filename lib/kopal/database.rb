@@ -47,5 +47,15 @@ class << self
     ActiveRecord::Base.establish_connection connection
   end
 
+  #Returns an XML string representing the database. Excludes environment specific
+  #fields example - password, openid stores.
+  def backup
+    raise NotImplementedError
+  end
+
+  def restore
+    Rake::Task['kopal:clear_database'].invoke
+  end
+
 end
 end

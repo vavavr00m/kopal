@@ -17,6 +17,14 @@ class Kopal::OrganiseController < Kopal::ApplicationController
     end
   end
 
+  def backup
+    if request.post?
+      send_data Kopal::Database.backup, :content_type => :xml #or 'application/xml'
+      return
+    end
+    #render A form only with a submit button "Continue"
+  end
+
   #OPTIMIZE: Auto-completion for City field.
   #OPTIMIZE: Real-time updation in Preferred calling name with change in name/aliases.
   def edit_profile
