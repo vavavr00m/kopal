@@ -79,6 +79,7 @@ class Kopal::HomeController < Kopal::ApplicationController
     }
     begin
       s = Kopal::OpenID::Server.new hash
+      s.begin
       case s.web_response.code
       when 200 #OpenID::Server::HTTP_OK
         render :text => s.web_response.body, :status => 200
@@ -89,7 +90,8 @@ class Kopal::HomeController < Kopal::ApplicationController
       end
     rescue Kopal::OpenID::AuthenticationRequired
       session[:openid_last_request] = s.openid_request
-      redirect_to Kopal.route.signin
+      redirect_to Kopal.route.signin :and_return_to =>
+        (Kopal.route.openid_server :only_path => true)
     rescue Kopal::OpenID::OpenIDError => e
       render :text => e.message, :status => 500
     end

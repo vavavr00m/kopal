@@ -3,13 +3,18 @@ require 'openid/store/filesystem'
 class Kopal::OpenID::Server
   include ::OpenID::Server
 
+  attr_reader :openid_request, :openid_response
+
   def initialize hash = {}
+    @signed = hash[:signed]
     begin
       @openid_request = hash[:openid_request] || server.decode_request(hash[:params])
     rescue ProtocolError => e
       raise Kopal::OpenID::OpenIDError, e
     end
+  end
 
+  def begin
     unless @openid_request
       raise Kopal::OpenID::OpenIDError, "This is an OpenID server endpoint." #This situation is exceptionable?
     end
@@ -19,8 +24,8 @@ class Kopal::OpenID::Server
       if @openid_request.id_select
         if @openid_request.immediate
           @openid_response = @openid_request.answer false
-        elsif hash[:signed].nil?
-          raise AuthenticationRequired
+        elsif @signed != true
+          raise Kopal::OpenID::AuthenticationRequired
         end
       end
 
@@ -28,7 +33,8 @@ class Kopal::OpenID::Server
         nil
       elsif @openid_request.immediate
         @openid_response = @openid_request.answer false, Kopal.route.openid_server
-      else #Always authorised for now.
+      else
+        raise Kopal::OpenID::AuthenticationRequired unless @signed
         @openid_response = @openid_request.answer true, nil, Kopal.identity.to_s
       end
     else
