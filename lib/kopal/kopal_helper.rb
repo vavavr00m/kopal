@@ -51,6 +51,11 @@ module Kopal::KopalHelper
     return identifier
   end
 
+  #Doesn't understands XRI as of now.
+  def normalise_openid_identifier identifier
+    Kopal::OpenID.normalise_identifier identifier
+  end
+
   def normalise_url i
     ActiveSupport::Deprecation.warn
     #DeprecatedMethod.here "Use normalise_kopal_identity() instead."
