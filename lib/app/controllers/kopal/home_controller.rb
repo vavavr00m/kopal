@@ -68,9 +68,15 @@ class Kopal::HomeController < Kopal::ApplicationController
   def stylesheet
     render :template => "stylesheet/#{params[:id]}.css", :layout => false
   end
-  
+
   def openid
-    
+    authenticate_with_openid { |result|
+      if result.successful?
+        render :text => 'success'
+      else
+        render :text => 'failed. ' + result.message
+      end
+    }
   end
 
   def openid_server

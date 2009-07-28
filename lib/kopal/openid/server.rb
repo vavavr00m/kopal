@@ -49,7 +49,7 @@ class Kopal::OpenID::Server
   #TODO: Change to session or database.
   def store
     if @store.nil?
-      dir = Pathname.new(RAILS_ROOT).join('db').join('openid-store')
+      dir = Pathname.new(RAILS_ROOT).join('tmp').join('kopal-oids')
       @store = OpenID::Store::Filesystem.new(dir)
     end
   end

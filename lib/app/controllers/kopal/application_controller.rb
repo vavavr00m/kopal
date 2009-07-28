@@ -9,6 +9,7 @@ class Kopal::ApplicationController < ActionController::Base
   helper :all # include all helpers, all the time
   helper Kopal::KopalHelper #in views
   include Kopal::KopalHelper #in controllers
+  include Kopal::OpenID::ControllerHelper
   before_filter :initialise
   layout "kopal_application"
 

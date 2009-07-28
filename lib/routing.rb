@@ -70,6 +70,10 @@ class Kopal::Routing
     home hash.update :action => 'openid'
   end
 
+  def openid_consumer_complete hash = {}
+    openid_consumer hash.update :only_path => false
+  end
+
   def openid_server hash = {}
     hash[:only_path] = !!hash[:only_path] #Default is false.
     home hash.update :action => 'openid_server'
