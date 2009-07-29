@@ -56,6 +56,7 @@ private
     @@request = request
     Kopal.initialise
     I18n.locale = params[:culture]
+    set_response_headers
     @signed = true if session[:signed]
     @profile_user = Kopal::ProfileUser.new
     @visitor = Kopal::VisitingUser.new
@@ -68,5 +69,9 @@ private
     flash.now[:notification] = "You have new friendship requests. <a href=\"" +
       organise_path(:action => 'friend') + "\">View</a>." if
       Kopal::UserFriend.find_by_friendship_state('pending')
+  end
+
+  def set_response_headers
+    response.headers['X-XRDS-Location'] = Kopal.route.xrds
   end
 end

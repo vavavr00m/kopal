@@ -7,8 +7,13 @@
 	  <% if(fclc = Kopal["feed_country_living_code"]) %><meta name="geo.country" content="<%= fclc %>" /><% end %>
 	  <% if @page.description %><meta name="Description" content="<%= @page.description %>"><% end %>
 
+    <% @page.yadis_meta = '<meta http-equiv="X-XRDS-Location" content="' +
+      Kopal.route.xrds + '">' %>
+
+    <%= @page.yadis_meta %>
+    
     <% @page.openid_meta = '<link rel="openid2.provider" href="' + Kopal.route.openid_server + '">' +
-      '<link rel="openid2.local_id" href="' + Kopal.identity.to_s + '">'%>
+       "\n" + '<link rel="openid2.local_id" href="' + Kopal.identity.to_s + '">'%>
 
     <%= @page.openid_meta  %>
     
