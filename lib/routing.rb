@@ -66,12 +66,16 @@ class Kopal::Routing
     kopal_route_organise_path hash
   end
 
+  def xrds hash = {}
+    home hash.update :action => 'xrds', :only_path => !!hash[:only_path]
+  end
+
   def openid_consumer hash = {}
     home hash.update :action => 'openid'
   end
 
   def openid_consumer_complete hash = {}
-    openid_consumer hash.update :only_path => false
+    openid_consumer hash.update :only_path => !!hash[:only_path]
   end
 
   def openid_server hash = {}

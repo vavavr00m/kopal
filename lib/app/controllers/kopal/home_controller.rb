@@ -69,6 +69,10 @@ class Kopal::HomeController < Kopal::ApplicationController
     render :template => "stylesheet/#{params[:id]}.css", :layout => false
   end
 
+  def xrds
+    render 'xrds', :content_type => 'application/xrds+xml', :layout => false
+  end
+
   def openid
     authenticate_with_openid { |result|
       if result.successful?
