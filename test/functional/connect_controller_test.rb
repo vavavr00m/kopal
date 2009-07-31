@@ -14,7 +14,7 @@ class Kopal::ConnectControllerTest < ActionController::TestCase
 
   def test_friendship_request
     #TODO: Write me.
-    #get :friendship_request, :"kopal.identity" => 'http://test.host/profile/'
+    get :friendship_request, :"kopal.identity" => 'http://test.host/profile/'
     #Or Kopal[:kopal_identity] = 'http://127.0.0.1:3500/profile/'
     #get :friendship_request, :"koapl.identity" => 'http://127.0.0.1:3500/profile/'
   end

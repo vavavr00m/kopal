@@ -7,17 +7,25 @@ class Kopal::ConnectController < Kopal::ApplicationController
   end
 
   def discovery
-    
+    #Nothing to write.
   end
 
+
+  #* Check if request is a duplicate request.
+  #* Send a 'friendship-state' request
+  #* Check is friendship state is 'waiting'
+  #* Decrypt and save the friendship key recieved from 'friendship-state' request.
+  #* Perform a 'discovery' request on requester and save the publick key.
+  #* Get the 'kopal-feed' of the requester and save it.
+  #* Publish the friendship state.
   def friendship_request
     required_params(
-      :'kopal.identity' => Proc.new {|x| normalise_url(x); true}
+      :'kopal.identity' => Proc.new {|x| normalise_kopal_identity(x); true}
     )
-    friend_identity = normalise_url(params[:'kopal.identity'])
+    friend_identity = normalise_kopal_identity(params[:'kopal.identity'])
     render_kopal_error 0x1201 and return if #Duplicate friendship request
-      UserFriend.find_by_kopal_identity(friend_identity)
-    @friend = UserFriend.new
+      Kopal::UserFriend.find_by_kopal_identity(friend_identity)
+    @friend = Kopal::UserFriend.new
     @friend.kopal_identity = friend_identity
     begin
       f_s = Kopal.fetch(@friend.kopal_identity.friendship_state_url)
@@ -29,7 +37,7 @@ class Kopal::ConnectController < Kopal::ApplicationController
     friendship_state = f_s.body_xml.root.elements["FriendshipState"].
       attributes["state"]
     unless friendship_state == 'waiting'
-      if UserFriend::ALL_FRIENDSHIP_STATES.map{|x| x.to_s}.include? friendship_state
+      if Kopal::UserFriend::ALL_FRIENDSHIP_STATES.map{|x| x.to_s}.include? friendship_state
         render_kopal_error 0x1202 #Invalid friendship state.
       else #extreme?
         render_kopal_error 0x1203 #Unknown friendship state.
