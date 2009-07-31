@@ -1,5 +1,7 @@
 class Kopal::HomeController < Kopal::ApplicationController
 
+  #Homepage. Displayes User's profile and comments.
+  #Also redirects to Kopal::ConnectController or feed if requested.
   #TODO: in place editor for "Status message".
   def index
     unless params[:"kopal.feed"].blank?
@@ -18,6 +20,11 @@ class Kopal::HomeController < Kopal::ApplicationController
     end
   end
 
+  #Shoutbox
+  def comment
+    
+  end
+
   #Redirects to Visitor's Profile Homepage.
   def foreign
     if request.post?
@@ -30,6 +37,7 @@ class Kopal::HomeController < Kopal::ApplicationController
     end
   end
 
+  #Displayes the Kopal Feed for user.
   def feed
     render :layout => false
   end
@@ -47,6 +55,7 @@ class Kopal::HomeController < Kopal::ApplicationController
     end
   end
 
+  #Sign-in page for user.
   def signin
     session[:and_return_to] ||= params[:and_return_to] || Kopal.route.root
     if request.post?
@@ -60,6 +69,7 @@ class Kopal::HomeController < Kopal::ApplicationController
     end
   end
 
+  #Signs out user. To sign-out a user, use - +Kopal.route.signout+
   def signout
     session[:signed] = false
     redirect_to(params[:and_return_to] || Kopal.route.root)
@@ -69,10 +79,16 @@ class Kopal::HomeController < Kopal::ApplicationController
     render :template => "stylesheet/#{params[:id]}.css", :layout => false
   end
 
+  #Displayes the XRDS file for user. Accessible from +Kopal.route.xrds+
   def xrds
     render 'xrds', :content_type => 'application/xrds+xml', :layout => false
   end
 
+  #Authenticates a user's by her OpenID.
+  #
+  #Usage -
+  #  Kopal.route.openid(:openid_identifier => 'http://www.example.net/')
+  #
   def openid
     authenticate_with_openid { |result|
       if result.successful?
@@ -83,6 +99,7 @@ class Kopal::HomeController < Kopal::ApplicationController
     }
   end
 
+  #OpenID server for user's OpenID Identifier.
   def openid_server
     hash = {:signed => @signed, :openid_request => session.delete(:openid_last_request),
       :params => params.dup

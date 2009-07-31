@@ -70,6 +70,8 @@ class Kopal::Routing
     home hash.update :action => 'xrds', :only_path => !!hash[:only_path]
   end
 
+  alias yadis xrds
+
   def openid_consumer hash = {}
     home hash.update :action => 'openid'
   end
