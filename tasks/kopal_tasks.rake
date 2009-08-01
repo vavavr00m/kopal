@@ -1,9 +1,14 @@
 namespace :kopal do
-  desc "Called automatically with db:migrate. Creates/upgrades the database for Kopal."
-  task :upgrade => :environment do
-    #TODO: Fetch the latest version number from Inernet, download and install it if necessary.
+  desc "Creates/upgrades the database for Kopal. Called automatically with db:migrate."
+  task :update => :environment do
     Rake::Task["gems:install"].invoke #Check gem dependencies and install/upgrade them.
     Kopal::Database.migrate
+  end
+
+  #desc "Fetches new release from Interner, then updates the plugin."
+  task :upgrade => :environment do
+    #TODO: Fetch the latest version number from Inernet, download and install it if necessary.
+    Rake::Task["kopal:update"].invoke
   end
 
   #desc "Removes kopal specific tables from the database."
@@ -39,6 +44,6 @@ namespace :kopal do
 end
 
 Rake::Task["db:migrate"].enhance do
-  Rake::Task["kopal:upgrade"].invoke
+  Rake::Task["kopal:update"].invoke
 end
 
