@@ -24,7 +24,9 @@ module Kopal
         :action => 'feed', :format => 'xml', :trailing_slash => false
     end
   end
-  
+
+  #This method is intended for internal use only, prefer +Kopal.route.root+ instead.
+  #Path of Kopal relative to host, and without postfixed '/'
   def self.base_route
    @@base_route
   end
@@ -39,16 +41,22 @@ class Kopal::Routing
   #include ActionController::Routing::Routes.named_routes.instance_variable_get :@module
   ActionController::Routing::Routes.named_routes.install self
 
+  #Homepage of Kopal profile.
   def root hash = {}
     kopal_route_root_path hash
   end
- 
+
+  #Homepage of Kopal profile by default. Accpets actions of Kopal::HomeController
   def home hash = {}
     hash[:controller] = 'kopal/home'
     #FIXME: By default it goes false, in route_organise it stays true.
     hash[:trailing_slash].nil?() ? hash[:trailing_slash] = true : nil
     return root if hash[:action].blank? or hash[:action] == 'index'
     kopal_route_home_path hash
+  end
+
+  def profile_comment hash = {}
+    home hash.update :action => 'comment'
   end
 
   def kopal_feed hash = {}
@@ -66,6 +74,7 @@ class Kopal::Routing
     kopal_route_organise_path hash
   end
 
+  #+:only_path+ is true by default.
   def xrds hash = {}
     home hash.update :action => 'xrds', :only_path => !!hash[:only_path]
   end
@@ -76,10 +85,13 @@ class Kopal::Routing
     home hash.update :action => 'openid'
   end
 
+  #+:only_path+ is true by default.
   def openid_consumer_complete hash = {}
+    #params[:openid_complete] = 1
     openid_consumer hash.update :only_path => !!hash[:only_path]
   end
 
+  #+:only_path+ is true by default.
   def openid_server hash = {}
     hash[:only_path] = !!hash[:only_path] #Default is false.
     home hash.update :action => 'openid_server'
