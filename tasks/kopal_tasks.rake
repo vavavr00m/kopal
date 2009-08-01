@@ -5,7 +5,7 @@ namespace :kopal do
     Kopal::Database.migrate
   end
 
-  #desc "Fetches new release from Interner, then updates the plugin."
+  #desc "Fetches new release from Internet, then updates the plugin."
   task :upgrade => :environment do
     #TODO: Fetch the latest version number from Inernet, download and install it if necessary.
     Rake::Task["kopal:update"].invoke
@@ -23,6 +23,13 @@ namespace :kopal do
 
   task :restore do
     Kopal::Database.restore
+  end
+
+  #desc "Revives the database. Clears out all deprecations and errors if any."
+  task :revive do
+    #Backup the database. (Including password, so not like Kopal::Database.backup).
+    #Clear the database.
+    #Restore the database.
   end
 
   #LATER: This should be a hidden task, shouldn't be available in the list.
