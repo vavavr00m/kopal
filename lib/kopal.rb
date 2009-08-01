@@ -61,11 +61,17 @@ class << self
   def initialised?
     @@initialised
   end
-
+  
+  #These four methods sound similar, but have different usages.
+  #  Kopal.root (File system path of Kopal plugin).
+  #  Kopal.route.root (URL of homepage of Kopal Identity).
+  #  Kopal.base_route (Do not use. For internal use only.) [Without postfixed '/']
+  #  Kopal.identity (May be different than Kopal.route.root, if saved such in database).
   def root
     Pathname.new KOPAL_ROOT
   end
 
+  #Kopal Identity of the user.
   def identity
     @identity ||= ProfileUser.new.kopal_identity
   end
@@ -78,6 +84,7 @@ class << self
     return false
   end
 
+  #Indexes KopalPreference
   def [] index
     index = index.to_s
     @@pref_cache[index] ||= Kopal::KopalPreference.get_field(index)
@@ -92,7 +99,8 @@ class << self
   def reload_preferences!
     @@pref_cache = {}
   end
-  
+
+  #Fetches a given URL and returns a Kopal::Signal::Response
   def fetch url
     Kopal::Antenna.broadcast(Kopal::Signal::Request.new(url))
   end

@@ -12,7 +12,7 @@ class Kopal::Antenna
   #Signal is a Kopal::Signal::Request
   #Returns a Kopal::Signal::Response
   #TODO: Support HTTPS
-  def self.broadcast signal #or receive?
+  def self.broadcast signal #or receive()?
     raise ArgumentError, "Expected an object of Kopal::Signal::Request but is " +
       signal.class.to_s unless signal.is_a? Kopal::Signal::Request
     signal.headers['User-agent'] ||= USER_AGENT

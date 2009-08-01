@@ -8,6 +8,8 @@
   <ul>
     <li><%= link_to(t(:home), Kopal.route.root,
           {:title => t(:profile_homepage_of_person, :person => @profile_user.feed.name)}) %></li>
+    <li><%= link_to("Shoutbox", Kopal.route.profile_comment,
+      :title => "View profile comments for #{@profile_user.feed.name}") %></li>
     <li><%= link_to(t(:friend, :count => 2), Kopal.route.friend,
           :title => t(:view_friends_of_person, :person => @profile_user.feed.name)) %></li>
     <li><%= link_to(t(:sign_in), Kopal.route.signin, {:title => t(:sign_in)}) %></li>

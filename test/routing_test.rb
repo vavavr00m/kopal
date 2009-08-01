@@ -24,6 +24,12 @@ class RoutingTest < Test::Unit::TestCase
       :action => 'index', :trailing_slash => true
   end
 
+  def test_kopal_route_profile_comment
+    assert_equal Kopal.base_route + '/home/comment/', Kopal.route.profile_comment
+    assert_recognition :get, '/home/comment/', :controller => 'kopal/home',
+      :action => 'comment', :trailing_slash => true
+  end
+
   def test_kopal_route_stylesheet
     assert_equal Kopal.base_route + '/home/stylesheet/home.css', Kopal.route.stylesheet('home')
     assert_equal Kopal.route.stylesheet('home'), Kopal.route.stylesheet(:id => 'home')
@@ -50,6 +56,32 @@ class RoutingTest < Test::Unit::TestCase
       Kopal.route.connect(:action => 'requested_subject')
     assert_recognition :get, '/connect/requested_subject/', :controller => 'kopal/connect',
       :action => 'requested_subject', :trailing_slash => true
+  end
+
+  def test_kopal_route_xrds
+    assert_equal 'http://test.host' + Kopal.base_route + '/home/xrds/',
+      Kopal.route.xrds
+    assert_recognition :get, '/home/xrds/', :controller => 'kopal/home',
+      :action => 'xrds', :trailing_slash => true
+  end
+
+  def test_kopal_route_openid_consumer
+    assert_equal Kopal.base_route + '/home/openid/', Kopal.route.openid_consumer
+    assert_recognition :get, '/home/openid/', :controller => 'kopal/home',
+      :action => 'openid', :trailing_slash => true
+  end
+
+  def test_kopal_route_openid_consumer_complete
+    assert_equal 'http://test.host' + Kopal.base_route + '/home/openid/',
+      Kopal.route.openid_consumer_complete
+    #No recognition on this route.
+  end
+
+  def test_kopal_route_openid_server
+    assert_equal 'http://test.host' + Kopal.base_route + '/home/openid_server/',
+      Kopal.route.openid_server
+    assert_recognition :get, '/home/openid_server', :controller => 'kopal/home',
+      :action => 'openid_server', :trailing_slash => true
   end
 
   def test_kopal_route_signin
