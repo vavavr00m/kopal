@@ -1,5 +1,5 @@
 <% content_for :surface_above do %>
-  <h1><%= t(:hello) + ', ' + @profile_user.feed.name %></h1>
+  <h1><%= @profile_user.feed.name %></h1>
   <blockquote class="status-message"><%= @profile_user.status_message %></blockquote>
 <% end %>
 

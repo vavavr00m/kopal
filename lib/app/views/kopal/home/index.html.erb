@@ -8,13 +8,12 @@
 <% if @profile_user.created_identity? %>
   <table>
     <tr>
-      <td><%=  t :name %></td>
-      <td><%= @profile_user.feed.name %></td>
+      <td><%=  t(:real_name).titlecase %></td>
+      <td><%= @profile_user.feed.real_name %></td>
     </tr>
     <tr>
       <td><%= t :aliases %></td>
-      <td><%= @profile_user.feed.aliases.unshift(
-        @profile_user.feed.real_name).join("<br />") %></td>
+      <td><%= @profile_user.feed.aliases.join("<br />") %></td>
     </tr>
     <tr>
       <td><%= t :about_me %></td>
