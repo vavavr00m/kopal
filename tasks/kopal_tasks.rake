@@ -1,6 +1,8 @@
 namespace :kopal do
   desc "Called automatically with db:migrate. Creates/upgrades the database for Kopal."
   task :upgrade => :environment do
+    #TODO: Fetch the latest version number from Inernet, download and install it if necessary.
+    Rake::Task["gems:install"].invoke #Check gem dependencies and install/upgrade them.
     Kopal::Database.migrate
   end
 
