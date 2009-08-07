@@ -21,6 +21,10 @@ class Kopal::Identity
     raise NotImplementedError
   end
 
+  def profile_image_url
+    connect_url + '&kopal.subject=image'
+  end
+
   def feed_url
     identity + '?kopal.feed=true'
   end

@@ -1,0 +1,27 @@
+<%= render :partial => 'navigation'  %>
+
+<h2>Write</h2>
+
+<%= error_messages_for 'profile_comment' %>
+
+<% form_for :profile_comment do |f| %>
+  <% unless @visitor.known? %>
+    <%= f.label :name %> &ndash; <br />
+    <%= f.text_field :name %> <br />
+    <%= f.label :email %> &ndash; <br />
+    <%= f.text_field :email %> <br />
+    <%= f.label :"website_address_(optional)" %> &ndash; <br />
+    <%= f.text_field :website_address %> <br />
+  <% else %>
+    You are signed in as - <%= @visitor.kopal_identity %>
+  <% end %>
+  <%= f.label :comment %> &ndash; <br />
+  <%= f.text_area :comment_text, :style => "height: 150px; width: 470px" %> <br />
+  <%= f.submit "Submit Comment!" %>
+<% end %>
+
+  <h2>Shoutbox</h2>
+
+<% @comments.each do |comment| %>
+  <%=  render :partial => 'comment_ribbon', :locals => { :comment => comment } %>
+<% end %>

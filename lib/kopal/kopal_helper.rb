@@ -28,23 +28,38 @@ module Kopal::KopalHelper
     return c
   end
 
+  #Normalises only a URL, subset of URI.
+  #raises URI::InvalidURIError if invalid URI.
+  #
   #modified from OpenIdAuthentication::normalize_identifier
-  #Must be _identity function_ after first normalise_url(id).
-  #i.e., normalise_url(normalise_url(id)) == normalise_url(id) #=> true
+  #
+  #Must be identity function. i.e.,
+  #  normalise_url(normalise_url(id)) = normalise_url(id)
+  def normalise_url identifier
+    identifier = identifier.to_s.strip
+    identifier = "http://#{identifier}" unless identifier =~ /^[^.\?#]+:\/\//i
+    raise URI::InvalidURIError unless
+      identifier =~ /^[^.]+:\/\/[^\/]+\.[^\/]+/i unless
+        identifier =~ /^[^.]+:\/\/localhost/i
+    uri = URI.parse(identifier)
+    uri.scheme = uri.scheme.downcase  # URI should do this
+    identifier = uri.normalize.to_s
+  end
+
+  #Must be _identity function_ after first normalise_kopal_identity(id).
+  #i.e.,
+  #  normalise_kopal_identity(normalise_kopal_identity(id)) = normalise_kopal_identity(id)
   #TODO: Write tests.
   def normalise_kopal_identity identifier
-    identifier = identifier.to_s.strip
-    identifier = "http://#{identifier}" unless identifier =~ /^[^.]+:\/\//i
-    identifier.gsub!(/\#(.*)$/, '') # strip any fragments
-    identifier += '/' unless identifier[-1].chr == '/'
     begin
+      identifier = normalise_url identifer
+      identifier.gsub!(/\#(.*)$/, '') # strip any fragments
+      identifier += '/' unless identifier[-1].chr == '/'
       raise URI::InvalidURIError if identifier['?'] #No query string
+      #What about "localhost"?
       #URLs must have atleast on dot.
-      raise URI::InvalidURIError unless identifier =~
-        /^[^.]+:\/\/[0-9a-z]+\.[0-9a-z]+/i #Internationalised domains?, IPv6 addresses?
-      uri = URI.parse(identifier)
-      uri.scheme = uri.scheme.downcase  # URI should do this
-      identifier = uri.normalize.to_s
+      #raise URI::InvalidURIError unless identifier =~
+        #/^[^.]+:\/\/[0-9a-z]+\.[0-9a-z]+/i #Internationalised domains?, IPv6 addresses?
     rescue URI::InvalidURIError
       raise Kopal::KopalIdentityInvalid, "#{identifier} is not a valid Kopal Identity."
     end
@@ -56,10 +71,10 @@ module Kopal::KopalHelper
     Kopal::OpenID.normalise_identifier identifier
   end
 
-  def normalise_url i
-    ActiveSupport::Deprecation.warn
-    #DeprecatedMethod.here "Use normalise_kopal_identity() instead."
-    normalise_kopal_identity i
+  def gravatar_url email
+    require 'md5'
+    hash = Digest::MD5 email
+    return "http://www.gravatar.com/avatar/#{hash}.jpeg?s=120"
   end
 
   #Argument n is the length of resulting hexadecimal string or Range of length.
@@ -74,6 +89,36 @@ module Kopal::KopalHelper
   def valid_hexadecimal? s
     s =~ /^[a-f0-9]*$/i #Empty string is valid Hexadecimal.
   end
+
+  #Should be defined in - Kopal::Helper::HtmlHelper maybe.
+  def format_date date, without_html = false
+    return date unless date.is_a? Date or date.is_a? Time or date.is_a? DateTime
+
+		m = ['Jan', 'Feb', 'March', 'April', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'] # Oh, we could have done this with strftime() method!
+		w = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] # sunday is 0 for both Time and Date
+
+		current = Time.zone.now #Same as Time.now.utc
+    if date.year < current.year
+      r = "#{m[date.month-1]}, #{date.year}"
+    elsif date.month < current.month or current.mday - date.mday > 1
+      r = "#{w[date.wday]}, #{date.mday} #{m[date.month-1]}"
+    elsif date.instance_of? Date
+      r = "Yesterday"
+    elsif current.mday - date.mday == 1
+      r = date.strftime("Yesterday, %I:%M%p")
+    elsif current.hour > date.hour or current.min - date.min > 20
+      r = date.strftime("Today, %I:%M%p")
+    elsif current.min - date.min > 2
+      r = "Minutes before"
+    elsif current.min >= date.min
+      r = 'Seconds before'
+    else
+      r = date.to_s(:long) #date in future?
+    end
+		return  r if without_html
+		return "<abbr title=\"#{date.to_s(:rfc822)}\">#{r}</abbr>"
+  end
+  alias d format_date
 end
 
 #For class methods, "include Kopal::KopalHelper" will do no effect, so we can

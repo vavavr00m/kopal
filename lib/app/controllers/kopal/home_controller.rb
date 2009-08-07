@@ -22,7 +22,19 @@ class Kopal::HomeController < Kopal::ApplicationController
 
   #Shoutbox
   def comment
-    
+    if request.post?
+      @profile_comment = Kopal::ProfileComment.new params[:profile_comment]
+      if @visitor.known?
+        @profile_comment.is_kopal_identity = true
+        @profile_comment.website_address = @visitor.kopal_identity.to_s
+      end
+      if @profile_comment.valid?
+        @profile_comment.save
+        flash[:highlight] = "Comment submitted successfully."
+        redirect_to Kopal.route.profile_comment
+      end
+    end
+    @comments = Kopal::ProfileComment.paginate(:page => params[:page], :order => 'created_at DESC')
   end
 
   #Redirects to Visitor's Profile Homepage.
@@ -47,11 +59,10 @@ class Kopal::HomeController < Kopal::ApplicationController
   def profile_image
     require 'md5'
     if params[:of].blank? #self
-      hash = MD5::md5(Kopal['feed_email'])
-      redirect_to "http://www.gravatar.com/avatar/#{hash}.jpeg?s=120"
+      redirect_to gravatar_url Kopal['feed_email']
     else
       #redirect to url or send raw data
-      redirect_to "http://www.gravatar.com/avatar/a.jpeg?s=120" #testing
+      redirect_to Kopal::Identity.new(params[:of]).profile_image_url
     end
   end
 
