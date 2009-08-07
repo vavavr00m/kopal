@@ -27,6 +27,7 @@
 
 KOPAL_ROOT = File.expand_path(File.dirname(__FILE__) + '/..')
 
+require 'will_paginate'
 require_dependency 'core_extension'
 require_dependency KOPAL_ROOT + '/config_dependency'
 require_dependency 'kopal/exception'
