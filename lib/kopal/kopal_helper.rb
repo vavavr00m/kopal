@@ -73,7 +73,7 @@ module Kopal::KopalHelper
 
   def gravatar_url email
     require 'md5'
-    hash = Digest::MD5 email
+    hash = MD5.md5 email
     return "http://www.gravatar.com/avatar/#{hash}.jpeg?s=120"
   end
 
