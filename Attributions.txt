@@ -1,0 +1,7 @@
+This software also includes/derives full/partial code from following software -
+
+
+Name: ReCAPTCHA helpers for Rails app.
+Url: http://github.com/ambethia/recaptcha/tree/master
+Copyright: 2007 Jason L Perry (http://ambethia.com)
+Licence: MIT Licence
