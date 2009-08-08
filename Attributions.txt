@@ -1,4 +1,4 @@
-This software also includes/derives full/partial code from following software -
+This software includes/derives full/partial code from following software -
 
 
 Name: ReCAPTCHA helpers for Rails app.
