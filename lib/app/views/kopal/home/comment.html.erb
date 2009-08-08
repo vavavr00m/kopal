@@ -17,6 +17,9 @@
   <% end %>
   <%= f.label :comment %> &ndash; <br />
   <%= f.text_area :comment_text, :style => "height: 150px; width: 470px" %> <br />
+  <% if can_use_recaptcha? %>
+    <%= recaptcha_tags %>
+  <% end %>
   <%= f.submit "Submit Comment!" %>
 <% end %>
 
@@ -25,3 +28,5 @@
 <% @comments.each do |comment| %>
   <%=  render :partial => 'comment_ribbon', :locals => { :comment => comment } %>
 <% end %>
+
+<%= will_paginate @comments %>

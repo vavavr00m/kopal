@@ -77,6 +77,10 @@ module Kopal::KopalHelper
     return "http://www.gravatar.com/avatar/#{hash}.jpeg?s=120"
   end
 
+  def can_use_recaptcha?
+    ENV['RECAPTCHA_PUBLIC_KEY'] && ENV['RECAPTCHA_PRIVATE_KEY']
+  end
+
   #Argument n is the length of resulting hexadecimal string or Range of length.
   def random_hexadecimal n = 32
     if n.is_a? Range
