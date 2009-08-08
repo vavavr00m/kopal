@@ -28,8 +28,14 @@ class Kopal::HomeController < Kopal::ApplicationController
         @profile_comment.is_kopal_identity = true
         @profile_comment.website_address = @visitor.kopal_identity.to_s
       end
-      if @profile_comment.valid?
-        @profile_comment.save
+      #Run validations before running verify_recaptcha(), since running validations
+      #will reset the error strings of model and errors set by verify_recaptcha() will be lost.
+      is_valid = @profile_comment.valid?
+      human_verified = true
+      human_verified = false unless
+        verify_recaptcha(:model => @profile_comment) if can_use_recaptcha?
+      if is_valid and human_verified
+        @profile_comment.save!
         flash[:highlight] = "Comment submitted successfully."
         redirect_to Kopal.route.profile_comment
       end
