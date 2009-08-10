@@ -83,7 +83,7 @@ class Kopal::ConnectController < Kopal::ApplicationController
   def friendship_update
     required_params( :"kopal.friendship-state" => true,
       :"kopal.friendship-key" => true,
-      :"kopal.identity" => Proc.new {|x| normalise_url(x); true}
+      :"kopal.identity" => Proc.new {|x| normalise_kopal_identity(x); true}
     )
     @friend = UserFriend.find_by_kopal_identity normalise_url params[:"kopal.identity"]
     render_kopal_error 0x1205 and return unless @friend
@@ -104,7 +104,7 @@ class Kopal::ConnectController < Kopal::ApplicationController
 
   def friendship_state
     required_params(
-      :"kopal.identity" => Proc.new {|x| normalise_url(x); true}
+      :"kopal.identity" => Proc.new {|x| normalise_kopal_identity(x); true}
     )
     @friend ||= Kopal::UserFriend.find_or_initialise_readonly normalise_url params[:"kopal.identity"]
     render :friendship_state #necessary, since called by other methods.

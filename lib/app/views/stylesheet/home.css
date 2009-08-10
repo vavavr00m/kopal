@@ -34,6 +34,7 @@ div#SurfaceFront{
 	/*min-height:620px;*/
   float:left;
 	padding:8px;
+  min-width:470px;
 }
 
 div#SurfaceLeft{
