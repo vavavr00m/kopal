@@ -1,5 +1,17 @@
 <%= render :partial => 'navigation'  %>
 
+<p class="helper"><%= link_to "Write &raquo;", "\#write",
+    :title => "Write something for #{@profile_user}" %></p>
+
+  <h2>Shoutbox</h2>
+
+<% @comments.each do |comment| %>
+  <%=  render :partial => 'comment_ribbon', :locals => { :comment => comment } %>
+<% end %>
+
+<p class="helper"><%= will_paginate @comments %></p>
+
+<a name="write"></a>
 <h2>Write</h2>
 
 <%= error_messages_for 'profile_comment' %>
@@ -22,11 +34,3 @@
   <% end %>
   <%= f.submit "Submit Comment!" %>
 <% end %>
-
-  <h2>Shoutbox</h2>
-
-<% @comments.each do |comment| %>
-  <%=  render :partial => 'comment_ribbon', :locals => { :comment => comment } %>
-<% end %>
-
-<%= will_paginate @comments %>
