@@ -1,5 +1,9 @@
 #Users, whom this application belongs to.
 class Kopal::ProfileUser < Kopal::KopalUser
+
+  def to_s
+    feed.name
+  end
   
   def kopal_identity
     Kopal[:kopal_identity] ||= Kopal.route.root :only_path => false

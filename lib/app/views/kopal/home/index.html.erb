@@ -39,3 +39,13 @@
 <% else %>
   <p><%= t :user_has_not_yet_created_her_identity %></p>
 <% end %>
+
+<h2>Shoutbox</h2>
+
+<p class="helper"><%= link_to "Write &raquo;", Kopal.route.profile_comment, :title => "Shoutbox for #{@profile_user}" %></p>
+
+<% @comments.each do |c| %>
+  <%= render :partial => 'comment_ribbon', :locals => { :comment => c } %>
+<% end %>
+
+<p class="helper"><%= link_to "View more &raquo;", Kopal.route.profile_comment, :title => "Shoutbox for #{@profile_user}" %></p>

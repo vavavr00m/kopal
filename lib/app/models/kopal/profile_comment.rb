@@ -18,6 +18,9 @@ class Kopal::ProfileComment < Kopal::KopalModel
   def validate
     begin
       unless self[:email].blank?
+        #TODO: Create a helper around tmail parser which checks if "@" is present
+        #throw Kopal::EmailSyntaxInvalid elsewise.
+        #"bad-bad-email!!" is good for TMail.
         self[:email] = TMail::Address.parse(self[:email]).address
       end
     rescue TMail::SyntaxError
@@ -36,7 +39,7 @@ class Kopal::ProfileComment < Kopal::KopalModel
   end
 
   def duplicate_comment?
-    u = self.class.find_by_email_and_comment_text(self[:email], self[:comment_text],
+    u = self.class.find_by_comment_text(self[:comment_text],
       :conditions => ['created_at > ?', DUPLICATE_TIME.ago])
   end
 

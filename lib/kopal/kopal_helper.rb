@@ -52,7 +52,7 @@ module Kopal::KopalHelper
   #TODO: Write tests.
   def normalise_kopal_identity identifier
     begin
-      identifier = normalise_url identifer
+      identifier = normalise_url identifier
       identifier.gsub!(/\#(.*)$/, '') # strip any fragments
       identifier += '/' unless identifier[-1].chr == '/'
       raise URI::InvalidURIError if identifier['?'] #No query string

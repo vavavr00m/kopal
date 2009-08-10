@@ -18,6 +18,7 @@ class Kopal::HomeController < Kopal::ApplicationController
       #Kopal.route.connect(params) won't work. Got to change string keys to symbols.
       redirect_to Kopal.route.connect Hash[*(params.map { |k,v| [k.to_sym, v] }.flatten)]
     end
+    @comments = Kopal::ProfileComment.find(:all, :order => 'created_at DESC', :limit => 20)
   end
 
   #Shoutbox
