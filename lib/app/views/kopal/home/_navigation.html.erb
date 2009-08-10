@@ -4,7 +4,9 @@
 <% end %>
 
 <% content_for :surface_left do %>
-  <%= image_tag Kopal.route.home(:action => 'profile_image') %>
+  <%# link_to image_tag(Kopal.route.home(:action => 'profile_image')), Kopal.route.root,
+    {:title => t(:profile_homepage_of_person, :person => @profile_user)} %>
+  <%= image_tag(Kopal.route.home(:action => 'profile_image'), :alt => @profile_user, :title => @profile_user) %>
   <ul>
     <li><%= link_to(t(:home), Kopal.route.root,
           {:title => t(:profile_homepage_of_person, :person => @profile_user.feed.name)}) %></li>
