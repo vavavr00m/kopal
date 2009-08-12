@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	  <meta http-equiv="Content-Language" content="<%= I18n.locale.to_s.upcase %>" />
 	  <% if(fclc = Kopal["feed_country_living_code"]) %><meta name="geo.country" content="<%= fclc %>" /><% end %>
-	  <% if @page.description %><meta name="Description" content="<%= @page.description %>"><% end %>
+	  <% if @page.description %><meta name="Description" content="<%= @page.description %>" /><% end %>
 
     <% @page.yadis_meta = '<meta http-equiv="X-XRDS-Location" content="' +
       Kopal.route.xrds + '">' %>
