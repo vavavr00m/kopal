@@ -16,6 +16,10 @@ module Kopal
         :trailing_slash => true
       map.kopal_route_home "#{Kopal.base_route}/home/:action/:id.:format",
         :controller => 'kopal/home', :trailing_slash => false
+      map.kopal_route_page "#{Kopal.base_route}/page/*page", :controller => 'kopal/page',
+        :trailing_slash => false
+      map.kopal_route_page_draw "#{Kopal.base_route}/pagedraw/:action/:id",
+        :controller => 'kopal/page_draw', :trailing_slash => true
       map.kopal_route_organise "#{Kopal.base_route}/organise/:action/:id", :controller => 'kopal/organise',
         :trailing_slash => true
       map.kopal_route_connect "#{Kopal.base_route}/connect/:action/", :controller => 'kopal/connect',
@@ -68,6 +72,14 @@ class Kopal::Routing
     kopal_route_connect_path hash
   end
   alias connect kopal_connect
+
+  #Usage:
+  #    Kopal.route.page 'homepage'
+  #    Kopal.route.page :page => 'homepage'
+  def page hash = {}
+    hash = {:page => hash} if hash.is_a? String
+    kopal_route_page_path hash
+  end
   
   def organise hash = {}
     hash[:controller] = 'kopal/organise'

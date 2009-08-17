@@ -18,6 +18,11 @@ class Kopal::ApplicationController < ActionController::Base
 
   #FIXME: Save from Replay attack. a session[:last_signin] timestamp may work.
   #Which expires say, after 2 days. (But session cookies only stay as long as session)?
+  #
+  #(Second thought) - Authorisation sounds like upgrading someones privileges, while
+  #authentication sounds like the process of verifying. Rename this to authenticate?
+  #Ex: You are now authorised to do this task.
+  #Ex: Please authenticate yourself before continuing.
   def authorise
     #:status => 401 (Unauthorised)
     redirect_to(Kopal.route.signin(:and_return_to => request.request_uri)) and
@@ -58,14 +63,14 @@ private
     I18n.locale = params[:culture]
     set_response_headers
     @signed = true if session[:signed]
-    @profile_user = Kopal::ProfileUser.new
+    @profile_user = Kopal.profile_user
     @visitor = Kopal::VisitingUser.new
-    @page = OpenStruct.new
+    @_page = Kopal::PageView.new
     #When theme support is implemented, these should go to theme controller.
-    @page.title = @profile_user.feed.name + " &ndash; Kopal Profile"
-    @page.description = "Profile for #{Kopal["feed_preferred_calling_name"]}" if
+    @_page.title = @profile_user.feed.name + " &ndash; Kopal Profile"
+    @_page.description = "Profile for #{Kopal["feed_preferred_calling_name"]}" if
       Kopal["feed_preferred_calling_name"]
-    @page.stylesheets = ['home']
+    @_page.add_stylesheet 'home'
     flash.now[:notification] = "You have new friendship requests. <a href=\"" +
       organise_path(:action => 'friend') + "\">View</a>." if
       Kopal::UserFriend.find_by_friendship_state('pending')
