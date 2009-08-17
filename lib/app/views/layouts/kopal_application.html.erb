@@ -1,26 +1,19 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
   <head>
-    <title><%= @page.title %></title>
+    <title><%= @_page.title %></title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	  <meta http-equiv="Content-Language" content="<%= I18n.locale.to_s.upcase %>" />
 	  <% if(fclc = Kopal["feed_country_living_code"]) %><meta name="geo.country" content="<%= fclc %>" /><% end %>
-	  <% if @page.description %><meta name="Description" content="<%= @page.description %>" /><% end %>
+	  <% if @_page.description %><meta name="Description" content="<%= @_page.description %>" /><% end %>
 
-    <% @page.yadis_meta = '<meta http-equiv="X-XRDS-Location" content="' +
-      Kopal.route.xrds + '">' %>
-
-    <%= @page.yadis_meta %>
+    <%= @_page.meta_yadis_discovery %>
+    <%= @_page.meta_openid_discovery %>
     
-    <% @page.openid_meta = '<link rel="openid2.provider" href="' + Kopal.route.openid_server + '">' +
-       "\n" + '<link rel="openid2.local_id" href="' + Kopal.identity.to_s + '">'%>
-
-    <%= @page.openid_meta  %>
-    
-    <% if @page.stylesheets; for stylesheet in @page.stylesheets %>
+    <% for stylesheet in @_page.stylesheets %>
       <%= stylesheet_link_tag Kopal.route.stylesheet(stylesheet[:name] || stylesheet),
         :media => stylesheet[:media] || 'all' %>
-    <% end; end %>
+    <% end %>
 	  
     <%= yield :page_head %>
     
@@ -51,14 +44,14 @@
         <%= yield :surface_down %>
         <p>Social Profile of <%= @profile_user %>. Powered by <a href="http://code.google.com/p/kopal/">Kopal</a>.</p>
 
-        <% if Kopal[:widget_google_analytics_code] %>
+        <% if @_page.include_google_analytics? %>
           <script type="text/javascript">
           var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
           document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
           </script>
           <script type="text/javascript">
           try {
-            var pageTracker = _gat._getTracker("<%= Kopal[:widget_google_analytics_code] %>");
+            var pageTracker = _gat._getTracker("<%= @_page.google_analytics_code %>");
             pageTracker._trackPageview();
           } catch(err) {}</script>
        <% end %>

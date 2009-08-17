@@ -78,7 +78,11 @@ class << self
 
   #Kopal Identity of the user.
   def identity
-    @identity ||= ProfileUser.new.kopal_identity
+    profile_user.kopal_identity
+  end
+
+  def profile_user
+    @profile_user ||= Kopal::ProfileUser.new
   end
 
   def authenticate_simple password
