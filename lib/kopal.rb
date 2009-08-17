@@ -10,15 +10,15 @@
 #
 #== Themes for Kopal.
 # *work in progress, not yet implemented*
-#=== Available @page variables.
-#[<tt>@page.title</tt>] Title of the page. Goes in +<title></title>+
-#[<tt>@page.description</tt>] Description of the page. Goes in +<meta name="Description" />+
-#[<tt>@page.stylesheets</tt>] 
+#=== Available @_page variables. See Kopal::PageView for more information.
+#[<tt>@_page.title</tt>] Title of the page. Goes in +<title></title>+
+#[<tt>@_page.description</tt>] Description of the page. Goes in +<meta name="Description" />+
+#[<tt>@_page.stylesheets</tt>]
 #  Path of stylesheets for page.
 #  Example Usage - 
-#  * +@page.stylesheets = 'home'+
-#  * +@page.stylesheets = ['home', 'home2'] #Two stylesheets+
-#  * +@page.stylesheets = [{:name => 'home'}, {:name => 'home2', :media => 'print'}]+
+#  * @_page.add_stylesheet 'home'
+#  * @_page.add_stylesheet {:name => 'home2'}
+#  * @_page.add_stylesheet {:name => 'home2', :media => 'print'}
 #
 #=== Available containers
 # * +:page_head_meta_content+
