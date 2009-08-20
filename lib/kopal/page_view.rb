@@ -1,5 +1,7 @@
+#Class which holds information (mainly markup) of the page being displayed.
 class Kopal::PageView
 
+  #alias for constant +RAILS_ENV+.
   def environment
     RAILS_ENV
     #"production" # uncomment for quick testing.
@@ -10,7 +12,7 @@ class Kopal::PageView
   end
 
   def title
-    @title ||= "#{Kopal.profile_user} | Kopal Profile"
+    @title ||= "#{Kopal.profile_user}" + title_postfix
   end
 
   def title= value
@@ -25,10 +27,12 @@ class Kopal::PageView
     @description = value
   end
 
+  #Yadis/XRDS discovery meta tags for user.
   def meta_yadis_discovery
     '<meta http-equiv="X-XRDS-Location" content="' + Kopal.route.xrds + '">'
   end
 
+  #OpenID discovery meta tags.
   def meta_openid_discovery
     '<link rel="openid2.provider" href="' + Kopal.route.openid_server + '">' +
        "\n" + '<link rel="openid2.local_id" href="' + Kopal.identity.to_s + '">'
@@ -38,6 +42,9 @@ class Kopal::PageView
     @stylesheets ||= []
   end
 
+  #Usage:
+  #    add_stylesheet('home')
+  #    add_stylesheet( :name => 'home', :media => 'all')
   def add_stylesheet value
     stylesheets #initialise
     @stylesheets << value
@@ -52,6 +59,8 @@ class Kopal::PageView
     @javascripts << value
   end
 
+  #Includes the Protoype library in page.
+  #Fetches files from Google Ajaxlibs if in production environment.
   def include_prototype
     return if @included_prototype
     add_javascript(if production_env?
@@ -62,6 +71,8 @@ class Kopal::PageView
     @included_prototype = true
   end
 
+  #Includes the Script.aculo.us library in page.
+  #Fetches files from Google Ajaxlibs if in production environment.
   #Don't forget to include Prototype first.
   def include_scriptaculous
     return if @included_scriptaculous
