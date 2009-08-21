@@ -1,8 +1,26 @@
-#Users, whom this application belongs to.
+#User, whom this application belongs to.
+#There should be only one instance of this class accessible from Kopal.profile_user
 class Kopal::ProfileUser < Kopal::KopalUser
+
+  def initialize signed = false
+    @signed = signed
+    #Enforce single instance.
+    #raise "Only one instance allowed." if @@single_instance
+    #@@single_instance = true
+  end
 
   def to_s
     feed.name
+  end
+
+  #If the current visitor is profile user herself? Or in other words,
+  #should we enable administrative tasks?
+  def signed?
+    @signed
+  end
+
+  def signed_out!
+    @signed = false
   end
   
   def kopal_identity
