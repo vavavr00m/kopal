@@ -67,9 +67,6 @@ private
     @visitor = Kopal::VisitingUser.new
     @_page = Kopal::PageView.new
     #When theme support is implemented, these should go to theme controller.
-    @_page.title = @profile_user.feed.name + " &ndash; Kopal Profile"
-    @_page.description = "Profile for #{Kopal["feed_preferred_calling_name"]}" if
-      Kopal["feed_preferred_calling_name"]
     @_page.add_stylesheet 'home'
     flash.now[:notification] = "You have new friendship requests. <a href=\"" +
       organise_path(:action => 'friend') + "\">View</a>." if

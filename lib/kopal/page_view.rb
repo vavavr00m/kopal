@@ -12,11 +12,24 @@ class Kopal::PageView
   end
 
   def title
-    @title ||= "#{Kopal.profile_user}" + title_postfix
+    @title ||= title_postfix
   end
 
+  #If passed as an Array, each value will be separated by title_separator
+  #Usage:
+  #    title = "Hello, world!" #=> Hello, world! - Name - Kopal Profile
+  #    title = ["Hello", "world"] #=> Hello - world - Name - Kopal Profile
   def title= value
+    value = value.join(title_separator) if value.is_a? Array
     @title = value.to_s + title_postfix
+  end
+
+  def title_separator
+    @title_separator ||= "|" #//, &ndash;, |, /
+  end
+
+  def title_separator= value
+    @title_separator = value
   end
 
   def description
@@ -103,6 +116,6 @@ private
   end
 
   def title_postfix
-    " | Kopal Profile"
+    "#{Kopal.profile_user} #{title_separator} Kopal Profile"
   end
 end
