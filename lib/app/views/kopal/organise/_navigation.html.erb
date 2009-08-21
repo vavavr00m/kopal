@@ -1,6 +1,6 @@
 <% content_for(:surface_left)  do %>
   <ul>
-    <li><%= link_to(t(:edit_profile), Kopal.route.edit_profile, {:title => t(:edit_your_profile)}) %></li>
+    <li><%= link_to("Edit identity", Kopal.route.edit_identity, {:title => "Edit your identity."}) %></li>
     <li><%= link_to("Change password", Kopal.route.change_password, {:title => "Chane your password"}) %></li>
     <li><%= link_to "Organise friends", Kopal.route.organise_friend,
       {:title => "Manage your friends"} %>

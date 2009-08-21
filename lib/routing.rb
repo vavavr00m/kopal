@@ -80,6 +80,18 @@ class Kopal::Routing
     hash = {:page => hash} if hash.is_a? String
     kopal_route_page_path hash
   end
+
+  def page_draw hash = {}
+    kopal_route_page_draw_path hash
+  end
+
+  def page_create hash = {}
+    page_draw hash.update :action => 'create_page'
+  end
+
+  def page_edit hash = {}
+    page_draw hash.update :action => 'edit'
+  end
   
   def organise hash = {}
     hash[:controller] = 'kopal/organise'
@@ -110,10 +122,10 @@ class Kopal::Routing
   end
 
   #LATER: As per http://www.google.com/support/webmasters/bin/answer.py?answer=76329
-  #"edit-profile" should be preferred over "edit_profile", Rails should have some
-  #in-built support for matching :action => "edit-profile" to method edit_profile.
-  def edit_profile hash = {}
-    organise hash.update :action => 'edit_profile'
+  #"edit-identity" should be preferred over "edit_identity", Rails should have some
+  #in-built support for matching :action => "edit-identity" to method edit_identity.
+  def edit_identity hash = {}
+    organise hash.update :action => 'edit_identity'
   end
 
   def change_password hash = {}

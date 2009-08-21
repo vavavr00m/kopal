@@ -27,7 +27,7 @@ class Kopal::OrganiseController < Kopal::ApplicationController
 
   #OPTIMIZE: Auto-completion for City field.
   #OPTIMIZE: Real-time updation in Preferred calling name with change in name/aliases.
-  def edit_profile
+  def edit_identity
     if request.post?
       #OPTIMIZE: presently, one database save per field. Take it all in one go.
       begin
