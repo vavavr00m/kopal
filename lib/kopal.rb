@@ -81,8 +81,12 @@ class << self
     profile_user.kopal_identity
   end
 
-  def profile_user
-    @profile_user ||= Kopal::ProfileUser.new
+  def profile_user signed = false
+    @profile_user ||= Kopal::ProfileUser.new signed
+  end
+
+  def visiting_user kopal_identity = nil
+    @visiting_user ||= Kopal::VisitingUser.new(kopal_identity)
   end
 
   def authenticate_simple password

@@ -62,9 +62,9 @@ private
     Kopal.initialise
     I18n.locale = params[:culture]
     set_response_headers
-    @signed = true if session[:signed]
-    @profile_user = Kopal.profile_user
-    @visitor = Kopal::VisitingUser.new
+    @signed = true if session[:signed] #DEPRECATED: Use @profile_user.signed? instead.
+    @profile_user = Kopal.profile_user session[:signed]
+    @visitor = Kopal.visiting_user
     @_page = Kopal::PageView.new
     #When theme support is implemented, these should go to theme controller.
     @_page.add_stylesheet 'home'

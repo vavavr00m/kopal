@@ -1,4 +1,5 @@
 #Visitor
+#Maintain only one instance accessible from Kopal.visiting_user
 class Kopal::VisitingUser < Kopal::KopalUser
 
   attr_reader :kopal_identity
@@ -9,9 +10,13 @@ class Kopal::VisitingUser < Kopal::KopalUser
     end
   end
 
-  def has_kopal_identity?
-    !!kopal_identity
+  #Alias for Kopal::ProfileUser#signed?
+  def self?
+    Kopal.profile_user.signed?
   end
 
-  alias_method :"known?", :"has_kopal_identity?"
+  #Is the visitor recognised and has a valid Kopal Identity?
+  def signed?
+    !!kopal_identity
+  end
 end
