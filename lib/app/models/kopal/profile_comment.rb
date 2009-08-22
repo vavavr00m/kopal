@@ -6,6 +6,7 @@
 #Model indices
 #  none
 class Kopal::ProfileComment < Kopal::KopalModel
+  set_table_name 'profile_comment'
 
   DUPLICATE_TIME = 2.minutes #Time within which a duplicate comment can not be saved.
 

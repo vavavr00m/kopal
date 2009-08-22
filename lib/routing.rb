@@ -85,11 +85,14 @@ class Kopal::Routing
     kopal_route_page_draw_path hash
   end
 
+  #Or create_page?
   def page_create hash = {}
     page_draw hash.update :action => 'create_page'
   end
 
+  #Or edit_page?
   def page_edit hash = {}
+    hash = { :page => hash} if hash.is_a? String
     page_draw hash.update :action => 'edit'
   end
   
