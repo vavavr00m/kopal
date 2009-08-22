@@ -10,6 +10,7 @@
 # * <tt>kopal_identity, unique</tt>
 #
 class Kopal::UserFriend < Kopal::KopalModel
+  set_table_name 'user_friend'
 
   #Valid friendship states that can go to database.
   FRIENDSHIP_STATES = [
