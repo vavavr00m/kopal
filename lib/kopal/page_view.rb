@@ -1,6 +1,9 @@
 #Class which holds information (mainly markup) of the page being displayed.
 class Kopal::PageView
 
+  LAST_VERSION_PROTOTYPE = '1.6'
+  LAST_VERSION_SCRIPTACULOUS = '1.8'
+
   #alias for constant +RAILS_ENV+.
   def environment
     RAILS_ENV
@@ -20,7 +23,7 @@ class Kopal::PageView
   #    title = "Hello, world!" #=> Hello, world! - Name - Kopal Profile
   #    title = ["Hello", "world"] #=> Hello - world - Name - Kopal Profile
   def title= value
-    value = value.join(title_separator) if value.is_a? Array
+    value = value.join(' ' + title_separator + ' ') + ' | ' if value.is_a? Array
     @title = value.to_s + title_postfix
   end
 
@@ -107,12 +110,14 @@ class Kopal::PageView
 
 private
 
-  def ajaxlib_prototype_path version = false
-    'http://ajax.googleapis.com/ajax/libs/prototype/1.6/prototype.js'
+  def ajaxlib_prototype_path version = nil
+    version ||= LAST_VERSION_PROTOTYPE
+    "http://ajax.googleapis.com/ajax/libs/prototype/#{version}/prototype.js"
   end
 
-  def ajaxlib_scriptaculous_path version = false
-    'http://ajax.googleapis.com/ajax/libs/scriptaculous/1.8/scriptaculous.js'
+  def ajaxlib_scriptaculous_path version = nil
+    version ||= LAST_VERSION_SCRIPTACULOUS
+    "http://ajax.googleapis.com/ajax/libs/scriptaculous/#{version}/scriptaculous.js"
   end
 
   def title_postfix

@@ -38,16 +38,16 @@ module Kopal::Helper::PageHelper
   #Wrapper around Script.aculo.us's In Place Editor.
   def in_place_editor element_text, id, url, options = {}
     id += "_InPlaceEditor"
-		r = "<span class=\"in_place_editor\" id=\"#{id}\">#{element_text}</span>"
-		r << "new Ajax.InPlaceEditor(\"#{id}\", \"#{url}\""
+		tag = "<span class=\"in_place_editor\" id=\"#{id}\">#{element_text}</span>"
+		r = "new Ajax.InPlaceEditor(\"#{id}\", \"#{url}\""
     unless options.blank?
       new_options = {}
       options.each {|k,v|
-        new_options[k.to_s.camelcase(:lower)] = v
+        new_options[k.to_s.camelcase(:lower)] = array_or_string_for_javascript(v)
       }
       r << "," + options_for_javascript(new_options)
     end
     r << ")"
-    javascript_tag r
+    tag + javascript_tag(r)
   end
 end
