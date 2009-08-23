@@ -144,6 +144,11 @@ class Kopal::Routing
     home(hash)
   end
 
+  def javascript hash = 'home'
+    hash = { :id => hash} if hash.is_a? String
+    home hash.update :action => 'javascript', :format => 'js', :trailing_slash => false
+  end
+
   #TODO: :format => recognise saved image format.
   def profile_image hash = {}
     hash.update :action => 'profile_image', :id =>

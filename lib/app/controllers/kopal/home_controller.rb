@@ -94,8 +94,9 @@ class Kopal::HomeController < Kopal::ApplicationController
   end
 
   def stylesheet
-    render :template => "stylesheet/#{params[:id]}.css", :layout => false
+    render :template => "siterelated/#{params[:id]}.#{params[:format]}", :layout => false
   end
+  alias javascript stylesheet
 
   #Displayes the XRDS file for user. Accessible from +Kopal.route.xrds+
   def xrds
