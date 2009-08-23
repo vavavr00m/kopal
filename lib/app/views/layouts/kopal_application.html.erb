@@ -14,6 +14,10 @@
       <%= stylesheet_link_tag Kopal.route.stylesheet(stylesheet[:name] || stylesheet),
         :media => stylesheet[:media] || 'all' %>
     <% end %>
+
+    <% for javascript in @_page.javascripts %>
+      <%= javascript_include_tag javascript %>
+    <% end %>
 	  
     <%= yield :page_head %>
     
