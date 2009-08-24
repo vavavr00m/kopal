@@ -14,17 +14,29 @@ class Kopal::PageView
     environment == "production"
   end
 
+  #Append title in already created onw
+  #Usage:
+  #    @_page.title <<= 'Appened title'
   def title
-    @title ||= title_postfix
+    @title ||= []
   end
 
+  #Used to set the absolute value for title.
+  #
   #If passed as an Array, each value will be separated by title_separator
   #Usage:
   #    title = "Hello, world!" #=> Hello, world! - Name - Kopal Profile
   #    title = ["Hello", "world"] #=> Hello - world - Name - Kopal Profile
   def title= value
-    value = value.join(' ' + title_separator + ' ') + ' | ' if value.is_a? Array
-    @title = value.to_s + title_postfix
+    value = [value] if value.is_a? String
+    @title = value
+  end
+
+  def show_title
+    if @title.blank?
+      return title_postfix
+    end
+    @title.reverse.join(' ' + title_separator + ' ') + ' | ' + title_postfix
   end
 
   def title_separator

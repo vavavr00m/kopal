@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
   <head>
-    <title><%= @_page.title %></title>
+    <title><%= @_page.show_title %></title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	  <meta http-equiv="Content-Language" content="<%= I18n.locale.to_s.upcase %>" />
 	  <% if(fclc = Kopal["feed_country_living_code"]) %><meta name="geo.country" content="<%= fclc %>" /><% end %>

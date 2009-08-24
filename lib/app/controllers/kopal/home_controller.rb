@@ -23,6 +23,7 @@ class Kopal::HomeController < Kopal::ApplicationController
 
   #Shoutbox
   def comment
+    @_page.title <<= "Shoutbox"
     if request.post?
       @profile_comment = Kopal::ProfileComment.new params[:profile_comment]
       if @visitor.known?
@@ -44,8 +45,13 @@ class Kopal::HomeController < Kopal::ApplicationController
     @comments = Kopal::ProfileComment.paginate(:page => params[:page], :order => 'created_at DESC')
   end
 
+  def friend
+    @_page.title <<= 'Friends'
+  end
+
   #Redirects to Visitor's Profile Homepage.
   def foreign
+    @_page.title <<= "Foreign Affairs"
     if request.post?
       identity = Kopal::Identity.new(params[:identity])
       case params[:subject]
@@ -75,6 +81,7 @@ class Kopal::HomeController < Kopal::ApplicationController
 
   #Sign-in page for user.
   def signin
+    @_page.title <<= "Sign In"
     session[:and_return_to] ||= params[:and_return_to] || Kopal.route.root
     if request.post?
       if Kopal.authenticate_simple(params[:password])

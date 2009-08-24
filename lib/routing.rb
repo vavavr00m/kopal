@@ -78,6 +78,7 @@ class Kopal::Routing
   #    Kopal.route.page :page => 'homepage'
   def page hash = {}
     hash = {:page => hash} if hash.is_a? String
+    hash[:trailing_slash] = !hash[:page]
     kopal_route_page_path hash
   end
 
