@@ -14,6 +14,7 @@ class Kopal::VisitingUser < Kopal::KopalUser
   def self?
     Kopal.profile_user.signed?
   end
+  alias me? self?
 
   #Is the visitor recognised and has a valid Kopal Identity?
   def signed?

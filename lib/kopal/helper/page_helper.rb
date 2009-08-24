@@ -1,5 +1,16 @@
 module Kopal::Helper::PageHelper
 
+  #redirects as expected.
+  def redirect_2 url
+    if request.xhr?
+      render :update do |page|
+        page.redirect_to url_for(url)
+      end
+    else
+      redirect_to url
+    end
+  end
+
   def gravatar_url email
     require 'md5'
     hash = MD5.md5 email
@@ -9,10 +20,10 @@ module Kopal::Helper::PageHelper
   def format_date date, without_html = false
     return date unless date.is_a? Date or date.is_a? Time or date.is_a? DateTime
 
-		m = ['Jan', 'Feb', 'March', 'April', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'] # Oh, we could have done this with strftime() method!
-		w = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] # sunday is 0 for both Time and Date
+    m = ['Jan', 'Feb', 'March', 'April', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'] # Oh, we could have done this with strftime() method!
+    w = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] # sunday is 0 for both Time and Date
 
-		current = Time.zone.now #Same as Time.now.utc
+    current = Time.zone.now #Same as Time.now.utc
     if date.year < current.year
       r = "#{m[date.month-1]}, #{date.year}"
     elsif date.month < current.month or current.mday - date.mday > 1
@@ -30,16 +41,16 @@ module Kopal::Helper::PageHelper
     else
       r = date.to_s(:long) #date in future?
     end
-		return  r if without_html
-		return "<abbr title=\"#{date.to_s(:rfc822)}\">#{r}</abbr>"
+    return  r if without_html
+    return "<abbr title=\"#{date.to_s(:rfc822)}\">#{r}</abbr>"
   end
   alias d format_date
 
   #Wrapper around Script.aculo.us's In Place Editor.
   def in_place_editor element_text, id, url, options = {}
     id += "_InPlaceEditor"
-		tag = "<span class=\"in_place_editor\" id=\"#{id}\">#{element_text}</span>"
-		r = "new Ajax.InPlaceEditor(\"#{id}\", \"#{url}\""
+    tag = "<span class=\"in_place_editor\" id=\"#{id}\">#{element_text}</span>"
+    r = "new Ajax.InPlaceEditor(\"#{id}\", \"#{url}\""
     unless options.blank?
       new_options = {}
       options.each {|k,v|
