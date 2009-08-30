@@ -1,4 +1,8 @@
 /* Copied from Rails error pages. */
+/* Convention -
+ * * IDs - PascalNotation
+ * * Classes - under_scored
+*/
 body { background-color: #fff; color: #333; margin-left:20px; }
 
 body, p, ol, ul, td {
@@ -21,6 +25,9 @@ pre {
 a { color: #000; }
 a:visited { color: #666; }
 a:hover { color: #fff; background-color:#000; }
+a img{
+  border:none;
+}
 
 h2:after{
   content: " —";
@@ -134,3 +141,74 @@ div.friend-ribbon span.action{
   text-align:right;
   padding-top:4px;
 }
+
+
+a.cloud{
+	color:rgb(102,86,194);
+	font-weight:normal;
+	letter-spacing:normal;
+	}
+a.cloud:hover{
+	background-color:rgb(92,76,184);
+	color:white;
+	text-decoration:none;
+	}
+
+/* ---- Profile Pages ------------------------------------------------------- */
+#PageEdit{
+	background-color:rgb(254, 254, 254);
+	}
+#PageEdit a{
+	}
+#PageEdit a:hover{
+	}
+#PageEdit .PageElement{
+	background-color:white;
+	border:1px dashed gray;
+	padding:12px 4px;
+	margin:10px 4px;
+	}
+#PageEdit .Heading{
+	font-weight:bold;
+	}
+#PageEdit .List, #PageEdit .Text{
+	padding-left:16px;
+	}
+
+#PageFront{
+	font-family:"lucida grande",verdana,sans-serif;
+	}
+#PageFront h2{
+	background-color:inherit;
+	border-bottom:1px solid rgb(225, 226, 237);
+	color:inherit;
+	font-family:Georgia,"Times New Roman",Times,serif;
+	font-size:19px;
+	font-weight:normal;
+	padding:0;
+	margin:24px 0 0 0;
+	}
+#PageFront h2:after{
+	content:'';
+	}
+#PageFront p, #PageFront li, #PageFront table tr{
+	font-size:14px;
+	padding:0;
+	margin:0 0 0 17px;
+	}
+#PageFront p:first-letter{
+	font-family:"Times new Roman";
+	font-size:21px;
+	}
+#PageFront .seperator{
+	border-bottom:1px solid black;
+	margin:10px 0 26px 0;
+	}
+#PageFront .seperator .heading{
+	position:relative;
+	bottom:-10px;
+	background-color:white;
+	margin-left:24px;
+	font-size:17px;
+	padding:4px;
+	}

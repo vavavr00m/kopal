@@ -1,0 +1,14 @@
+<%= render :partial => 'kopal/home/navigation' %>
+
+<% @_page.title <<= 'Rename Page' %>
+
+<h2> Rename Page - <%= @page %> </h2>
+
+<p class="description">You're renaming page - <%= @page %></p>
+
+<%= error_messages_for :page %>
+
+<% form_tag :page_id => @page.id do %>
+	<%= label_tag :page_name, "New Page Name &ndash;" %> <%= text_field_tag :page_name %> <br />
+  <%= submit_tag 'Rename page &raquo;' %>
+<% end %>

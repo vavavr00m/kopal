@@ -40,6 +40,15 @@
   <p><%= t :user_has_not_yet_created_her_identity %></p>
 <% end %>
 
+<h2>Profile</h2>
+
+<p class="helper"><%= link_to "View all profile pages", Kopal.route.page,
+  :title => "View profile pages of #{@profile_user}" %></p>
+
+  <%= as_cloud @pages_as_cloud, {:limit => 4, :max_font_size => 17} %>
+
+<p>&nbsp;</p>
+
 <h2>Shoutbox</h2>
 
 <p class="helper"><%= link_to "Write &raquo;", Kopal.route.profile_comment(:anchor => 'write'),
