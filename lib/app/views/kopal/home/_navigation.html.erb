@@ -4,24 +4,29 @@
 <% end %>
 
 <% content_for :surface_left do %>
-  <%# link_to image_tag(Kopal.route.home(:action => 'profile_image')), Kopal.route.root,
-    {:title => t(:profile_homepage_of_person, :person => @profile_user)} %>
-  <%= image_tag(Kopal.route.home(:action => 'profile_image'), :alt => @profile_user, :title => @profile_user) %>
+  <%= link_to image_tag(Kopal.route.home(:action => 'profile_image'),
+    :alt => 'Profile image', :title => "Profile picture of #{@profile_user}"),
+    Kopal.route.root,
+    {:title => "Go to homepage of #{@profile_user}"} %>
   <ul>
     <li><%= link_to(t(:home), Kopal.route.root,
           {:title => t(:profile_homepage_of_person, :person => @profile_user.feed.name)}) %></li>
+    <li><%= link_to "Profile", Kopal.route.page, {:title => "View profile pages of #{@profile_user}"} %></li>
     <li><%= link_to("Shoutbox", Kopal.route.profile_comment,
       :title => "View profile comments for #{@profile_user.feed.name}") %></li>
     <li><%= link_to(t(:friend, :count => 2), Kopal.route.friend,
           :title => t(:view_friends_of_person, :person => @profile_user.feed.name)) %></li>
-    <li><%= link_to(t(:sign_in), Kopal.route.signin, {:title => t(:sign_in)}) %></li>
-    <li><%= link_to(t(:sign_out), Kopal.route.signout, {:title => t(:sign_out)}) %></li>
   </ul>
   <hr />
   <ul>
+  <% if @profile_user.signed? %>
+    <li><%= link_to(t(:sign_out), Kopal.route.signout, {:title => t(:sign_out)}) %></li>
+  <% else %>
+    <li><%= link_to(t(:sign_in), Kopal.route.signin, {:title => t(:sign_in)}) %></li>
     <li><%= link_to("Add as friend", Kopal.route.home(:action => 'foreign',
       :subject => 'friendship-request'),
       {:title => "Add #{@profile_user.feed.name} as your friend."}) %></li>
     <!-- <li><%= link_to("Send a message") %></li> -->
+  <% end %>
   </ul>
 <% end %>

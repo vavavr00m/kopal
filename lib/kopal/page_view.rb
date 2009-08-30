@@ -79,7 +79,7 @@ class Kopal::PageView
   end
 
   def javascripts
-    @javascripts ||= [Kopal.route.javascript 'home']
+    @javascripts ||= [Kopal.route.javascript('dynamic'), Kopal.route.javascript('home')]
   end
 
   def add_javascript value

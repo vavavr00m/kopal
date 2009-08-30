@@ -1,0 +1,45 @@
+<a name="Element_<%= page_element[:'id'] %>"></a> <!-- <a /> doesn't work! -->
+<%= '<h2>' + h(page_element[:'heading']) + '</h2>' unless page_element[:'type'] == 'separator' %>
+
+<% if page_element[:'type'] == 'text' %>
+	<p><%= wikify page_element[:'text'] %></p>
+
+
+<% elsif page_element[:'type'] == 'list' %>
+	<ul>
+		<% page_element[:'entry'].each { |e| %>
+			<li> <%= wikify e %> <?li>
+		<% } %>
+	</ul>
+
+	
+<% elsif page_element[:'type'] == 'pair' %>
+	<table>
+		<tbody>
+			<% page_element[:entry].each { |e| %>
+				<tr>
+					<td valign="top" align="right"><b><%= h  e[:'heading'] %></b></td>
+					<td><%= wikify  e[:'text'] %></td>
+				</tr>
+			<% } %>
+		</tbody>
+	</table>
+
+
+<% elsif page_element[:'type'] == 'todo' %>
+	<ul>
+		<% page_element[:entry].each { |e| %>
+			<li>
+				<%= '<s>' if e[:'status'] == 'done' %>
+				<%= wikify e[:'text'] %>
+				<%= '</s> &nbsp; done' if e[:'status'] == 'done' %>
+			</li>
+		<% } %>
+	</ul>
+
+
+<% elsif page_element[:'type']  == 'separator' %>
+	<div class="seperator"><span class="heading"><%= h(page_element[:'heading']) %></span></div>
+	
+
+<% end %>

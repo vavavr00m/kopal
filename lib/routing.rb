@@ -96,6 +96,11 @@ class Kopal::Routing
     hash = { :page => hash} if hash.is_a? String
     page_draw hash.update :action => 'edit'
   end
+
+  def page_delete hash = {}
+    hash = { :page => hash} if hash.is_a? String
+    page_draw hash.update :action => 'delete_page'
+  end
   
   def organise hash = {}
     hash[:controller] = 'kopal/organise'
@@ -148,6 +153,14 @@ class Kopal::Routing
   def javascript hash = 'home'
     hash = { :id => hash} if hash.is_a? String
     home hash.update :action => 'javascript', :format => 'js', :trailing_slash => false
+  end
+
+  #Unlike stylesheet and javascript, need to pass the file extension too.
+  #Ex:
+  #    image "ajax-spinner.gif"
+  def image hash = {}
+    hash = { :id => hash} if hash.is_a? String
+    home hash.update :action => 'image', :trailing_slash => false
   end
 
   #TODO: :format => recognise saved image format.

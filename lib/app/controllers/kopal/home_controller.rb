@@ -19,6 +19,12 @@ class Kopal::HomeController < Kopal::ApplicationController
       redirect_to Kopal.route.connect Hash[*(params.map { |k,v| [k.to_sym, v] }.flatten)]
     end
     @comments = Kopal::ProfileComment.find(:all, :order => 'created_at DESC', :limit => 20)
+    @pages_as_cloud = Kopal::ProfilePage.find(:all).map {|p|
+      { :label => p.to_s, :link => Kopal.route.page(p.page_name),
+        :title => "\"#{p}\", profile pages of #{@profile_user}",
+        :weight => p.page_text[:element].size
+      }
+    }
   end
 
   #Shoutbox
@@ -100,10 +106,13 @@ class Kopal::HomeController < Kopal::ApplicationController
     redirect_to(params[:and_return_to] || Kopal.route.root)
   end
 
+  #ajax-spinner.gif. Credit - http://www.ajaxload.info/
   def stylesheet
+    params[:format] = "#{params[:format]}.erb" if params[:id] == 'dynamic'
     render :template => "siterelated/#{params[:id]}.#{params[:format]}", :layout => false
   end
   alias javascript stylesheet
+  alias image stylesheet
 
   #Displayes the XRDS file for user. Accessible from +Kopal.route.xrds+
   def xrds
@@ -148,6 +157,10 @@ class Kopal::HomeController < Kopal::ApplicationController
     rescue Kopal::OpenID::OpenIDError => e
       render :text => e.message, :status => 500
     end
+  end
+
+  def update_status_message_aj
+    #TODO: Write me.
   end
 
 end

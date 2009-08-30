@@ -1,7 +1,6 @@
 #Methods defined here are used everywhere and not only in views, so not in
 #<tt>/app/helper</tt> folder.
 module Kopal::KopalHelper
-  #OPTIMIZE: include all files in kopal/helper automatically.
   include Kopal::Helper::PageHelper
   
   #Returns list of countries names in current locale as a Hash indexed by country codes.
@@ -89,6 +88,16 @@ module Kopal::KopalHelper
 
   def valid_hexadecimal? s
     s =~ /^[a-f0-9]*$/i #Empty string is valid Hexadecimal.
+  end
+
+  #Convert HTML escape codes to special characters except - <"&>
+  #For example - &hearts; -> ♥, &#65; -> A
+  #Call this before saving to database.
+  #TODO: Write me.
+  #LATER: Write front-end documentation about this.
+  def html_escape_code_to_character string
+    #Case insensitive for hexadecimal codes
+    return string
   end
   
 end

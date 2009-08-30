@@ -8,6 +8,11 @@ namespace :kopal do
   #desc "Fetches new release from Internet, then updates the plugin."
   task :upgrade => :environment do
     #TODO: Fetch the latest version number from Inernet, download and install it if necessary.
+    #make sure that vendor/plugins is writable by us.
+    #fetch the new release in kopal-tmp-{timestamp}
+    #remove vendor/plugins/kopal and rename kopal-tmp-{} to kopal
+    #
+    #Advertise - "rake kopal:upgrade && rake kopal:update" to do full upgradation.
     Rake::Task["kopal:update"].invoke
   end
 
