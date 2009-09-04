@@ -64,6 +64,7 @@ class Kopal::OrganiseController < Kopal::ApplicationController
       }
       Kopal[:feed_city] = params[:feed_city] if Kopal[:feed_city_has_code] == "no"
       flash.now[:highlight] = "Profile updated!" if flash[:notice].blank?
+      Kopal.refresh_profile_user
     end
   end
 
