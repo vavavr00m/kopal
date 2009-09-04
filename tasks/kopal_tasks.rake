@@ -5,14 +5,60 @@ namespace :kopal do
     Kopal::Database.migrate
   end
 
-  #desc "Fetches new release from Internet, then updates the plugin."
+  desc "Fetches new release from Internet, then updates the plugin.\n" +
+    "Pass REVISION for hg revision, default is tip-stable or tip-preview based on the revision installed."
+  #Developers, running task will delete everything inside kopal plugin folder. So,
+  #BACKUP before you run this.
+  #This happened to me, and I lost my precious coding of two days (and bloody NetBeans,
+  #simply closed every deleted file, without giving a chance to save).
   task :upgrade => :environment do
-    #TODO: Fetch the latest version number from Inernet, download and install it if necessary.
-    #make sure that vendor/plugins is writable by us.
-    #fetch the new release in kopal-tmp-{timestamp}
-    #remove vendor/plugins/kopal and rename kopal-tmp-{} to kopal
-    #
-    #Advertise - "rake kopal:upgrade && rake kopal:update" to do full upgradation.
+    include FileUtils
+    require_dependency Kopal.root.join("vendor", "patched_recursive_http_fetcher").to_s
+    kopal_hg = 'http://kopal.googlecode.com/hg/'
+    version_path = "#{kopal_hg}VERSION.txt"
+    tip_stable = "tip-preview" #For the moment.
+    tip_preview = "tip-preview"
+    current = Kopal::Version.current
+    plugins_path = Rails.root.join("vendor", "plugins")
+    puts "ERROR: vednor/plugins is not writable!" and exit unless
+      File.writable? plugins_path
+    revision = ENV['REVISION']
+    if revision.blank?
+      puts "Checking if a new release is available."
+      fetched = Kopal::Version.new(
+        Kopal.fetch("#{version_path}?r=#{tip_stable}").response.body)
+      revision = "tip-#{current.software_channel}"
+      if revision == tip_preview
+        #First check if a higher stable version is available in current release.
+        if fetched.compare(current) > 0
+          revision = tip_stable
+        else
+          fetched = Kopal::Version.new(
+          Kopal.fetch("#{version_path}?r=#{revision}").response.body)
+          if fetched.compare(current) < 1
+            puts "No new release is available."
+            exit
+          end
+        end
+      else #tip-stable
+        if fetched.compare(current) < 1
+          puts "No new release is available."
+          exit
+        end
+      end
+      puts "New release #{fetched} is available. Downloading."
+    end
+    temp_kopal_folder = "kopal-temp-#{Time.now.tv_sec}"
+    temp_kopal_path = "#{plugins_path}/#{temp_kopal_folder}"
+    "Downloading in vendor/plugins/#{temp_kopal_folder}"
+    mkdir_p temp_kopal_path
+    Dir.chdir(temp_kopal_path) do
+      fetcher = PatchedRecursiveHTTPFetcher.new("#{kopal_hg}?r=#{revision}", -1)
+      fetcher.fetch
+    end
+    #ruby core docs, which I don't understand.
+    remove_dir KOPAL_ROOT, true
+    mv temp_kopal_path, KOPAL_ROOT
     Rake::Task["kopal:update"].invoke
   end
 
