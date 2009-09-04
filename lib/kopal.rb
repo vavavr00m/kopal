@@ -47,7 +47,7 @@ end
 
 module Kopal
   include KopalHelper
-  SOFTWARE_VERSION = "2009.0.alpha.1"
+  SOFTWARE_VERSION = File.read(KOPAL_ROOT + '/VERSION.txt').strip
   #protocol right word? Or standard? sepcification?
   CONNECT_PROTOCOL_REVISION = "0.1.draft"
   FEED_PROTOCOL_REVISION = "0.1.draft"
