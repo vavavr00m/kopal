@@ -26,7 +26,8 @@ class Kopal::ApplicationController < ActionController::Base
   def authorise
     #:status => 401 (Unauthorised)
     redirect_to(Kopal.route.signin(:and_return_to => request.request_uri)) and
-      return false unless @signed
+      return false unless @signed #Using @profile_user.signed? may create a security risk
+    #if Kopal#@profile_user is cached.
     true
   end
 
