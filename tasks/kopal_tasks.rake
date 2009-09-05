@@ -23,6 +23,7 @@ namespace :kopal do
     puts "ERROR: vednor/plugins is not writable!" and exit unless
       File.writable? plugins_path
     revision = ENV['REVISION']
+    Kopal[:meta_upgrade_last_check] = Time.now
     if revision.blank?
       puts "Checking if a new release is available."
       fetched = Kopal::Version.new(
@@ -50,7 +51,7 @@ namespace :kopal do
     end
     temp_kopal_folder = "kopal-temp-#{Time.now.tv_sec}"
     temp_kopal_path = "#{plugins_path}/#{temp_kopal_folder}"
-    "Downloading in vendor/plugins/#{temp_kopal_folder}"
+    puts "Downloading in vendor/plugins/#{temp_kopal_folder}"
     mkdir_p temp_kopal_path
     Dir.chdir(temp_kopal_path) do
       fetcher = PatchedRecursiveHTTPFetcher.new("#{kopal_hg}?r=#{revision}", -1)
@@ -59,7 +60,8 @@ namespace :kopal do
     #ruby core docs, which I don't understand.
     remove_dir KOPAL_ROOT, true
     mv temp_kopal_path, KOPAL_ROOT
-    Rake::Task["kopal:update"].invoke
+    puts "\n\nUpgraded Kopal to version #{fetched} from #{current}."
+    puts "NOTE: Please run \"rake kopal:update RAILS_ENV=production\" to update Kopal.\n"
   end
 
   #desc "Removes kopal specific tables from the database."
