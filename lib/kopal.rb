@@ -82,19 +82,11 @@ class << self
   end
 
   def profile_user signed = false
-    @profile_user || refresh_profile_user(signed)
-  end
-  
-  def refresh_profile_user signed = false
-    @profile_user = Kopal::ProfileUser.new signed
+    @profile_user ||= Kopal::ProfileUser.new signed
   end
 
   def visiting_user kopal_identity = nil
-    @visiting_user || refresh_visiting_user(kopal_identity) 
-  end
-  
-  def refresh_visiting_user kopal_identity = nil
-    @visiting_user = Kopal::VisitingUser.new(kopal_identity)
+    @visiting_user ||= Kopal::VisitingUser.new kopal_identity
   end
 
   def authenticate_simple password
@@ -116,9 +108,10 @@ class << self
     @@pref_cache[index] = Kopal::KopalPreference.save_field(index, value)
   end
 
-  #Will we ever need it?
-  def reload_preferences!
+  def reload_variables!
     @@pref_cache = {}
+    @profile_user = nil
+    @visiting_user = nil
   end
 
   #Fetches a given URL and returns a Kopal::Signal::Response

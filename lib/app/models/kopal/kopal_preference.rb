@@ -29,7 +29,8 @@ class Kopal::KopalPreference < Kopal::KopalModel
     #value is serialised and ActiveRecord screws up and replaces "\n"
     #with " ".
     :kopal_encoded_private_key,
-    :widget_google_analytics_code
+    :widget_google_analytics_code,
+    :meta_upgrade_last_check
   ]
   DEPRECATED_FIELDS = {
     #:deprecated_field => "message"
@@ -83,6 +84,8 @@ class Kopal::KopalPreference < Kopal::KopalModel
         country_list.include? text.to_sym
     when "widget_google_analytics_code"
       errors.add_to_base("Wrong Google Analytics code") unless text =~ /^UA\-[a-zA-Z0-9]+\-[0-9]+$/
+    when "meta_upgrade_last_check"
+      errors.add_to_base("#{name} must be an instance of Time") unless text.is_a? Time
     end
   end
 

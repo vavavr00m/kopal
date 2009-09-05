@@ -61,19 +61,33 @@ private
     @@request = request
     Kopal.initialise
     I18n.locale = params[:culture]
-    set_response_headers
     @signed = true if session[:signed] #DEPRECATED: Use @profile_user.signed? instead.
     @profile_user = Kopal.profile_user session[:signed]
     @visitor = Kopal.visiting_user
     @_page = Kopal::PageView.new
-    #When theme support is implemented, these should go to theme controller.
-    @_page.add_stylesheet 'home'
-    flash.now[:notification] = "You have new friendship requests. <a href=\"" +
-      organise_path(:action => 'friend') + "\">View</a>." if
-      Kopal::UserFriend.find_by_friendship_state('pending')
+    set_response_headers
+    set_page_variables
+    actions_for_profile_user if @profile_user.signed?
   end
 
   def set_response_headers
     response.headers['X-XRDS-Location'] = Kopal.route.xrds
+  end
+
+  def set_page_variables
+    #When theme support is implemented, these should go to theme controller.
+    @_page.add_stylesheet 'home'
+  end
+
+  def actions_for_profile_user
+    unless Kopal[:meta_upgrade_last_check] and
+        Kopal[:meta_upgrade_last_check] > 7.days.ago
+      flash.now[:notification] = "New release may be available. \n" +
+        "Please run <em>rake kopal:upgrade</em> to check and upgrade."
+    end
+    if Kopal::UserFriend.find_by_friendship_state('pending')
+      flash.now[:notification] = "You have new friendship requests. <a href=\"" +
+        organise_path(:action => 'friend') + "\">View</a>."
+    end
   end
 end
