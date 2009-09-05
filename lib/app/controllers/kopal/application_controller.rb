@@ -62,6 +62,7 @@ private
     Kopal.initialise
     I18n.locale = params[:culture]
     @signed = true if session[:signed] #DEPRECATED: Use @profile_user.signed? instead.
+    Kopal.reload_variables!
     @profile_user = Kopal.profile_user session[:signed]
     @visitor = Kopal.visiting_user
     @_page = Kopal::PageView.new
