@@ -60,8 +60,8 @@ namespace :kopal do
     #ruby core docs, which I don't understand.
     remove_dir KOPAL_ROOT, true
     mv temp_kopal_path, KOPAL_ROOT
-    puts "\n\nUpgraded Kopal to version #{fetched} from #{current}."
-    puts "NOTE: Please run \"rake kopal:update RAILS_ENV=production\" to update Kopal.\n"
+    puts "\nUpgraded Kopal to version #{fetched} from #{current}."
+    puts "NOTE: Please run \"rake kopal:update RAILS_ENV=production\" to update Kopal.\n\n"
   end
 
   #desc "Removes kopal specific tables from the database."
