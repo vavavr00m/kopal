@@ -20,4 +20,5 @@ class Kopal::VisitingUser < Kopal::KopalUser
   def signed?
     !!kopal_identity
   end
+  alias known? signed?
 end

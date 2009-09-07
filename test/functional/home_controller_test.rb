@@ -67,6 +67,6 @@ class Kopal::HomeControllerTest < ActionController::TestCase
 
   def test_stylesheet_is_working_good
     get :stylesheet, :id => 'home'
-    assert_template 'stylesheet/home.css'
+    assert_template 'siterelated/home.css'
   end
 end

@@ -108,11 +108,16 @@ class Kopal::HomeController < Kopal::ApplicationController
 
   #ajax-spinner.gif. Credit - http://www.ajaxload.info/
   def stylesheet
+    params[:format] ||= 'css'
     params[:format] = "#{params[:format]}.erb" if params[:id] == 'dynamic'
     render :template => "siterelated/#{params[:id]}.#{params[:format]}", :layout => false
   end
-  alias javascript stylesheet
   alias image stylesheet
+
+  def javascript
+    params[:format] ||= 'js'
+    stylesheet
+  end
 
   #Displayes the XRDS file for user. Accessible from +Kopal.route.xrds+
   def xrds
