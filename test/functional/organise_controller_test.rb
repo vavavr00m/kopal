@@ -20,12 +20,12 @@ class Kopal::OrganiseControllerTest < ActionController::TestCase
     assert_redirected_to :action => 'edit_profile'
   end
 
-  def test_edit_profile_is_reachable
-    get :edit_profile, {}, {:signed => true}
+  def test_edit_identity_is_reachable
+    get :edit_identity, {}, {:signed => true}
     assert_response :success
   end
 
-  def test_edit_profile_is_working_good
+  def test_edit_identity_is_working_good
     posting = {
       :feed_real_name => "Test user",
       :feed_aliases => "Hello,\nWorld!",
@@ -40,7 +40,7 @@ class Kopal::OrganiseControllerTest < ActionController::TestCase
       :feed_country_living_code => 'IN'
     }
     dry = Proc.new {
-      post :edit_profile, posting, {:signed => true}
+      post :edit_identity, posting, {:signed => true}
       assert_response :success
       assert_nil flash[:notice]
       assert_equal "Profile updated!", flash[:highlight]
@@ -95,7 +95,7 @@ class Kopal::OrganiseControllerTest < ActionController::TestCase
     assert_equal 'old-password', Kopal[:account_password]
     post :change_password, {:password => 'a', :password_confirmation => 'b'}, {:signed => true}
     assert_equal "Passwords do not match.", flash[:notice]
-    Kopal.reload_preferences!
+    Kopal.reload_variables!
     assert_equal 'old-password', Kopal[:account_password]
     post :change_password, {:password => 'a', :password_confirmation => 'a'}, {:signed => true}
     assert_equal "Password changed!", flash[:highlight]
