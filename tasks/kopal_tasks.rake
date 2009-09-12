@@ -3,6 +3,7 @@ namespace :kopal do
   task :update => :environment do
     Rake::Task["gems:install"].invoke #Check gem dependencies and install/upgrade them.
     Kopal::Database.migrate
+    puts "\nNOTE: **** Be sure to restart your servers. ****\n\n"
   end
 
   desc "Fetches new release from Internet, then updates the plugin.\n" +
