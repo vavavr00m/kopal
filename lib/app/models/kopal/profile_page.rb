@@ -24,6 +24,17 @@ class Kopal::ProfilePage < Kopal::KopalModel
     Kopal::ProfilePage.find(:all).map { |x| x.page_name }
   end
 
+  def recursively_assign_page_name name
+    p = self.new
+    p.page_name = name
+    i = 1
+    while self.find_by_page_name(p.page_name)
+      p.page_name = "#{p.page_name}-#{i+=1}"
+      raise SystemStackError if i > 10000 #Too much looping, save from infinity.
+    end
+    return p
+  end
+
   def page_description
     page_text[:meta][:page_description]
   end

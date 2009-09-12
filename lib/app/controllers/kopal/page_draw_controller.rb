@@ -12,7 +12,8 @@ class Kopal::PageDrawController < Kopal::ApplicationController
 
 
 	before_filter :authorise, :page_draw_init
-  before_filter :initialise_atpage, :except => ['index', 'create_page']
+  before_filter :initialise_atpage, :except =>
+                  ['index', 'create_page', 'create_example_page']
 
   def index
     redirect_to Kopal.route.page
@@ -20,13 +21,8 @@ class Kopal::PageDrawController < Kopal::ApplicationController
 
   def create_page
     title = "new-page"
-    p = Kopal::ProfilePage.new
-    p.page_name = title
-    i = 1
-    until p.save
-      p.page_name = title + "-#{i += 1}"
-      raise if i > 10000 #Too much looping, save from infinity.
-    end
+    p = Kopal::ProfilePage.recursively_assign_page_name title
+    p.save!
     redirect_to Kopal.route.page_edit :page => p.page_name
   end
 
@@ -247,6 +243,11 @@ class Kopal::PageDrawController < Kopal::ApplicationController
 		render :nothing => true
 	end
 
+  def create_example_page
+    create_example_pages
+    redirect_to :action => 'index'
+  end
+
 private
 	def page_draw_init # May also use initialize() here but has a doubt that will still the action won't execute if it returns false?
     @page = Kopal::ProfilePage.find_by_page_name params[:page] if params[:page]
@@ -291,5 +292,9 @@ private
 			page.insert_html :top, 'PageEdit', r
 		end
 	end
+
+  def create_example_pages
+    #to write
+  end
 
 end
