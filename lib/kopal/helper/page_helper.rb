@@ -53,6 +53,7 @@ module Kopal::Helper::PageHelper
 
       r << link_to(a[:label], a[:link], :title => a[:title],
         :class => "cloud", :style => "font-size:#{m}px;")
+      r << " "
     }
     return r
 	end
