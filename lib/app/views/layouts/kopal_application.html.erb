@@ -28,9 +28,6 @@
       <div id="SurfaceAbove">
         <%= yield :surface_above %>
       </div>
-      <div id="SurfaceLeft">
-        <%= yield :surface_left %>
-      </div>
       <div id="SurfaceFront">
         <% if flash[:highlight] -%>
           <div id="FlashHighlight" class="flash highlight"><%= flash[:highlight] %></div>
@@ -43,6 +40,9 @@
         <% end -%>
 
         <%= @content_for_layout %>
+      </div>
+      <div id="SurfaceLeft">
+        <%= yield :surface_left %>
       </div>
       <div id="SurfaceDown"> <!-- footer -->
         <%= yield :surface_down %>
