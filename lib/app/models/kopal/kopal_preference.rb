@@ -1,6 +1,6 @@
 #Holds all the data of user too, since there is only one user, No need for UserAccount model.
 class Kopal::KopalPreference < Kopal::KopalModel
-  class InvalidFieldName < StandardError; end;
+  class InvalidFieldName < Kopal::KopalError; end;
   set_table_name :kopal_preference
   serialize :preference_text
 
@@ -34,6 +34,7 @@ class Kopal::KopalPreference < Kopal::KopalModel
   ]
   DEPRECATED_FIELDS = {
     #:deprecated_field => "message"
+    :example_deprecated_field => "You're using example_deprecated_field."
   }
   DEFAULT_VALUE = {
     :authentication_method => 'simple',
@@ -46,7 +47,7 @@ class Kopal::KopalPreference < Kopal::KopalModel
   
   validates_presence_of :preference_name
   validates_uniqueness_of :preference_name
-  validates_inclusion_of :preference_name,
+  validates_inclusion_of :preference_name, #same in check_preference_name!()?
     :in => self.all_fields,
     :message => "{{value}} is not in the list."
   before_validation :preference_name_in_lowercase
@@ -56,8 +57,8 @@ class Kopal::KopalPreference < Kopal::KopalModel
     name = self.preference_name
     text = self.preference_text
     case name
-    when "feed_name":
-      errors.add_to_base('Name must not be blank') if text.blank?
+    when "feed_real_name":
+      errors.add_to_base('Real name must not be blank') if text.blank?
     when "feed_email":
       begin
         e = TMail::Address.parse(text)
@@ -91,14 +92,14 @@ class Kopal::KopalPreference < Kopal::KopalModel
 
   #Get a preference value. Also see Kopal#[] for shorthand.
   def self.get_field name
-    deprecated? name
+    check_preference_name! name
     s = self.find_by_preference_name(name)
     return( s ? s.preference_text : DEFAULT_VALUE[name.to_sym])
   end
 
   #Saves a preference to the database. Also see Kopal#[]= for a shorthand.
   def self.save_field name, value
-    deprecated? name
+    check_preference_name! name
     s = self.find_or_initialize_by_preference_name(name)
     s.preference_text = value;
     s.save!
@@ -109,16 +110,33 @@ class Kopal::KopalPreference < Kopal::KopalModel
   def self.delete_field name
   end
 
+  #+false+ if invalid.
+  #+true+ or +"deprecated"+ if valid.
+  def self.preference_name_valid? name
+    FIELDS.include?(name.to_sym) || (deprecated?(name) && 'deprecated')
+  end
+
+  #returns false if not, else deprecation-message if true.
   def self.deprecated? name
-    raise Kopal::KopalPreference::InvalidFieldName, 'Preference name ' + name.to_s +
-      ' is not valid.' unless all_fields.include? name.to_s
-    DeprecatedMethod.here DEPRECATED_FIELDS[name.to_sym] if
-      DEPRECATED_FIELDS.has_key? name.to_sym
+    return false unless DEPRECATED_FIELDS.has_key? name.to_sym
+    DEPRECATED_FIELDS[name.to_sym]
   end
 
 private
   def preference_name_in_lowercase
     self.preference_name = self.preference_name.to_s.downcase
+  end
+
+  #post-fixed(!) since raises exception.
+  def self.check_preference_name! name
+    raise Kopal::KopalPreference::InvalidFieldName, 'Preference name ' + name.to_s +
+      ' is not valid.' unless preference_name_valid? name
+    deprecation_reason = deprecated? name
+    DeprecatedMethod.here "#{name}; #{deprecation_reason}" if deprecation_reason
+  end
+
+  def handle_deprecated_field
+    #To-do when a deprecated field is found in !new_record.
   end
 end
 
