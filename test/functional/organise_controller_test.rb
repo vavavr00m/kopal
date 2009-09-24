@@ -20,6 +20,30 @@ class Kopal::OrganiseControllerTest < ActionController::TestCase
     assert_redirected_to :action => 'edit_profile'
   end
 
+  def test_config_is_reachable_and_works
+    get :config, {}, {:signed => true}
+    assert_response :success
+    assert_equal "Key can not be empty.", flash[:notice]
+
+    get :config, {:key => 'this_field_is_invalid'}, {:signed => true}
+    assert_equal "Invalid key", flash[:notice][0..10], flash[:notice]
+
+    get :config, {:key => 'example_deprecated_field'}, {:signed => true}
+    assert flash[:notice]["<code>#{assigns(:key)}</code> is deprecated."], flash[:notice]
+
+    post :config, {:key => 'feed_real_name', :value => ''}, {:signed => true}
+    assert_response :success
+    assert flash[:notice]["Real name must not be blank"], flash[:notice]
+
+    post :config, {:key => 'Feed_real_name', :value => 'new value via config.'}, {:signed => true}
+    assert_equal :feed_real_name, assigns(:key)
+    assert_response :redirect
+    assert 'new value via config.', Kopal[:feed_real_name]
+    
+    get :config, {:key => 'Feed_Real_name'}, {:signed => true}
+    assert assigns(:present_value), flash[:notice]
+  end
+
   def test_edit_identity_is_reachable
     get :edit_identity, {}, {:signed => true}
     assert_response :success

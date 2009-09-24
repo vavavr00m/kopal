@@ -1,14 +1,15 @@
 require 'test_helper'
 
 class Kopal::KopalPreferenceTest < ActiveSupport::TestCase
+  KP = Kopal::KopalPreference
 
   def setup
     #TODO: Need to reset database schema before every test in test_helper.rb.
-    Kopal::KopalPreference.delete_all #alternative for now.
+    KP.delete_all #alternative for now.
   end
   
   def test_schema_has_loaded
-    assert_equal [], Kopal::KopalPreference.all
+    assert_equal [], KP.all
   end
 
   def test_preference_name_are_always_lowercase
@@ -30,6 +31,12 @@ class Kopal::KopalPreferenceTest < ActiveSupport::TestCase
     assert a.valid?, a.errors.inspect
     a.preference_name = 'this_feed_name_should_not_exist'
     assert !a.valid?
+  end
+
+  def test_method_preference_name_valid
+    assert_equal true, KP.preference_name_valid?('feed_real_name')
+    assert_equal false, KP.preference_name_valid?('this_feed_name_should_not_exist')
+    assert_equal 'deprecated', KP.preference_name_valid?('example_deprecated_field')
   end
   
 end

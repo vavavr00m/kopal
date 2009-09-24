@@ -38,9 +38,9 @@ div#SurfaceAbove{
   margin-bottom:25px;
 }
 div#SurfaceFront{
-	/*min-height:620px;*/
+	min-height:620px;
   /*position:absolute;*/
-  float:right;
+  float:left;
   margin-left:216px;
   margin-right:40px;
 	padding:8px;
@@ -48,9 +48,8 @@ div#SurfaceFront{
 }
 
 div#SurfaceLeft{
-	float:left;
+	position:absolute;
 	width:184px;
-  margin-right:-200px;
 	padding-left:4px;
   padding-top:8px;
 }

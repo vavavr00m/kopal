@@ -17,6 +17,41 @@ class Kopal::OrganiseController < Kopal::ApplicationController
     end
   end
 
+  #Web-based API for Kopal::KopalPreference
+  #Pass GET parameters +key+ and +value+ as preference name and new value.
+  #
+  def config
+    if params[:key].blank?
+      flash.now[:notice] = "Key can not be empty."
+      return
+    end
+    @key = params[:key].to_s.downcase.to_sym
+    if message = Kopal::KopalPreference.deprecated?(@key)
+      flash.now[:notice] = "<code>#{@key}</code> is deprecated. #{message}"
+      return
+    end
+    unless Kopal::KopalPreference.preference_name_valid? @key
+      flash.now[:notice] = "Invalid key <code>#{@key}</code>."
+      return
+    end
+    if request.post?
+      begin
+        Kopal[@key] = params[:value]
+      rescue ActiveRecord::RecordInvalid => e
+        flash.now[:notice] = "<b>ERROR:</b> #{e.message}"
+        return
+      end
+      flash[:highlight] = "Key <code>#{@key}</code> set to <code>#{Kopal[@key]}</code>."
+      redirect_to Kopal.route.home
+      return
+    else
+      @present_value = Kopal[@key]
+    end
+    unless @present_value
+      render 'config', :status => 400 #doesn't work
+    end
+  end
+
   def backup
     if request.post?
       send_data Kopal::Database.backup, :content_type => :xml #or 'application/xml'
