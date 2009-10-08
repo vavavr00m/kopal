@@ -20,4 +20,5 @@ Rake::RDocTask.new(:rdoc) do |rdoc|
   rdoc.options << '--line-numbers' << '--inline-source'
   rdoc.rdoc_files.include('README.txt')
   rdoc.rdoc_files.include('**/*.rb')
+  rdoc.rdoc_files.exclude(/^(test|vendor|lib\/db)/)
 end
