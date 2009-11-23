@@ -2,7 +2,12 @@ namespace :kopal do
   desc "Creates/upgrades the database for Kopal. Called automatically with db:migrate."
   task :update => :environment do
     Rake::Task["gems:install"].invoke #Check gem dependencies and install/upgrade them.
+    Kopal::Database.establish_connection
+    first_time = true if Kopal::Database.last_migrated_number.zero?
     Kopal::Database.migrate
+    if first_time
+      Kopal::Database.perform_first_time_tasks
+    end
     puts "\nNOTE: **** Be sure to restart your servers. ****\n\n"
   end
 

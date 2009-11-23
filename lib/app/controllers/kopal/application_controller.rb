@@ -57,6 +57,7 @@ class Kopal::ApplicationController < ActionController::Base
   
 private
   def initialise
+    check_for_incomplete_migration!
     self.prepend_view_path Kopal.root.join('lib', 'app', 'views').to_s
     Kopal::Routing.ugly_hack self.dup
     @@request = request
@@ -90,6 +91,13 @@ private
     if Kopal::UserFriend.find_by_friendship_state('pending')
       flash.now[:notification] = "You have new friendship requests. <a href=\"" +
         organise_path(:action => 'friend') + "\">View</a>."
+    end
+  end
+
+  def check_for_incomplete_migration!
+    if Kopal::Database.latest_migration_number != Kopal::Database.last_migrated_number
+      render :text => "Kopal needs to be updated first.\n" +
+        "Please run <code>rake kopal:update RAILS_ENV=#{RAILS_ENV}</code> to update."
     end
   end
 end
