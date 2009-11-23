@@ -8,11 +8,12 @@ class Kopal::KopalPreference < Kopal::KopalModel
   #It is up to Controller to choose a default value for fields.
   FIELDS = [
     :authentication_method,
-    :account_password, #TODO: Hash it with salt.
+    :account_password_hash, #SHA-512 password hash.
+    :account_password_salt, #512-bit salt.
+    :user_status_message,
     :feed_real_name, #Name of the user
     :feed_aliases, #Aliases of the user separated by "\n"
     :feed_preferred_calling_name,
-    :user_status_message,
     :feed_description, #Description of the user
     :feed_email, #Email of user.
     :feed_show_email, #Only <tt>yes</tt> or <tt>no</tt> downcase.
@@ -33,14 +34,16 @@ class Kopal::KopalPreference < Kopal::KopalModel
     :meta_upgrade_last_check
   ]
   DEPRECATED_FIELDS = {
-    #:deprecated_field => "message"
-    :example_deprecated_field => "You're using example_deprecated_field."
+    :example_deprecated_field => "You're using example_deprecated_field.",
+    :account_password => "Use :account_password_hash instead."
   }
   DEFAULT_VALUE = {
     :authentication_method => 'simple',
-    :account_password => 'secret01',
     :feed_show_gender => 'yes'
   }
+
+  DEFAULT_PASSWORD = 'secret01'
+  
   def self.all_fields
     (FIELDS.dup.concat(DEPRECATED_FIELDS.keys)).map { |k| k.to_s }
   end
@@ -57,6 +60,11 @@ class Kopal::KopalPreference < Kopal::KopalModel
     name = self.preference_name
     text = self.preference_text
     case name
+    when /account_password_(hash|salt)/:
+        errors.add_to_base("Password hash/salt length must be 512 bit.") unless
+          text.size == 128
+        errors.add_to_base("Password hash/salt must be a hexadecimal string.") unless
+          valid_hexadecimal?(text)
     when "feed_real_name":
       errors.add_to_base('Real name must not be blank') if text.blank?
     when "feed_email":
@@ -93,7 +101,14 @@ class Kopal::KopalPreference < Kopal::KopalModel
   #Get a preference value. Also see Kopal#[] for shorthand.
   def self.get_field name
     check_preference_name! name
-    s = self.find_by_preference_name(name)
+    get_field_without_raise
+  end
+
+  #Migration script should call this function.
+  #Does not raises exception if key is not found or is deprecated. Return false then.
+  def self.get_field_without_raise name
+    return false unless preference_name_valid? name
+    s = self.find_by_preference_name(name.to_s)
     return( s ? s.preference_text : DEFAULT_VALUE[name.to_sym])
   end
 
@@ -108,6 +123,7 @@ class Kopal::KopalPreference < Kopal::KopalModel
 
   #TODO: Write me
   def self.delete_field name
+    self.delete_all(["preference_name = ? ", name])
   end
 
   #+false+ if invalid.
@@ -122,6 +138,13 @@ class Kopal::KopalPreference < Kopal::KopalModel
     DEPRECATED_FIELDS[name.to_sym]
   end
 
+  def self.save_password value
+    require 'digest'
+    salt = self.save_field('account_password_salt', random_hexadecimal(128))
+    password = Digest::SHA512.hexdigest value.to_s + salt
+    self.save_field('account_password_hash', password)
+  end
+
 private
   def preference_name_in_lowercase
     self.preference_name = self.preference_name.to_s.downcase
@@ -133,10 +156,6 @@ private
       ' is not valid.' unless preference_name_valid? name
     deprecation_reason = deprecated? name
     DeprecatedMethod.here "#{name}; #{deprecation_reason}" if deprecation_reason
-  end
-
-  def handle_deprecated_field
-    #To-do when a deprecated field is found in !new_record.
   end
 end
 

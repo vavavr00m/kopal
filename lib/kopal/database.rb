@@ -41,10 +41,26 @@ class << self
       Rake::Task["db:schema:dump"].invoke if ActiveRecord::Base.schema_format == :ruby
     end
   end
+
+  def last_migrated_number
+    ActiveRecord::Migrator.current_version
+  end
+
+  def latest_migration_number
+    Dir[Kopal.root.join('lib', 'db', 'migrate', '*.rb')].map {|f|
+      File.basename(f).to_i
+    }.max || 0
+  end
   
   #Connect to Kopal databse in present environment
   def establish_connection
     ActiveRecord::Base.establish_connection connection
+  end
+
+  def perform_first_time_tasks
+    if Kopal[:account_password_hash].nil?
+      Kopal::KopalPreference.save_password(Kopal::KopalPreference::DEFAULT_PASSWORD)
+    end
   end
 
   #Returns an XML string representing the database. Excludes environment specific
