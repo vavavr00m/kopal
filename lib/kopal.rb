@@ -66,6 +66,13 @@ class << self
   def initialised?
     @@initialised
   end
+
+  def khelper #helper() is defined for ActionView::Base
+    #Need to use "module_function()" in Kopal::KopalHelper,
+    #but that would make all methods as private instance methods,
+    #so need to completely deprecate and remove Kopal::KopalHelperWrapper first.
+    @khelper ||= Kopal::KopalHelperWrapper.new
+  end
   
   #These four methods sound similar, but have different usages.
   #  Kopal.root (File system path of Kopal plugin).
