@@ -109,7 +109,3 @@ namespace :kopal do
   end
 end
 
-Rake::Task["db:migrate"].enhance do
-  Rake::Task["kopal:update"].invoke
-end
-
