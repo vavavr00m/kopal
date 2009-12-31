@@ -13,15 +13,21 @@
 #</tt>
 #
 #At present only SQLite3 is supported.
+#
+#Since !same connection/request is possible, there is no use to put in kopal-lib.
+#integrate to +Kopal::KopalModel+
 class Kopal::Database
 
-class << self
+  def initialize database_path = nil
+    @database = database_path || 
+      File.join(RAILS_ROOT, 'db', 'kopal.' + RAILS_ENV + '.sqlite3')
+  end
   
   #At present only SQLite3 is supported with default database path.
   def connection
    @connection = {
     :adapter => 'sqlite3',
-    :database => RAILS_ROOT + '/db/kopal.' + RAILS_ENV + '.sqlite3'
+    :database => @database
    }
   end
   
@@ -33,17 +39,30 @@ class << self
     @@name_prefix = self?() ? 'kopal_' : ''
   end
 
-  def migrate
+  def migration_needed?
+    last_migrated_number != latest_migration_number
+  end
+
+  def migrate!
     establish_connection
     ActiveRecord::Migration.verbose = ENV["VERBOSE"] ? ENV["VERBOSE"] == "true" : true
     ActiveRecord::Migrator.migrate("#{KOPAL_ROOT}/lib/db/migrate/", ENV["VERSION"] ? ENV["VERSION"].to_i : nil)
     if self?()
       Rake::Task["db:schema:dump"].invoke if ActiveRecord::Base.schema_format == :ruby
     end
+    revert_to_previous_connection
+  end
+
+  def delete_and_migrate!
+    File.delete(@database)
+    migrate!
   end
 
   def last_migrated_number
-    ActiveRecord::Migrator.current_version
+    establish_connection
+    v = ActiveRecord::Migrator.current_version
+    revert_to_previous_connection
+    v
   end
 
   def latest_migration_number
@@ -54,7 +73,14 @@ class << self
   
   #Connect to Kopal databse in present environment
   def establish_connection
+    @previous_connection = ActiveRecord::Base.connection
     ActiveRecord::Base.establish_connection connection
+  end
+
+  #This is ugly
+  def revert_to_previous_connection
+    #Need to pass connection hash instead of connection object.
+    #ActiveRecord::Base.establish_connection @previous_connection
   end
 
   def perform_first_time_tasks
@@ -73,5 +99,4 @@ class << self
     Rake::Task['kopal:clear_database'].invoke
   end
 
-end
 end

@@ -95,7 +95,7 @@ private
   end
 
   def check_for_incomplete_migration!
-    if Kopal::Database.latest_migration_number != Kopal::Database.last_migrated_number
+    if Kopal.database.migration_needed?
       render :text => "Kopal needs to be updated first.\n" +
         "Please run <code>rake kopal:update RAILS_ENV=#{RAILS_ENV}</code> to update."
     end

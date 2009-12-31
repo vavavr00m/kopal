@@ -53,11 +53,10 @@ class Kopal::KopalPreference < Kopal::KopalModel
   validates_inclusion_of :preference_name, #same in check_preference_name!()?
     :in => self.all_fields,
     :message => "{{value}} is not in the list."
-  before_validation :preference_name_in_lowercase
 
   #OPTIMIZE: Internationalise/Localise it.
   def validate
-    name = self.preference_name
+    name = self.preference_name = self.preference_name.to_s.downcase
     text = self.preference_text
     case name
     when /account_password_(hash|salt)/:
@@ -101,7 +100,7 @@ class Kopal::KopalPreference < Kopal::KopalModel
   #Get a preference value. Also see Kopal#[] for shorthand.
   def self.get_field name
     check_preference_name! name
-    get_field_without_raise
+    get_field_without_raise name
   end
 
   #Migration script should call this function.
@@ -140,15 +139,12 @@ class Kopal::KopalPreference < Kopal::KopalModel
 
   def self.save_password value
     require 'digest'
-    salt = self.save_field('account_password_salt', random_hexadecimal(128))
+    salt = self.save_field('account_password_salt', Kopal.khelper.random_hexadecimal(128))
     password = Digest::SHA512.hexdigest value.to_s + salt
     self.save_field('account_password_hash', password)
   end
 
 private
-  def preference_name_in_lowercase
-    self.preference_name = self.preference_name.to_s.downcase
-  end
 
   #post-fixed(!) since raises exception.
   def self.check_preference_name! name

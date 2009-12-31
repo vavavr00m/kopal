@@ -73,6 +73,25 @@ class << self
     #so need to completely deprecate and remove Kopal::KopalHelperWrapper first.
     @khelper ||= Kopal::KopalHelperWrapper.new
   end
+
+  #Since this is a class method and so +@database+ is a class instance variable, and since
+  #in production mode, classes are cached, and I believe that class variables and
+  #class instance variables are shared among requests. So if two requests come
+  #simultaneously and first request sets it to something say "a" and then other
+  #request comes and sets it to "b", now first request accesses it again, then
+  #it's going to access rescource "b"!
+  #So, I believe that this is what is called not being "thread safe"!
+  #
+  #of course, this is going to happen only when there are more than one Kopal
+  #databases, (Ex: Kryzen).
+  def database
+    @database ||= Kopal::Database.new
+  end
+
+  def database= value
+    raise ArgumentError unless value.is_a? Kopal::Database
+    @database = value
+  end
   
   #These four methods sound similar, but have different usages.
   #  Kopal.root (File system path of Kopal plugin).
