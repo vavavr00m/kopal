@@ -15,6 +15,7 @@ class Kopal::ProfileUser < Kopal::KopalUser
 
   #If the current visitor is profile user herself? Or in other words,
   #should we enable administrative tasks?
+  #should be deprecated in favour of +@visiting_user.signed?()+
   def signed?
     @signed
   end

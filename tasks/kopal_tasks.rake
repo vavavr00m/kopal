@@ -1,12 +1,16 @@
 namespace :kopal do
-  desc "Creates/upgrades the database for Kopal. Called automatically with db:migrate."
+  desc "Creates/upgrades the database for Kopal."
   task :update => :environment do
     Rake::Task["gems:install"].invoke #Check gem dependencies and install/upgrade them.
-    Kopal::Database.establish_connection
-    first_time = true if Kopal::Database.last_migrated_number.zero?
-    Kopal::Database.migrate
+    #Initialise it before migrating.
+    #Since if called within migration (for example 0005_deprecate_account_password.rb),
+    #it will establish a new database connection and SQLite will throw error like
+    #library called out of sequence.
+    Kopal::KopalModel
+    first_time = true if Kopal.database.last_migrated_number.zero?
+    Kopal.database.migrate!
     if first_time
-      Kopal::Database.perform_first_time_tasks
+      Kopal.database.perform_first_time_tasks
     end
     puts "\nNOTE: **** Be sure to restart your servers. ****\n\n"
   end

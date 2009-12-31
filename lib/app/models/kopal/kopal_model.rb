@@ -1,7 +1,7 @@
 class Kopal::KopalModel < ActiveRecord::Base
   self.abstract_class = true
   include Kopal::KopalHelper
-  Kopal::Database.establish_connection
+  Kopal.database.establish_connection
 
   def self.inherited(subclass)
     super 
