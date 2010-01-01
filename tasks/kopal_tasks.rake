@@ -67,7 +67,6 @@ namespace :kopal do
       fetcher = PatchedRecursiveHTTPFetcher.new("#{kopal_hg}?r=#{revision}", -1)
       fetcher.fetch
     end
-    #ruby core docs, which I don't understand.
     remove_dir KOPAL_ROOT, true
     mv temp_kopal_path, KOPAL_ROOT
     puts "\nUpgraded Kopal to version #{fetched} from #{current}."
