@@ -1,7 +1,7 @@
 #Represents a Kopal Feed
 #By default represents a feed for the Profile User
 #
-#This is a read-only class, and does not modifies Kopal Feeds.
+#Changes: 19-Dec-2009 - Kopal Library should be independent from database specifics.
 class Kopal::Feed
   include Kopal::KopalHelper
 
@@ -9,18 +9,18 @@ class Kopal::Feed
     @of_profile_user = false
     case data
     when REXML::Document
-      initialise_for_rexml data
+      initialise_from_rexml data
     when Kopal::Signal::Response
-      initialise_for_rexml REXML::Document.new(data.body_raw)
+      initialise_from_rexml REXML::Document.new(data.body_raw)
     when String
       #String can be a URI or valid XML string.
       if data =~ /^https?:\/\//
         r = Kopal.fetch data
         data = r.body_raw
       end
-      initialise_for_rexml REXML::Document.new(data)
-    when Kopal::ProfileUser, nil
-      initialise_for_profile_user
+      initialise_from_rexml REXML::Document.new(data)
+    when Hash
+      initialise_from_hash data
     else
       raise ArgumentError, "Unknown type for a Kopal Feed - #{data.class}"
     end
@@ -272,21 +272,20 @@ private
     end
   end
 
-  def initialise_for_profile_user
-    @of_profile_user = true
-    @real_name = (Kopal[:feed_real_name] || "Profile user").strip
-    @name = (Kopal[:feed_preferred_calling_name] || @real_name).strip
-    @aliases = Kopal[:feed_aliases].to_s.split("\n").map { |e| e.strip}
-    @description = Kopal[:feed_description]
-    @gender = if(Kopal[:feed_show_gender] == 'yes')
-      Kopal[:feed_gender].to_s.titlecase
+  def initialise_from_hash hash
+    @real_name = (hash[:feed_real_name] || "Profile user").strip
+    @name = (hash[:feed_preferred_calling_name] || @real_name).strip
+    @aliases = hash[:feed_aliases].to_s.split("\n").map { |e| e.strip}
+    @description = hash[:feed_description]
+    @gender = if(hash[:feed_show_gender] == 'yes')
+      hash[:feed_gender].to_s.titlecase
     end
-    @email = if(Kopal[:feed_show_email] == 'yes')
+    @email = if(hash[:feed_show_email] == 'yes')
       Kopal[:feed_email].to_s
     end
-    @country_living_code = Kopal[:feed_country_living_code].to_s.upcase
-    if 'yes' == Kopal[:feed_city_has_code]
-      @city_code = Kopal[:feed_city]
+    @country_living_code = hash[:feed_country_living_code].to_s.upcase
+    if 'yes' == hash[:feed_city_has_code]
+      @city_code = hash[:feed_city]
     end
   end
 
