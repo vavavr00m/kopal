@@ -124,14 +124,16 @@ class << self
   end
 
   #Indexes KopalPreference
+  #prefer +Kopal::ProfileUser#[]+ instead.
   def [] index
-    index = index.to_s
-    @@pref_cache[index] ||= Kopal::KopalPreference.get_field(index)
+    #DeprecatedMethod.here
+    profile_user[index]
   end
 
+  #Prefer +Kopal::ProfileUser#[]=+ instead.
   def []= index, value
-    index = index.to_s
-    @@pref_cache[index] = Kopal::KopalPreference.save_field(index, value)
+    #DeprecatedMethod.here
+    profile_user[index] = value
   end
 
   def reload_variables!

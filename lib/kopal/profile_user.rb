@@ -4,9 +4,25 @@ class Kopal::ProfileUser < Kopal::KopalUser
 
   def initialize signed = false
     @signed = signed
+    @pref_cache = {}
     #Enforce single instance.
     #raise "Only one instance allowed." if @@single_instance
     #@@single_instance = true
+  end
+
+  #Indexes KopalPreference
+  def [] index
+    index = index.to_s
+    @pref_cache[index] ||= Kopal::KopalPreference.get_field(index)
+  end
+
+  def []= index, value
+    index = index.to_s
+    @pref_cache[index] = Kopal::KopalPreference.save_field(index, value)
+  end
+
+  def reload_preferences!
+    @pref_cache = {}
   end
 
   def to_s
@@ -15,7 +31,6 @@ class Kopal::ProfileUser < Kopal::KopalUser
 
   #If the current visitor is profile user herself? Or in other words,
   #should we enable administrative tasks?
-  #should be deprecated in favour of +@visiting_user.signed?()+
   def signed?
     @signed
   end
@@ -23,7 +38,7 @@ class Kopal::ProfileUser < Kopal::KopalUser
   def signed_out!
     @signed = false
   end
-  
+
   def kopal_identity
     Kopal[:kopal_identity] ||= Kopal.route.root :only_path => false
     Kopal::Identity.new Kopal[:kopal_identity]
@@ -48,7 +63,7 @@ class Kopal::ProfileUser < Kopal::KopalUser
   def feed
     @kopal_feed ||= Kopal::Feed.new
   end
-  
+
   def name
     DeprecatedMethod.here "Use .feed.name() instead."
     feed.name
@@ -59,7 +74,7 @@ class Kopal::ProfileUser < Kopal::KopalUser
     DeprecatedMethod.here "Use .feed.real_name() instead."
     feed.real_name
   end
-  
+
   def aliases
     DeprecatedMethod.here "Use .feed.aliases() instead."
     feed.aliases
@@ -114,7 +129,7 @@ class Kopal::ProfileUser < Kopal::KopalUser
       year = Kopal[:feed_birth_time].year
       return case Kopal[:feed_birth_time_pref]
       when 'y':
-        year.to_s 
+        year.to_s
       when 'md':
         Kopal[:feed_birth_time].to_time.strftime("%d-%b")
       when 'ymd':
@@ -123,7 +138,7 @@ class Kopal::ProfileUser < Kopal::KopalUser
     end
     return ''
   end
-  
+
   #Returns the date of birth as string, followed by age in brackets.
   #Respects date of birth preference in +Kopal[:feed_birth_time_pref]+
   def dob_with_age
