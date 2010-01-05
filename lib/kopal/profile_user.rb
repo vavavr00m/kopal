@@ -61,23 +61,16 @@ class Kopal::ProfileUser < Kopal::KopalUser
   end
 
   def feed
-    @kopal_feed ||= Kopal::Feed.new
+    @kopal_feed ||= Kopal::Feed.new preferences_for_feed
   end
 
-  def name
-    DeprecatedMethod.here "Use .feed.name() instead."
-    feed.name
-  end
-  alias preferred_calling_name name
-
-  def real_name
-    DeprecatedMethod.here "Use .feed.real_name() instead."
-    feed.real_name
-  end
-
-  def aliases
-    DeprecatedMethod.here "Use .feed.aliases() instead."
-    feed.aliases
+  def preferences_for_feed
+    r = {}
+    Kopal::KopalPreference.find(:all, :conditions => "preference_name LIKE 'feed_%'").
+      each { |e|
+        r[e.preference_name] = e.preference_text
+      }
+    r
   end
 
   #Duplication? !DRY?
@@ -85,45 +78,23 @@ class Kopal::ProfileUser < Kopal::KopalUser
     Kopal[:user_status_message]
   end
 
-  def description
-    DeprecatedMethod.here "Use .feed.description() instead?"
-    feed.description
-  end
-
   def image_path
-    Kopal.route.profile_image :only_path => false
+    Kopal.route.profile_image self, :only_path => false
   end
 
-  def gender
-    DeprecatedMethod.here "Use .feed.gender() instead."
-    feed.gender
-  end
-
-  def email
-    DeprecatedMethod.here "Use .feed.email() instead."
-    feed.email
-  end
-
+  #Delegate to Feed and deprecate it.
   def show_dob?
     return false if Kopal[:feed_birth_time_pref] == 'nothing'
     return true
   end
 
+  #Delegate to Feed and deprecate it. rename to dob_has_year?
   def can_show_age?
     return true if Kopal[:feed_birth_time_pref] =~ /^y/
     return false
   end
 
-  def age
-    DeprecatedMethod.here "Use .feed.age() instead."
-    feed.age
-  end
-
-  def birth_time
-    DeprecatedMethod.here "Use .feed.birth_time_string() instead."
-    feed.birth_time_string
-  end
-
+  #delegate to Feed and deprecate it.
   def dob_string
     unless Kopal[:feed_birth_time].blank?
       year = Kopal[:feed_birth_time].year
@@ -141,6 +112,7 @@ class Kopal::ProfileUser < Kopal::KopalUser
 
   #Returns the date of birth as string, followed by age in brackets.
   #Respects date of birth preference in +Kopal[:feed_birth_time_pref]+
+  #delegate to Feed and deprecate it.
   def dob_with_age
     unless feed.birth_time.blank?
       #age_string = " (#{age} #{t(:year, :count => year).downcase})"
@@ -153,48 +125,6 @@ class Kopal::ProfileUser < Kopal::KopalUser
       end
     end
     return ''
-  end
-
-  def next_birthday
-    DeprecatedMethod.here "Use .feed.next_birthday() instead."
-    feed.next_birthday
-  end
-
-  def country_living_code
-    DeprecatedMethod.here "Use .feed.country_living_code() instead."
-    feed.country_living_code
-  end
-
-  def country_living
-    DeprecatedMethod.here "Use .feed.country_living() instead."
-    feed.country_living
-  end
-
-  #Country living in format => Country (CODE)
-  def country_living_with_code
-    DeprecatedMethod.here "Use .feed.country_living_with_code() instead."
-    feed.country_living_with_code
-  end
-
-  def city_has_code?
-    DeprecatedMethod.here "Use .feed.city_has_code?() instead."
-    feed.city_has_code?
-  end
-
-  #Name of the city.
-  def city
-    DeprecatedMethod.here "Use .feed.city_name() instead."
-    feed.city_name
-  end
-
-  def city_code
-    DeprecatedMethod.here "Use .feed.city_code() instead."
-    feed.city_code
-  end
-
-  def city_with_code
-    DeprecatedMethod.here "Use .feed.city_with_code() instead."
-    feed.city_with_code
   end
 
   #USE WITH CAUTION!
@@ -213,7 +143,7 @@ class Kopal::ProfileUser < Kopal::KopalUser
   #Default is 2048, recommended by RSA see -
   #http://www.rsa.com/rsalabs/node.asp?id=2004#table1
   #http://www.rsa.com/rsalabs/node.asp?id=2218
-  #We don't need to be very future-proof beccause
+  #We don't need to be very future-proof because
   #We ain't encrypting any private data, where eve stores cipher text today, and analyses
   #it when technology becomes feasible.
   #Also, Private key can be changed over time so age of value of a cipher text of today is
