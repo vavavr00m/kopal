@@ -1,17 +1,27 @@
 ENV["RAILS_ENV"] = "test"
-ENV['RAILS_ROOT'] ||= File.dirname(__FILE__) + '/../../../..' 
+ENV['RAILS_ROOT'] ||= File.dirname(__FILE__) + '/../../../..'
+begin
+  loop = false
+  environment_file = File.expand_path(File.join(ENV['RAILS_ROOT'], 'config/environment.rb'))
+  unless File.exists? environment_file
+    ENV['RAILS_ROOT'] = File.dirname(__FILE__) + '/../kopal-app' #in development mode.
+    loop = true
+  end
+end while loop
+  
 require 'test/unit'
-require File.expand_path(File.join(ENV['RAILS_ROOT'], 'config/environment.rb'))
+require environment_file
 require 'test_help'
 require 'rake'
 
 def reload_kopal_schema
   ActiveRecord::Base.logger = Logger.new(File.dirname(__FILE__) + "/debug.log")
-  Kopal::Database.establish_connection
+  database = Kopal::Database.new
+  database.establish_connection
   #ActiveRecord::Base.connection.drop_database name
-  sqlite3_file = File.join(RAILS_ROOT, Kopal::Database.connection[:database])
+  sqlite3_file = File.join(RAILS_ROOT, database.connection[:database])
   FileUtils.rm(sqlite3_file) if File.exists? sqlite3_file
-  Kopal::Database.migrate
+  database.migrate!
 end
 
 class ActiveSupport::TestCase

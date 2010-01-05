@@ -36,7 +36,7 @@ require_dependency 'core_extension'
 require_dependency KOPAL_ROOT + '/config_dependency'
 require_dependency 'kopal/exception'
 require_dependency 'kopal/openid'
-require_dependency 'routing'
+require_dependency 'kopal/routing'
 
 %w{ models controllers }.each do |dir| 
   path = File.join(File.dirname(__FILE__), 'app', dir)

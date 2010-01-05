@@ -1,4 +1,4 @@
-require "#{File.dirname(__FILE__)}/test_helper" 
+require "#{File.dirname(__FILE__)}/../test_helper" 
 
 class RoutingTest < Test::Unit::TestCase
 
@@ -38,7 +38,8 @@ class RoutingTest < Test::Unit::TestCase
   end
 
   def test_kopal_route_profile_image
-    assert_equal Kopal.base_route + '/home/profile_image/profile_user.jpeg', Kopal.route.profile_image
+    assert_equal Kopal.base_route + '/home/profile_image/profile_user.jpeg',
+      Kopal.route.profile_image(Kopal::ProfileUser.new)
     assert_recognition :get, '/home/profile_image', :controller => 'kopal/home',
       :action => 'profile_image', :trailing_slash => true #FIXME: trailing slash should come false.
   end

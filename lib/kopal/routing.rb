@@ -171,9 +171,9 @@ class Kopal::Routing
   end
 
   #TODO: :format => recognise saved image format.
-  def profile_image hash = {}
+  def profile_image profile_user, hash = {}
     hash.update :action => 'profile_image', :id =>
-      Kopal::ProfileUser.new.feed.name.titlecase.gsub(/[\/\\\!\@\#\$\%\^\*\&\-\.\,\?]+/, ' ').
+      profile_user.feed.name.titlecase.gsub(/[\/\\\!\@\#\$\%\^\*\&\-\.\,\?]+/, ' ').
       gsub(' ', '').underscore, :format => 'jpeg', :trailing_slash => false
     home(hash)
   end

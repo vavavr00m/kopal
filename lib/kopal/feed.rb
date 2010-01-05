@@ -20,7 +20,7 @@ class Kopal::Feed
       end
       initialise_from_rexml REXML::Document.new(data)
     when Hash
-      initialise_from_hash data
+      initialise_from_hash data.symbolize_keys
     else
       raise ArgumentError, "Unknown type for a Kopal Feed - #{data.class}"
     end
