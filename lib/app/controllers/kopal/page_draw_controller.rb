@@ -1,3 +1,4 @@
+#Migrate AMAP code which is not rails-specific to Kopal lib.
 class Kopal::PageDrawController < Kopal::ApplicationController
   helper Kopal::Helper::PageDrawHelper
 
