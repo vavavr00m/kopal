@@ -64,6 +64,9 @@ class Kopal::HomeController < Kopal::ApplicationController
       when 'friendship-request'
         redirect_to identity.friendship_request_url
         return
+      when 'signin'
+      else
+        flash.now[:notice] = "Unidentified value for <code>subject</code>"
       end
     end
   end

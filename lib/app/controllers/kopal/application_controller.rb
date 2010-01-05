@@ -62,11 +62,12 @@ private
     Kopal::Routing.ugly_hack self.dup
     @@request = request
     Kopal.initialise
+    @kopal_route = Kopal::Routing.new self
     I18n.locale = params[:culture]
     @signed = true if session[:signed] #DEPRECATED: Use @profile_user.signed? instead.
     Kopal.reload_variables!
     @profile_user = Kopal.profile_user session[:signed]
-    @visitor = Kopal.visiting_user
+    @visiting_user = @visitor = Kopal.visiting_user
     @_page = Kopal::PageView.new
     set_response_headers
     set_page_variables

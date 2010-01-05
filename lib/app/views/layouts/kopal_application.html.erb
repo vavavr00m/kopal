@@ -46,6 +46,7 @@
       </div>
       <div id="SurfaceDown"> <!-- footer -->
         <%= yield :surface_down %>
+        <%= render :partial => '_shared/kopal_ribbon' %>
         <p>Social Profile of <%= @profile_user %>. Powered by <a href="http://code.google.com/p/kopal/">Kopal</a>.</p>
 
         <% if @_page.include_google_analytics? %>
@@ -61,5 +62,6 @@
        <% end %>
       </div>
     </div>
+    <p>&nbsp;<br />&nbsp;<br />&nbsp;<br />&nbsp;<br /></p>
   </body>
 </html>
