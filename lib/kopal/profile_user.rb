@@ -1,4 +1,7 @@
 #Keeps information about the profile.
+#This and it's descendents classes should all be
+#only getters, no setter methods. Use Models for saving, which may be
+#available through getter methods for example method "account" for <tt>Kopal::KopalAccount</tt>.
 class Kopal::ProfileUser < Kopal::KopalUser
 
   def initialize kopal_account_or_id
