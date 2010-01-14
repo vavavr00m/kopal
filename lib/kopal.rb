@@ -55,6 +55,7 @@ module Kopal
   @@initialised = false
   @@multi_mode = false
   @@delegated_signin = false
+  @@delegated_preferences = []
 
 class << self
   
@@ -88,6 +89,10 @@ class << self
 
   def delegate_signin_to_application?
     @@delegated_signin
+  end
+
+  def preferences_delegated_to_application
+    @@delegated_preferences
   end
 
   def khelper #helper() is defined for ActionView::Base
