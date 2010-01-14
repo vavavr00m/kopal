@@ -274,14 +274,15 @@ private
 
   def initialise_from_hash hash
     @real_name = (hash[:feed_real_name] || "Profile user").strip
-    @name = (hash[:feed_preferred_calling_name] || @real_name).strip
+    @name = (hash[:feed_preferred_calling_name].blank?() ? @real_name :
+      hash[:feed_preferred_calling_name]).strip
     @aliases = hash[:feed_aliases].to_s.split("\n").map { |e| e.strip}
     @description = hash[:feed_description]
     @gender = if(hash[:feed_show_gender] == 'yes')
       hash[:feed_gender].to_s.titlecase
     end
     @email = if(hash[:feed_show_email] == 'yes')
-      Kopal[:feed_email].to_s
+      hash[:feed_email].to_s
     end
     @country_living_code = hash[:feed_country_living_code].to_s.upcase
     if 'yes' == hash[:feed_city_has_code]

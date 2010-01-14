@@ -1,29 +1,70 @@
 class Kopal::KopalModel < ActiveRecord::Base
   self.abstract_class = true
   include Kopal::KopalHelper
-  Kopal.database.establish_connection
+class << self
 
-  def self.inherited(subclass)
-    super 
-    #Tables are only in singular case in Kopal.
-    #
-    #This doesn't seem to work.
-    #For example, if I -
-    #ModelA.find_something()
-    #ModelB.find_something()
-    #ModelA.find_something() -- Will look in table "model_b"!!
-    #I _guess_ this is because, (don't know why) all models all the time share
-    #same table name. When ModelA is called first time, all models get the table
-    #name "model_a". When ModelB is called for first time, all models get the
-    #table name "model_b". When ModelA is called for second time, this method
-    #doesn't seem to invoke, and table name stays "model_b".
-    #This went unnoticed so far because in initial development stage, I never came
-    #through this situation. A few days before, tests started showing this error, and
-    #today in development mode while developing profile pages, where I was able
-    #to debug.
-    #
-    #
-    #set_table_name Kopal::Database.name_prefix + subclass.to_s.gsub("Kopal::", '').underscore
+  def name_prefix
+    configurations[RAILS_ENV]['kopal_prefix'] ||
+      'kopal_'
   end
+
+  #Checks if migrations are needed, only for schema belonging to Kopal.
+  def migration_needed?
+    last_migrated_number != latest_migration_number
+  end
+
+  def migrate!
+    #Checks if any migration has same version number of any application migration.
+    #What about conflicts with another plugin's migrations?
+    duplicates = all_migration_numbers_of_application & all_migration_numbers
+    if(duplicates.size > 0)
+      raise "ERROR: Duplicate migration numbers - #{duplicates.to_sentence :last_word_connector => ' and'}"
+    end
+    ActiveRecord::Migration.verbose = ENV["VERBOSE"] ? ENV["VERBOSE"] == "true" : true
+    ActiveRecord::Migrator.migrate("#{KOPAL_ROOT}/lib/db/migrate/")
+    Rake::Task["db:schema:dump"].invoke if schema_format == :ruby
+  end
+
+  #Find the last migration number for Kopal.
+  def last_migrated_number
+    (ActiveRecord::Migrator.get_all_versions & all_migration_numbers).max.to_i #nil to zero
+  end
+
+  def latest_migration_number
+    all_migration_numbers.max || 0
+  end
+
+  def all_migration_numbers
+    Dir[Kopal.root.join('lib', 'db', 'migrate', '*.rb')].map {|f|
+      File.basename(f).to_i
+    }
+  end
+
+  def all_migration_numbers_of_application
+    Dir[Rails.root.join('db', 'migrate', '*.rb')].map {|f|
+      File.basename(f).to_i
+    }
+  end
+
+  #belongs to Kopal::KopalAccount
+  def perform_first_time_tasks
+    #Options to choose language.
+    #
+    #Create default user account.
+    Kopal::KopalAccount.create_default_profile_account!
+  end
+
+  #Returns an XML string representing the database. Excludes environment specific
+  #fields example - password, openid stores.
+  def backup
+    raise NotImplementedError
+  end
+
+  def restore
+    raise NotImplementedError
+    Rake::Task['kopal:clear_database'].invoke
+  end
+
+end
 end
 

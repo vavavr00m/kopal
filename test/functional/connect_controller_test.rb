@@ -4,7 +4,7 @@ class Kopal::ConnectControllerTest < ActionController::TestCase
 
   def test_index_is_reachable
     get :index
-    assert_redirected_to Kopal.route.root
+    assert_redirected_to assigns(:kopal_route).root
   end
 
   def test_discovery_is_reachable

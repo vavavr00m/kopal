@@ -52,10 +52,13 @@ module Kopal
   CONNECT_PROTOCOL_REVISION = "0.1.draft"
   FEED_PROTOCOL_REVISION = "0.1.draft"
   PLATFORM = "kopal.googlecode.com"
-  @@pref_cache = {}
   @@initialised = false
+  @@multi_mode = false
+  @@delegated_signin = false
 
 class << self
+  
+  attr_accessor :redirect_for_home
   
   #Anything that needs to be run at the startup, goes here.
   def initialise
@@ -66,6 +69,26 @@ class << self
   def initialised?
     @@initialised
   end
+  
+  def multiple_profile_interface!
+    @@multi_mode = true
+  end
+
+  #aliased as multi_mode?
+  def multiple_profile_interface?
+    @@multi_mode
+  end
+
+  alias multi_mode? multiple_profile_interface?
+
+  #Not necessarily in only multi mode.
+  def delegate_signin_to_application!
+    @@delegated_signin = true
+  end
+
+  def delegate_signin_to_application?
+    @@delegated_signin
+  end
 
   def khelper #helper() is defined for ActionView::Base
     #Need to use "module_function()" in Kopal::KopalHelper,
@@ -73,78 +96,17 @@ class << self
     #so need to completely deprecate and remove Kopal::KopalHelperWrapper first.
     @khelper ||= Kopal::KopalHelperWrapper.new
   end
-
-  #Since this is a class method and so +@database+ is a class instance variable, and since
-  #in production mode, classes are cached, and I believe that class variables and
-  #class instance variables are shared among requests. So if two requests come
-  #simultaneously and first request sets it to something say "a" and then other
-  #request comes and sets it to "b", now first request accesses it again, then
-  #it's going to access rescource "b"!
-  #So, I believe that this is what is called not being "thread safe"!
-  #
-  #of course, this is going to happen only when there are more than one Kopal
-  #databases, (Ex: Kryzen).
-  def database
-    @database ||= Kopal::Database.new
-  end
-
-  def database= value
-    raise ArgumentError unless value.is_a? Kopal::Database
-    @database = value
-  end
   
   #These four methods sound similar, but have different usages.
   #  Kopal.root (File system path of Kopal plugin).
   #  Kopal.route.root (URL of homepage of Kopal Identity).
   #  Kopal.base_route (Do not use. For internal use only.) [Without postfixed '/']
-  #  Kopal.identity (May be different than Kopal.route.root, if saved such in database).
   def root
     Pathname.new KOPAL_ROOT
   end
 
-  #Kopal Identity of the user.
-  def identity
-    profile_user.kopal_identity
-  end
-
-  def profile_user signed = false
-    @profile_user ||= Kopal::ProfileUser.new signed
-  end
-
-  def visiting_user kopal_identity = nil
-    @visiting_user ||= Kopal::VisitingUser.new kopal_identity
-  end
-
-  def authenticate_simple password
-    raise "Authentication method is not simple" unless
-      Kopal[:authentication_method] == 'simple'
-    raise "Password is nil!" if Kopal[:account_password].blank?
-    return true if password == Kopal[:account_password]
-    return false
-  end
-
-  #Indexes KopalPreference
-  #prefer +Kopal::ProfileUser#[]+ instead.
-  def [] index
-    #DeprecatedMethod.here
-    profile_user[index]
-  end
-
-  #Prefer +Kopal::ProfileUser#[]=+ instead.
-  def []= index, value
-    #DeprecatedMethod.here
-    profile_user[index] = value
-  end
-
-  def reload_variables!
-    @@pref_cache = {}
-    @profile_user = nil
-    @visiting_user = nil
-  end
-
-  #Fetches a given URL and returns a Kopal::Signal::Response
-  def fetch url
-    Kopal::Antenna.broadcast(Kopal::Signal::Request.new(url))
+  def default_profile_user
+    @default_profile_user ||= Kopal::ProfileUser.new(0)
   end
 end
 end

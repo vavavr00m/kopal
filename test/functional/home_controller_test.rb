@@ -10,13 +10,13 @@ class Kopal::HomeControllerTest < ActionController::TestCase
   def test_index_redirects_to_kopal_feed
     get :index, :"kopal.feed" => true
     assert_response :redirect
-    assert_redirected_to Kopal.route.feed
+    assert_redirected_to assigns(:kopal_route).feed
   end
 
   def test_index_redirects_to_kopal_connect
     get :index, :"kopal.connect" => true, :"kopal.subject" => 'requested-subject'
     assert_response :redirect
-    assert_redirected_to Kopal.route.kopal_connect(:action => 'requested_subject')
+    assert_redirected_to assigns(:kopal_route).kopal_connect(:action => 'requested_subject')
   end
 
   def test_foreign_is_reachable
@@ -47,16 +47,19 @@ class Kopal::HomeControllerTest < ActionController::TestCase
   end
 
   def test_signing_in
-    Kopal[:account_password] = 'test-password'
-    assert 'simple', Kopal[:authentication_method] #for now
+    get :index
+    Kopal::KopalPreference.save_password assigns(:profile_user).account.id, 'test-password'
+    assert 'simple', assigns(:profile_user)[:authentication_method] #for now
+    post :signin, :password => 'wrong-password'
+    assert_nil session[:kopal][:signed_kopal_identity]
     post :signin, :password => 'test-password'
-    assert session[:signed]
+    assert session[:kopal][:signed_kopal_identity]
   end
 
   def test_signout_is_reachable
     get :signout
     assert_response :redirect
-    assert_redirected_to Kopal.route.root
+    assert_redirected_to assigns(:kopal_route).root
     assert !session[:signed] #nil or false
   end
 

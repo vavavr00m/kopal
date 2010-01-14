@@ -7,11 +7,6 @@ class Kopal::Identity
   def initialize url
     @identity = normalise_url(url)
     @uri = URI.parse(@identity)
-    @profile_user = Kopal::ProfileUser.new
-  end
-
-  def of_profile_user?
-    @profile_user.kopal_identity == identity
   end
 
   #Checks if the given url is a valid Kopal Identity.
@@ -38,13 +33,12 @@ class Kopal::Identity
     connect_url + '&kopal.subject=friend'
   end
 
-  def friendship_state_url
-    connect_url_with_identity + '&kopal.subject=friendship-state'
+  def friendship_state_url requester_identity
+    connect_url_with_identity(requester_identity) + '&kopal.subject=friendship-state'
   end
 
-  def friendship_update_url state, friendship_key = nil
-    friendship_key ||= Kopal::UserFriend.find_or_initialise_readonly(identity).friendship_key
-    connect_url_with_identity + '&kopal.subject=friendship-update&kopal.state=' + 
+  def friendship_update_url state, friendship_key, requester_identity
+    connect_url_with_identity(requester_identity) + '&kopal.subject=friendship-update&kopal.state=' +
       state + '&kopal.friendship-key=' + friendship_key.to_s
   end
 
@@ -54,9 +48,8 @@ private
     identity + '?kopal.connect=true'
   end
 
-  def connect_url_with_identity
-    #raise NoMethodError, "Can't generate for Profile user" if of_profile_user?
-    connect_url + '&kopal.identity=' + @profile_user.kopal_identity.to_s
+  def connect_url_with_identity requester_identity
+    connect_url + '&kopal.identity=' + requester_identity.to_s
   end
   
 end

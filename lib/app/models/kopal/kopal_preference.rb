@@ -1,16 +1,20 @@
 #Holds all the data of user too, since there is only one user, No need for UserAccount model.
 class Kopal::KopalPreference < Kopal::KopalModel
   class InvalidFieldName < Kopal::KopalError; end;
-  set_table_name :kopal_preference
+
+  set_table_name :"#{name_prefix}kopal_preference"
   serialize :preference_text
 
+  TEMP_PREFERENCE_NAME_PREFIX = "temp_"
+
   #Only these values can be stored in the <tt>preference_name</tt> field. (extreme programming?).
+  #unless they start with "temp_"
   #It is up to Controller to choose a default value for fields.
   FIELDS = [
     :authentication_method,
     :account_password_hash, #SHA-512 password hash.
     :account_password_salt, #512-bit salt.
-    :user_status_message,
+    :profile_status_message,
     :feed_real_name, #Name of the user
     :feed_aliases, #Aliases of the user separated by "\n"
     :feed_preferred_calling_name,
@@ -31,28 +35,28 @@ class Kopal::KopalPreference < Kopal::KopalModel
     #with " ".
     :kopal_encoded_private_key,
     :widget_google_analytics_code,
-    :meta_upgrade_last_check
+    #:meta_something # names starting with 'meta_' are common to all, and are always
+    #stored only for 'kopal_account_id' as 0. Modify validate , get_field to do so (not save_field).
   ]
   DEPRECATED_FIELDS = {
     :example_deprecated_field => "You're using example_deprecated_field.",
-    :account_password => "Use :account_password_hash instead."
   }
   DEFAULT_VALUE = {
     :authentication_method => 'simple',
-    :feed_show_gender => 'yes'
+    :feed_show_gender => 'yes',
   }
 
   DEFAULT_PASSWORD = 'secret01'
-  
-  def self.all_fields
-    (FIELDS.dup.concat(DEPRECATED_FIELDS.keys)).map { |k| k.to_s }
-  end
-  
-  validates_presence_of :preference_name
+
+  ALL_FIELDS = FIELDS + DEPRECATED_FIELDS.keys
+
+  validates_presence_of :kopal_account_id, :preference_name
   validates_uniqueness_of :preference_name
   validates_inclusion_of :preference_name, #same in check_preference_name!()?
-    :in => self.all_fields,
+    :in => ALL_FIELDS.to_s,
+    :unless => Proc.new { |p| p.preference_name.starts_with? TEMP_PREFERENCE_NAME_PREFIX},
     :message => "{{value}} is not in the list."
+  before_validation_on_create :validates_uniqueness_of_kopal_account_id_and_preference_name
 
   #OPTIMIZE: Internationalise/Localise it.
   def validate
@@ -97,32 +101,31 @@ class Kopal::KopalPreference < Kopal::KopalModel
     end
   end
 
-  #Get a preference value. Also see Kopal#[] for shorthand.
-  def self.get_field name
-    check_preference_name! name
-    get_field_without_raise name
+  #Also available as <tt>Kopal::ProfileUser#[]</tt>
+  def self.get_field kopal_account_id, preference_name
+    check_preference_name! preference_name
+    get_field_without_raise kopal_account_id, preference_name
   end
 
   #Migration script should call this function.
   #Does not raises exception if key is not found or is deprecated. Return false then.
-  def self.get_field_without_raise name
-    return false unless preference_name_valid? name
-    s = self.find_by_preference_name(name.to_s)
-    return( s ? s.preference_text : DEFAULT_VALUE[name.to_sym])
+  def self.get_field_without_raise kopal_account_id, preference_name
+    s = self.find_by_kopal_account_id_and_preference_name(kopal_account_id, preference_name.to_s)
+    return( s ? s.preference_text : DEFAULT_VALUE[preference_name.to_sym])
   end
 
-  #Saves a preference to the database. Also see Kopal#[]= for a shorthand.
-  def self.save_field name, value
-    check_preference_name! name
-    s = self.find_or_initialize_by_preference_name(name)
-    s.preference_text = value;
+  #Creates or updates as necessary and returns the saved +preference_text+.
+  #Also available as <tt>Kopal::ProfileUser#[]=</tt>
+  def self.save_field kopal_account_id, preference_name, preference_text
+    check_preference_name! preference_name
+    s = self.find_or_initialize_by_kopal_account_id_and_preference_name(kopal_account_id, preference_name)
+    s.preference_text = preference_text;
     s.save!
     s.preference_text
   end
 
   #TODO: Write me
-  def self.delete_field name
-    self.delete_all(["preference_name = ? ", name])
+  def self.delete_field kopal_account_id, preference_name
   end
 
   #+false+ if invalid.
@@ -137,17 +140,33 @@ class Kopal::KopalPreference < Kopal::KopalModel
     DEPRECATED_FIELDS[name.to_sym]
   end
 
-  def self.save_password value
+  def self.save_password kopal_account_id, password
     require 'digest'
-    salt = self.save_field('account_password_salt', Kopal.khelper.random_hexadecimal(128))
-    password = Digest::SHA512.hexdigest value.to_s + salt
-    self.save_field('account_password_hash', password)
+    #need transaction?
+    salt = self.save_field(kopal_account_id, 'account_password_salt', Kopal.khelper.random_hexadecimal(128))
+    password = Digest::SHA512.hexdigest password + salt
+    self.save_field(kopal_account_id, 'account_password_hash', password)
+  end
+
+  def self.verify_password kopal_account_id, password
+    require 'digest'
+    salt = self.get_field(kopal_account_id, 'account_password_salt')
+    hash = self.get_field(kopal_account_id, 'account_password_hash')
+    hash == Digest::SHA512.hexdigest(password + salt.to_s)
   end
 
 private
 
+  def validates_uniqueness_of_kopal_account_id_and_preference_name
+    if self.class.
+        find_by_kopal_account_id_and_preference_name self[:kopal_account_id], self[:preference_name]
+      errors.add('preference_name', 'Preference name is already used.')
+    end
+  end
+
   #post-fixed(!) since raises exception.
   def self.check_preference_name! name
+    return if name.starts_with? TEMP_PREFERENCE_NAME_PREFIX
     raise Kopal::KopalPreference::InvalidFieldName, 'Preference name ' + name.to_s +
       ' is not valid.' unless preference_name_valid? name
     deprecation_reason = deprecated? name

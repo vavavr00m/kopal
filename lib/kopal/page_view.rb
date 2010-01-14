@@ -4,6 +4,11 @@ class Kopal::PageView
   LAST_VERSION_PROTOTYPE = '1.6'
   LAST_VERSION_SCRIPTACULOUS = '1.8'
 
+  def initialize profile_user
+    @profile_user = profile_user
+    @kopal_route = @profile_user.route
+  end
+
   #alias for constant +RAILS_ENV+.
   def environment
     RAILS_ENV
@@ -48,7 +53,7 @@ class Kopal::PageView
   end
 
   def description
-    @description ||= "Social profile of #{Kopal.profile_user}."
+    @description ||= "Social profile of #{@profile_user}."
   end
 
   def description= value
@@ -57,13 +62,13 @@ class Kopal::PageView
 
   #Yadis/XRDS discovery meta tags for user.
   def meta_yadis_discovery
-    '<meta http-equiv="X-XRDS-Location" content="' + Kopal.route.xrds + '">'
+    '<meta http-equiv="X-XRDS-Location" content="' + @kopal_route.xrds + '">'
   end
 
   #OpenID discovery meta tags.
   def meta_openid_discovery
-    '<link rel="openid2.provider" href="' + Kopal.route.openid_server + '">' +
-       "\n" + '<link rel="openid2.local_id" href="' + Kopal.identity.to_s + '">'
+    '<link rel="openid2.provider" href="' + @kopal_route.openid_server + '">' +
+       "\n" + '<link rel="openid2.local_id" href="' + @profile_user.kopal_identity.to_s + '">'
   end
 
   def stylesheets
@@ -79,7 +84,7 @@ class Kopal::PageView
   end
 
   def javascripts
-    @javascripts ||= [Kopal.route.javascript('dynamic'), Kopal.route.javascript('home')]
+    @javascripts ||= [@kopal_route.javascript('dynamic'), @kopal_route.javascript('home')]
   end
 
   def add_javascript value
@@ -117,7 +122,7 @@ class Kopal::PageView
   end
 
   def google_analytics_code
-    Kopal[:widget_google_analytics_code]
+    @profile_user[:widget_google_analytics_code]
   end
 
 private
@@ -133,6 +138,6 @@ private
   end
 
   def title_postfix
-    "#{Kopal.profile_user} #{title_separator} Kopal Profile"
+    "#{@profile_user} #{title_separator} Kopal Profile"
   end
 end

@@ -35,11 +35,6 @@ module Kopal
    @@base_route
   end
 
-  #DEPRECATED, use controller variable - +@kopal_route+ instead,
-  #since it may not be thread safe.
-  def self.route
-    @routing ||= Kopal::Routing.new
-  end
 end
 
 #Wrapper around named routes.
@@ -48,7 +43,9 @@ class Kopal::Routing
   #include ActionController::Routing::Routes.named_routes.instance_variable_get :@module
   ActionController::Routing::Routes.named_routes.install self
 
-  def initialize controller = nil
+  def initialize controller
+    raise 'Tried to initialise from a non-kopal controller' unless
+      controller.is_a? Kopal::ApplicationController
     @controller = controller
   end
 
@@ -171,10 +168,13 @@ class Kopal::Routing
   end
 
   #TODO: :format => recognise saved image format.
-  def profile_image profile_user, hash = {}
+  #pass a custome name as as hash[:image_name]
+  def profile_image hash = {}
+    image_name = hash.delete(:image_name) ||
+      @controller.instance_variable_get(:@profile_user).feed.name.titlecase.
+        gsub(/[\/\\\!\@\#\$\%\^\*\&\-\.\,\?]+/, ' ').gsub(' ', '').underscore
     hash.update :action => 'profile_image', :id =>
-      profile_user.feed.name.titlecase.gsub(/[\/\\\!\@\#\$\%\^\*\&\-\.\,\?]+/, ' ').
-      gsub(' ', '').underscore, :format => 'jpeg', :trailing_slash => false
+      image_name, :format => (hash[:format] || 'jpeg'), :trailing_slash => false
     home(hash)
   end
 
@@ -203,16 +203,10 @@ class Kopal::Routing
     organise hash
   end
 
-  #Get the controller instance.
-  #thread safe?
-  def self.ugly_hack value
-    @@controller = value
-  end
-
 private
 
   def url_for options = {}
-    (@controller || @@controller).url_for options
+    @controller.url_for options
   end
 
 end

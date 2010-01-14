@@ -1,8 +1,8 @@
 <%= render :partial => 'navigation' %>
 
 <h2>Identity</h2>
-<% if @signed %>
-  <p class="helper"><%= link_to("Edit identity", Kopal.route.edit_identity,
+<% if @visiting_user.homepage? %>
+  <p class="helper"><%= link_to("Edit identity", @kopal_route.edit_identity,
     {:title => t(:edit_your_profile)}) %></p>
 <% end %>
 <% if @profile_user.created_identity? %>
@@ -42,21 +42,21 @@
 
 <h2>Profile</h2>
 
-<p class="helper"><%= link_to "View all profile pages", Kopal.route.page,
+<p class="helper"><%#= link_to "View all profile pages", Kopal.route.page,
   :title => "View profile pages of #{@profile_user}" %></p>
 
-  <%= as_cloud @pages_as_cloud, {:limit => 4, :max_font_size => 17} %>
+  <%#= as_cloud @pages_as_cloud, {:limit => 4, :max_font_size => 17} %>
 
 <p>&nbsp;</p>
 
 <h2>Shoutbox</h2>
 
-<p class="helper"><%= link_to "Write &raquo;", Kopal.route.profile_comment(:anchor => 'write'),
+<p class="helper"><%= link_to "Write &raquo;", @kopal_route.profile_comment(:anchor => 'write'),
     :title => "Write something for #{@profile_user}" %></p>
 
 <% @comments.each do |c| %>
   <%= render :partial => 'comment_ribbon', :locals => { :comment => c } %>
 <% end %>
 
-<p class="helper"><%= link_to "View more &raquo;", Kopal.route.profile_comment,
+<p class="helper"><%= link_to "View more &raquo;", @kopal_route.profile_comment,
   :title => "Shoutbox for #{@profile_user}" %></p>
