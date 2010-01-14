@@ -5,7 +5,7 @@ require 'rexml/document' #Host server of its.raining.in is not loading REXML::Do
 #TODO: Place <tt>div#SurfaceLeft</tt> after <tt>div#SurfaceFront</tt> using some
 #      negative margin CSS technique in <tt>layout.html.erb</tt>
 #TODO: Hook in mercurial to run all test successfully before commit.
-class Kopal::ApplicationController < ActionController::Base
+class Kopal::ApplicationController < ApplicationController
   helper :all # include all helpers, all the time
   helper Kopal::KopalHelper #in views
   include Kopal::KopalHelper #in controllers
@@ -25,9 +25,8 @@ class Kopal::ApplicationController < ActionController::Base
   #Ex: Please authenticate yourself before continuing.
   def authorise
     #:status => 401 (Unauthorised)
-    redirect_to(Kopal.route.signin(:and_return_to => request.request_uri)) and
-      return false unless @signed #Using @profile_user.signed? may create a security risk
-    #if Kopal#@profile_user is cached.
+    redirect_to(@kopal_route.signin(:and_return_to => request.request_uri)) and
+      return false unless @visiting_user.homepage?
     true
   end
 
@@ -54,28 +53,47 @@ class Kopal::ApplicationController < ActionController::Base
     }
     render :xml => xml, :staus => 400
   end
+
+  def render_404 message = nil
+    @message = message
+    render :template => 'home/http_404', :status => :not_found
+  end
   
 private
   def initialise
-    check_for_incomplete_migration!
-    self.prepend_view_path Kopal.root.join('lib', 'app', 'views').to_s
-    Kopal::Routing.ugly_hack self.dup
-    @@request = request
+    session[:kopal] = {} unless session[:kopal].is_a? Hash
     Kopal.initialise
+
+    if Kopal.multiple_profile_interface?
+      if kopal_determine_profile_identifier
+        @profile_user = Kopal::ProfileUser.new kopal_determine_profile_identifier
+      else
+        if params[:controller] == 'kopal/home' and params[:action] == 'index' and Kopal.redirect_for_home
+          redirect_to Kopal.redirect_for_home
+          return
+        end
+        render_404 "Can not find requested Kopal profile."
+        return
+      end
+    else
+      check_for_incomplete_migration!
+      @profile_user = Kopal::ProfileUser.new Kopal::KopalAccount.default_profile_account
+    end
+
     @kopal_route = Kopal::Routing.new self
+    @profile_user.route = @kopal_route
+    self.prepend_view_path Kopal.root.join('lib', 'app', 'views').to_s
+    @visiting_user = Kopal::VisitingUser.new session[:kopal][:signed_kopal_identity],
+      @profile_user.kopal_identity.to_s == session[:kopal][:signed_kopal_identity]
     I18n.locale = params[:culture]
-    @signed = true if session[:signed] #DEPRECATED: Use @profile_user.signed? instead.
-    Kopal.reload_variables!
-    @profile_user = Kopal.profile_user session[:signed]
-    @visiting_user = @visitor = Kopal.visiting_user
-    @_page = Kopal::PageView.new
+    @_page = Kopal::PageView.new @profile_user
     set_response_headers
     set_page_variables
-    actions_for_profile_user if @profile_user.signed?
+    actions_for_signed_user_visiting_homepage if @visiting_user.homepage?
   end
 
   def set_response_headers
-    response.headers['X-XRDS-Location'] = Kopal.route.xrds
+    response.headers['X-XRDS-Location'] = @kopal_route.xrds
   end
 
   def set_page_variables
@@ -83,7 +101,9 @@ private
     @_page.add_stylesheet 'home'
   end
 
-  def actions_for_profile_user
+  def actions_for_signed_user_visiting_homepage
+    return
+    #TODO: some tasks should only run on single profile interface and only on default profile.
     unless Kopal[:meta_upgrade_last_check] and
         Kopal[:meta_upgrade_last_check] > 7.days.ago
       flash.now[:notification] = "New release may be available. \n" +
@@ -96,7 +116,7 @@ private
   end
 
   def check_for_incomplete_migration!
-    if Kopal.database.migration_needed?
+    if Kopal::KopalModel.migration_needed?
       render :text => "Kopal needs to be updated first.\n" +
         "Please run <code>rake kopal:update RAILS_ENV=#{RAILS_ENV}</code> to update."
     end

@@ -9,8 +9,8 @@
 #== UserFriend Indices
 # * <tt>kopal_identity, unique</tt>
 #
-class Kopal::UserFriend < Kopal::KopalModel
-  set_table_name 'user_friend'
+class Kopal::ProfileFriend < Kopal::KopalModel
+  set_table_name "#{name_prefix}profile_friend"
 
   #Valid friendship states that can go to database.
   FRIENDSHIP_STATES = [
@@ -37,8 +37,8 @@ class Kopal::UserFriend < Kopal::KopalModel
 
   #Initialise a UserFriend instance that is not and can not be associated
   #with a database row.
-  def self.find_or_initialise_readonly kopal_identity
-    r = self.find_or_initialize_by_kopal_identity kopal_identity
+  def self.find_or_initialise_readonly friend_kopal_identity
+    r = self.find_or_initialize_by_friend_kopal_identity friend_kopal_identity
     r.readonly!
     return r
   end

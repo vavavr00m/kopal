@@ -1,18 +1,22 @@
 namespace :kopal do
+
+  desc "Performs first time tasks."
+  task :first_time => :environment do
+    Rake::Task['kopal:update'].invoke
+    Kopal::KopalModel.perform_first_time_tasks
+    puts "Your default password has been set as \"#{Kopal::KopalPreference::DEFAULT_PASSWORD}\", " +
+      "please change it."
+    puts "Thank you for using Kopal."
+  end
+  
   desc "Creates/upgrades the database for Kopal."
   task :update => :environment do
+    puts "Installing required gems."
     Rake::Task["gems:install"].invoke #Check gem dependencies and install/upgrade them.
-    #Initialise it before migrating.
-    #Since if called within migration (for example 0005_deprecate_account_password.rb),
-    #it will establish a new database connection and SQLite will throw error like
-    #library called out of sequence.
-    Kopal::KopalModel
-    first_time = true if Kopal.database.last_migrated_number.zero?
-    Kopal.database.migrate!
-    if first_time
-      Kopal.database.perform_first_time_tasks
-    end
-    puts "\nNOTE: **** Be sure to restart your servers. ****\n\n"
+    puts "Migrating Kopal specific database changes."
+    prev_state, ENV['VERBOSE'] = ENV['VERBOSE'], false.to_s
+    Rake::Task["kopal:migrate_database"].invoke
+    ENV['VERBOSE'] = prev_state
   end
 
   desc "Fetches new release from Internet, then updates the plugin.\n" +
@@ -73,6 +77,11 @@ namespace :kopal do
     puts "NOTE: Please run \"rake kopal:update RAILS_ENV=production\" to update Kopal.\n\n"
   end
 
+  desc "Migrates Kopal specific migrations only."
+  task :migrate_database do
+    Kopal::KopalModel.migrate!
+  end
+
   #desc "Removes kopal specific tables from the database."
   task :clear_database do
   end
@@ -110,5 +119,11 @@ namespace :kopal do
     task :remove do
     end
   end
+
+
+  Rake::Task["db:migrate"].enhance do
+    Rake::Task["kopal:migrate_database"].invoke
+  end
+  
 end
 

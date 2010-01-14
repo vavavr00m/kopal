@@ -5,7 +5,7 @@ class Kopal::HomeController < Kopal::ApplicationController
   #TODO: in place editor for "Status message".
   def index
     unless params[:"kopal.feed"].blank?
-      redirect_to Kopal.route.feed
+      redirect_to @kopal_route.feed
       return
     end
     unless params[:"kopal.connect"].blank?
@@ -16,15 +16,15 @@ class Kopal::HomeController < Kopal::ApplicationController
       params.delete :"kopal.connect"
       params.delete :"kopal.subject"
       #Kopal.route.connect(params) won't work. Got to change string keys to symbols.
-      redirect_to Kopal.route.connect Hash[*(params.map { |k,v| [k.to_sym, v] }.flatten)]
+      redirect_to @kopal_route.connect Hash[*(params.map { |k,v| [k.to_sym, v] }.flatten)]
     end
     @comments = Kopal::ProfileComment.find(:all, :order => 'created_at DESC', :limit => 20)
-    @pages_as_cloud = Kopal::ProfilePage.find(:all).map {|p|
-      { :label => p.to_s, :link => Kopal.route.page(p.page_name),
-        :title => "\"#{p}\", profile pages of #{@profile_user}",
-        :weight => p.page_text[:element].size
-      }
-    }
+#    @pages_as_cloud = Kopal::ProfilePage.find(:all).map {|p|
+#      { :label => p.to_s, :link => Kopal.route.page(p.page_name),
+#        :title => "\"#{p}\", profile pages of #{@profile_user}",
+#        :weight => p.page_text[:element].size
+#      }
+#    }
   end
 
   #Shoutbox
@@ -81,32 +81,43 @@ class Kopal::HomeController < Kopal::ApplicationController
   def profile_image
     require 'md5'
     if params[:of].blank? #self
-      redirect_to gravatar_url Kopal['feed_email']
+      redirect_to gravatar_url @profile_user['feed_email']
     else
       #redirect to url or send raw data
       redirect_to Kopal::Identity.new(params[:of]).profile_image_url
     end
   end
 
-  #Sign-in page for user.
+  #Sign-in page for profile user.
   def signin
+    session[:kopal][:return_after_signin] ||= params[:and_return_to] || @kopal_route.root(:only_path => false)
     @_page.title <<= "Sign In"
-    session[:and_return_to] ||= params[:and_return_to] || Kopal.route.root
-    if request.post?
-      if Kopal.authenticate_simple(params[:password])
-        session[:signed] = true
-        redirect_to( session[:and_return_to])
-        session.delete :and_return_to
-        return
+
+    if Kopal.delegate_signin_to_application?
+      result = kopal_profile_signin
+      return unless result
+      session[:kopal][:signed_kopal_identity] = @profile_user.kopal_identity.to_s
+      redirect_to session[:kopal].delete :return_after_signin
+      return
+    else
+      if request.post?
+        case @profile_user[:authentication_method]
+        when 'simple':
+          if Kopal::KopalPreference.verify_password(@profile_user.account.id, params[:password])
+            session[:kopal][:signed_kopal_identity] = @profile_user.kopal_identity.to_s
+            redirect_to session[:kopal].delete :return_after_signin
+            return
+          end
+        end
+        flash.now[:notice] = "Wrong password."
       end
-      flash.now[:notice] = "Wrong password."
     end
   end
 
   #Signs out user. To sign-out a user, use - +Kopal.route.signout+
   def signout
-    session[:signed] = false
-    redirect_to(params[:and_return_to] || Kopal.route.root)
+    session[:kopal][:signed_kopal_identity] = false
+    redirect_to(params[:and_return_to] || @kopal_route.root)
   end
 
   #ajax-spinner.gif. Credit - http://www.ajaxload.info/

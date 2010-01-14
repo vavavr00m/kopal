@@ -13,6 +13,7 @@ class ProfileCommentTest < ActiveSupport::TestCase
   def test_duplicate_comment_text_can_not_be_saved_instantly
     p = Proc.new {
       c = Kopal::ProfileComment.new
+      c.kopal_account_id = 0
       c.name = "example"
       c.email = 'something@example.net'
       c.comment_text = 'duplication'
@@ -26,14 +27,12 @@ class ProfileCommentTest < ActiveSupport::TestCase
     @new_record.email = 'bad-bad-email!!@'
     assert !@new_record.valid?
     assert @new_record.errors["email"]
-    assert_equal 1, @new_record.errors.size
   end
 
   def test_website_address_must_have_valid_syntax
     @new_record.website_address = 'bad-bad-website-address'
     assert !@new_record.valid?
     assert @new_record.errors["website_address"]
-    assert_equal 1, @new_record.errors.size
   end
 
   def tes_can_not_save_blank_comment_text

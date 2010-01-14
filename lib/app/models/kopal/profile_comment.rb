@@ -6,10 +6,11 @@
 #Model indices
 #  none
 class Kopal::ProfileComment < Kopal::KopalModel
-  set_table_name 'profile_comment'
+  set_table_name "#{name_prefix}profile_comment"
 
   DUPLICATE_TIME = 2.minutes #Time within which a duplicate comment can not be saved.
 
+  validates_presence_of :kopal_account_id
   #Name and email must be present if Website address is not a verified Kopal Identity.
   validates_presence_of :name, :email, :unless => Proc.new { |i| i.kopal_identity?}
   #Website address must be present (of course) if is_kopal_identity is true

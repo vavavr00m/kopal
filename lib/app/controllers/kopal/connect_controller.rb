@@ -3,7 +3,7 @@ class Kopal::ConnectController < Kopal::ApplicationController
   before_filter :connect_initialise
 
   def index
-    redirect_to Kopal.route.root
+    redirect_to @kopal_route.root
   end
 
   def discovery
@@ -24,11 +24,11 @@ class Kopal::ConnectController < Kopal::ApplicationController
     )
     friend_identity = normalise_kopal_identity(params[:'kopal.identity'])
     render_kopal_error 0x1201 and return if #Duplicate friendship request
-      Kopal::UserFriend.find_by_kopal_identity(friend_identity)
-    @friend = Kopal::UserFriend.new
+      Kopal::ProfileFriend.find_by_friend_kopal_identity(friend_identity)
+    @friend = Kopal::ProfileFriend.new
     @friend.kopal_identity = friend_identity
     begin
-      f_s = Kopal.fetch(@friend.kopal_identity.friendship_state_url)
+      f_s = Kopal::Antenna.broadcast(Kopal::Signal::Request.new @friend.kopal_identity.friendship_state_url @profile_user.kopal_identity)
     rescue Kopal::Antenna::FetchingError => e
       render_kopal_error e.message
       return
@@ -37,7 +37,7 @@ class Kopal::ConnectController < Kopal::ApplicationController
     friendship_state = f_s.body_xml.root.elements["FriendshipState"].
       attributes["state"]
     unless friendship_state == 'waiting'
-      if Kopal::UserFriend::ALL_FRIENDSHIP_STATES.map{|x| x.to_s}.include? friendship_state
+      if Kopal::ProfileFriend::ALL_FRIENDSHIP_STATES.map{|x| x.to_s}.include? friendship_state
         render_kopal_error 0x1202 #Invalid friendship state.
       else #extreme?
         render_kopal_error 0x1203 #Unknown friendship state.
@@ -85,7 +85,7 @@ class Kopal::ConnectController < Kopal::ApplicationController
       :"kopal.friendship-key" => true,
       :"kopal.identity" => Proc.new {|x| normalise_kopal_identity(x); true}
     )
-    @friend = UserFriend.find_by_kopal_identity normalise_url params[:"kopal.identity"]
+    @friend = Kopal::ProfileFriend.find_by_friend_kopal_identity normalise_url params[:"kopal.identity"]
     render_kopal_error 0x1205 and return unless @friend
     render_kopal_error 0x1204 and return unless
       @friend.friendship_key == params[:"kopal.friendship-key"]
@@ -106,7 +106,7 @@ class Kopal::ConnectController < Kopal::ApplicationController
     required_params(
       :"kopal.identity" => Proc.new {|x| normalise_kopal_identity(x); true}
     )
-    @friend ||= Kopal::UserFriend.find_or_initialise_readonly normalise_url params[:"kopal.identity"]
+    @friend ||= Kopal::ProfileFriend.find_or_initialise_readonly normalise_url params[:"kopal.identity"]
     render :friendship_state #necessary, since called by other methods.
   end
 

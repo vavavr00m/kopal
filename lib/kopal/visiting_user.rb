@@ -3,22 +3,24 @@
 class Kopal::VisitingUser < Kopal::KopalUser
 
   attr_reader :kopal_identity
-  def initialize kopal_identity = nil
+  
+  def initialize kopal_identity = nil, homepage = nil
     if kopal_identity
       @kopal_identity = (kopal_identity.is_a?(Kopal::Identity) ? kopal_identity :
-          Kopal::Indetity.new(kopal_identity))
+          Kopal::Identity.new(kopal_identity))
     end
+    @homepage = homepage
   end
 
-  #Alias for Kopal::ProfileUser#signed?
-  def self?
-    Kopal.profile_user.signed?
+  #If the current visitor is profile user herself? Or in other words,
+  #should we enable administrative tasks?
+  def homepage?
+    @homepage
   end
-  alias me? self?
 
   #Is the visitor recognised and has a valid Kopal Identity?
+  #+Not+ same as <tt>Kopal::ProfileUser#signed?</tt>
   def signed?
     !!kopal_identity
   end
-  alias known? signed?
 end
