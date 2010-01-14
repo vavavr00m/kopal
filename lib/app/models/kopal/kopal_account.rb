@@ -11,14 +11,16 @@ class Kopal::KopalAccount < Kopal::KopalModel
   has_many :pending_friends, :class_name => 'Kopal::ProfileFriend', :conditions => ['friendship_state = ?', 'pending']
   has_many :waiting_friends, :class_name => 'Kopal::ProfileFriend', :conditions => ['friendship_state = ?', 'waiting']
   has_many :friends, :class_name => 'Kopal::ProfileFriend', :conditions => ['friendship_state = ?', 'friend']
+  #has_many :profile_visitors
   #Duplicated in ProfileUser#status_message, remove it after one commit.
   has_one :status_message, :class_name => 'Kopal::KopalPreference', :conditions => ['preference_name = ?', 'profile_status_message']
+  #has_one :last_seen, :last_signed
 
   validates_presence_of :identifier_from_application, :unless => Proc.new {|p| p.id == 0}
   validates_uniqueness_of :identifier_from_application
 
   def self.create_default_profile_account!
-    raise 'Default profile account alread exists!' if self.find_by_id(0)
+    raise 'Default profile account already exists!' if self.find_by_id(0)
     self.transaction do
       d = self.new
       d.id = DEFAULT_PROFILE_ACCOUNT_ID

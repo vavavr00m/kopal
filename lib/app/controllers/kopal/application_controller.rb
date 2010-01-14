@@ -63,7 +63,7 @@ private
   def initialise
     session[:kopal] = {} unless session[:kopal].is_a? Hash
     Kopal.initialise
-
+    self.prepend_view_path Kopal.root.join('lib', 'app', 'views').to_s
     if Kopal.multiple_profile_interface?
       if kopal_determine_profile_identifier
         @profile_user = Kopal::ProfileUser.new kopal_determine_profile_identifier
@@ -82,7 +82,6 @@ private
 
     @kopal_route = Kopal::Routing.new self
     @profile_user.route = @kopal_route
-    self.prepend_view_path Kopal.root.join('lib', 'app', 'views').to_s
     @visiting_user = Kopal::VisitingUser.new session[:kopal][:signed_kopal_identity],
       @profile_user.kopal_identity.to_s == session[:kopal][:signed_kopal_identity]
     I18n.locale = params[:culture]
