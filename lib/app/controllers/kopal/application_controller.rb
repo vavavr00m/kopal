@@ -56,7 +56,7 @@ class Kopal::ApplicationController < ApplicationController
 
   def render_404 message = nil
     @message = message
-    render :template => 'home/http_404', :status => :not_found
+    render :template => 'kopal/home/http_404', :status => :not_found
   end
   
 private
