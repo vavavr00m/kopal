@@ -16,6 +16,8 @@ require 'rake/testtask'
 require 'rake/rdoctask'
 require 'tasks/rails'
 
+#TODO: Test on multiple DBMSes.
+
 Rake::Task['db:migrate:reset'].invoke
 #puts "BEING CALLED"
 #This line is being called 2 times, while above rake task executes only once!

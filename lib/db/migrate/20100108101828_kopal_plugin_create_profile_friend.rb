@@ -12,7 +12,8 @@ class KopalPluginCreateProfileFriend < ActiveRecord::Migration
       t.string :friend_group
       t.timestamps
     end
-    add_index profile_friend_table_name, [:kopal_account_id, :friend_kopal_identity], :unique => true
+    add_index profile_friend_table_name, [:kopal_account_id, :friend_kopal_identity], :unique => true,
+      :name => "index_#{profile_friend_table_name}_on_kaid_and_fkid" #Avoid PostgreSQL NAMEDATALEN-1 (63).
   end
 
   def self.down
