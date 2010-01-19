@@ -7,8 +7,10 @@ class Kopal::ProfileUser < Kopal::KopalUser
   def initialize kopal_account_or_id
     if kopal_account_or_id.is_a? Kopal::KopalAccount
       @account = kopal_account_or_id
-    else
+    elsif kopal_account_or_id.is_a? Integer #Or else Kopal::KopalAccount.find() will convert automatically to integer.
       @account = Kopal::KopalAccount.find(kopal_account_or_id)
+    else
+      raise ArgumentError, "Expected an instance of Integer but got instance of #{kopal_account_or_id.class} instead."
     end
     @pref_cache = {}
     #Enforce single instance.
@@ -83,7 +85,7 @@ class Kopal::ProfileUser < Kopal::KopalUser
 
   def preferences_for_feed
     r = {}
-    Kopal::KopalPreference.find(:all, :conditions => "preference_name LIKE 'feed_%'").
+    account.preferences_for_feed.
       each { |e|
         r[e.preference_name] = e.preference_text
       }
