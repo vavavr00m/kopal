@@ -27,7 +27,14 @@ class Kopal::KopalAccount < Kopal::KopalModel
       d.identifier_from_application = nil
       d.save!
       Kopal::KopalPreference.save_password d.id, Kopal::KopalPreference::DEFAULT_PASSWORD
+      return true #and not saved password hash.
     end
+  end
+
+  def self.create_account! identifier_from_application
+    a = self.new
+    a.identifier_from_application = identifier_from_application
+    a.save!
   end
 
   def self.default_profile_account
