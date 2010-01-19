@@ -17,7 +17,7 @@
 <%= error_messages_for 'profile_comment' %>
 
 <% form_for :profile_comment do |f| %>
-  <% unless @visitor.signed? %>
+  <% unless @visiting_user.signed? %>
     <%= f.label :name %> &ndash; <br />
     <%= f.text_field :name %> <br />
     <%= f.label :email %> &ndash; <br />

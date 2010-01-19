@@ -40,9 +40,11 @@ class Kopal::ProfileComment < Kopal::KopalModel
     end
   end
 
+  #only if new_record?(), calling valid?() on recently saved one shouldn't generate.
   def duplicate_comment?
-    u = self.class.find_by_comment_text(self[:comment_text],
-      :conditions => ['created_at > ?', DUPLICATE_TIME.ago])
+    self.class.find_by_kopal_account_id_and_comment_text(
+      self[:kopal_account_id], self[:comment_text],
+      :conditions => ['created_at > ?', DUPLICATE_TIME.ago]) if new_record?
   end
 
   def from_kopal_identity

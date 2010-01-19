@@ -30,11 +30,13 @@ class Kopal::HomeController < Kopal::ApplicationController
   #Shoutbox
   def comment
     @_page.title <<= "Shoutbox"
+    @comments = Kopal::ProfileComment.paginate(:page => params[:page], :order => 'created_at DESC')
     if request.post?
-      @profile_comment = Kopal::ProfileComment.new params[:profile_comment]
-      if @visitor.known?
+      @profile_comment = @profile_user.account.comments.build params[:profile_comment]
+      @profile_comment.kopal_account_id = @profile_user.account.id
+      if @visiting_user.signed?
         @profile_comment.is_kopal_identity = true
-        @profile_comment.website_address = @visitor.kopal_identity.to_s
+        @profile_comment.website_address = @visiting_user.kopal_identity.to_s
       end
       #Run validations before running verify_recaptcha(), since running validations
       #will reset the error strings of model and errors set by verify_recaptcha() will be lost.
@@ -45,10 +47,11 @@ class Kopal::HomeController < Kopal::ApplicationController
       if is_valid and human_verified
         @profile_comment.save!
         flash[:highlight] = "Comment submitted successfully."
-        redirect_to Kopal.route.profile_comment
+        redirect_to @kopal_route.profile_comment
+        return
       end
+      render :comment, :status => 400
     end
-    @comments = Kopal::ProfileComment.paginate(:page => params[:page], :order => 'created_at DESC')
   end
 
   def friend
