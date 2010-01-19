@@ -72,4 +72,33 @@ class Kopal::HomeControllerTest < ActionController::TestCase
     get :stylesheet, :id => 'home'
     assert_template 'siterelated/home.css'
   end
+
+  def test_comment_is_reachable
+    get :comment
+    assert_response :success
+  end
+
+  def test_comment_can_post_new_comment
+    post :comment, {}
+    assert_response 400
+    assert !assigns(:profile_comment).valid?
+    assert assigns(:profile_comment).errors[:comment_text]
+    assert_equal "can't be blank", assigns(:profile_comment).errors[:comment_text]
+    assert assigns(:profile_comment).errors[:name]
+    assert_equal "can't be blank", assigns(:profile_comment).errors[:name]
+
+    old_size = Kopal::ProfileComment.find(:all).size
+    time = Time.now
+    post :comment, {:profile_comment => {:name => "John Doe", 
+        :comment_text => "Hello, world! #{time}", :email => 'something@example.org' }}
+    new_size = Kopal::ProfileComment.find(:all).size
+    assert assigns(:profile_comment).valid?, assigns(:profile_comment).errors.inspect
+    assert_equal old_size+1, new_size
+    assert_response :redirect
+    assert_redirected_to assigns(:kopal_route).profile_comment
+    assert_equal "Comment submitted successfully.", flash[:highlight]
+    last_row = Kopal::ProfileComment.find(:last)
+    assert_equal 'John Doe', last_row.name
+    assert_equal "Hello, world! #{time}", last_row.comment_text
+  end
 end
