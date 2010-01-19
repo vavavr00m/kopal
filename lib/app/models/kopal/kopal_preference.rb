@@ -51,7 +51,6 @@ class Kopal::KopalPreference < Kopal::KopalModel
   ALL_FIELDS = FIELDS + DEPRECATED_FIELDS.keys
 
   validates_presence_of :kopal_account_id, :preference_name
-  validates_uniqueness_of :preference_name
   validates_inclusion_of :preference_name, #same in check_preference_name!()?
     :in => ALL_FIELDS.to_s,
     :unless => Proc.new { |p| p.preference_name.starts_with? TEMP_PREFERENCE_NAME_PREFIX},

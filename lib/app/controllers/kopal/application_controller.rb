@@ -10,7 +10,7 @@ class Kopal::ApplicationController < ApplicationController
   helper Kopal::KopalHelper #in views
   include Kopal::KopalHelper #in controllers
   include Kopal::OpenID::ControllerHelper
-  before_filter :initialise
+  before_filter :initialise_for_kopal
   layout "kopal_application"
 
   # Scrub sensitive parameters from your log
@@ -55,18 +55,19 @@ class Kopal::ApplicationController < ApplicationController
   end
 
   def render_404 message = nil
-    @message = message
-    render :template => 'kopal/home/http_404', :status => :not_found, :layout => false
+    #head :not_found
+    render :file => Rails.root.join('public', '404.html'), :status => :not_found
   end
   
 private
-  def initialise
+  def initialise_for_kopal
     session[:kopal] = {} unless session[:kopal].is_a? Hash
     Kopal.initialise
     self.prepend_view_path Kopal.root.join('lib', 'app', 'views').to_s
     if Kopal.multiple_profile_interface?
       if kopal_determine_profile_identifier
-        @profile_user = Kopal::ProfileUser.new kopal_determine_profile_identifier
+        @profile_user = Kopal::ProfileUser.new Kopal::KopalAccount.
+          find_by_identifier_from_application kopal_determine_profile_identifier
       else
         if params[:controller] == 'kopal/home' and params[:action] == 'index' and Kopal.redirect_for_home
           redirect_to Kopal.redirect_for_home
