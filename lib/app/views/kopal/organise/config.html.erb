@@ -1,0 +1,14 @@
+<%= render :partial => 'navigation' %>
+
+
+<% if @present_value %>
+  <h2>Kopal Configuration</h2>
+  <strong>Key:</strong> <code><%= @key %></code><br />
+  <strong>Value:</strong> <code><%= @present_value %></code><br />
+  <strong>New Value:</strong> <code><%= params[:value] %></code>
+
+  <% form_tag :key => @key, :value => params[:value] do %>
+    <%= submit_tag "Continue &raquo;" %>
+  <% end %>
+  
+<% end %>

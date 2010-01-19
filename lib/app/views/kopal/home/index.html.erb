@@ -1,0 +1,62 @@
+<%= render :partial => 'navigation' %>
+
+<h2>Identity</h2>
+<% if @visiting_user.homepage? %>
+  <p class="helper"><%= link_to("Edit identity", @kopal_route.edit_identity,
+    {:title => t(:edit_your_profile)}) %></p>
+<% end %>
+<% if @profile_user.created_identity? %>
+  <table>
+    <tr>
+      <td><%=  t(:real_name).titlecase %></td>
+      <td><%= @profile_user.feed.real_name %></td>
+    </tr>
+    <tr>
+      <td><%= t :aliases %></td>
+      <td><%= @profile_user.feed.aliases.join("<br />") %></td>
+    </tr>
+    <tr>
+      <td><%= t :about_me %></td>
+      <td><%= @profile_user.feed.description%></td>
+    </tr>
+    <tr>
+      <td><%= t :gender %></td>
+      <td><%= @profile_user.feed.gender %></td>
+    </tr>
+    <tr>
+      <td><%= t :date_of_birth %></td>
+      <td><%= @profile_user.dob_with_age %></td>
+    </tr>
+    <tr>
+      <td><%= t :country %></td>
+      <td><%= @profile_user.feed.country_living_with_code %></td>
+    </tr>
+    <tr>
+      <td><%= t :city %></td>
+      <td><%= @profile_user.feed.city_with_code %></td>
+    </tr>
+  </table>
+<% else %>
+  <p><%= t :user_has_not_yet_created_her_identity %></p>
+<% end %>
+
+<h2>Profile</h2>
+
+<p class="helper"><%#= link_to "View all profile pages", Kopal.route.page,
+  :title => "View profile pages of #{@profile_user}" %></p>
+
+  <%#= as_cloud @pages_as_cloud, {:limit => 4, :max_font_size => 17} %>
+
+<p>&nbsp;</p>
+
+<h2>Shoutbox</h2>
+
+<p class="helper"><%= link_to "Write &raquo;", @kopal_route.profile_comment(:anchor => 'write'),
+    :title => "Write something for #{@profile_user}" %></p>
+
+<% @comments.each do |c| %>
+  <%= render :partial => 'comment_ribbon', :locals => { :comment => c } %>
+<% end %>
+
+<p class="helper"><%= link_to "View more &raquo;", @kopal_route.profile_comment,
+  :title => "Shoutbox for #{@profile_user}" %></p>

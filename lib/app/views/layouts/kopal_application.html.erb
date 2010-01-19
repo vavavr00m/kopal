@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  <head>
+    <title><%= @_page.show_title %></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	  <meta http-equiv="Content-Language" content="<%= I18n.locale.to_s.upcase %>" />
+	  <% if(fclc = @profile_user["feed_country_living_code"]) %><meta name="geo.country" content="<%= fclc %>" /><% end %>
+	  <% if @_page.description %><meta name="Description" content="<%= @_page.description %>" /><% end %>
+
+    <%= @_page.meta_yadis_discovery %>
+    <%= @_page.meta_openid_discovery %>
+    
+    <% for stylesheet in @_page.stylesheets %>
+      <%= stylesheet_link_tag @kopal_route.stylesheet(stylesheet[:name] || stylesheet),
+        :media => stylesheet[:media] || 'all' %>
+    <% end %>
+
+    <% for javascript in @_page.javascripts %>
+      <%= javascript_include_tag javascript %>
+    <% end %>
+	  
+    <%= yield :page_head %>
+    
+  </head>
+  
+  <body>
+    <div id="Surface">
+      <div id="SurfaceAbove">
+        <%= yield :surface_above %>
+      </div>
+      <div id="SurfaceFront">
+        <% if flash[:highlight] -%>
+          <div id="FlashHighlight" class="flash highlight"><%= flash[:highlight] %></div>
+        <% end -%>
+        <% if flash[:notice] -%>
+          <div id="FlashNotice" class="flash notice"><%= flash[:notice] %></div>
+        <% end -%>
+        <% if flash[:notification] -%>
+          <div id="FlashNotification" class="flash notification"><%= flash[:notification] %></div>
+        <% end -%>
+
+        <%= @content_for_layout %>
+      </div>
+      <div id="SurfaceLeft">
+        <%= yield :surface_left %>
+      </div>
+      <div id="SurfaceDown"> <!-- footer -->
+        <%= yield :surface_down %>
+        <%= render :partial => '_shared/kopal_ribbon' %>
+        <p>Social Profile of <%= @profile_user %>. Powered by <a href="http://code.google.com/p/kopal/">Kopal</a>.</p>
+
+        <% if @_page.include_google_analytics? %>
+          <script type="text/javascript">
+          var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+          document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+          try {
+            var pageTracker = _gat._getTracker("<%= @_page.google_analytics_code %>");
+            pageTracker._trackPageview();
+          } catch(err) {}</script>
+       <% end %>
+      </div>
+    </div>
+    <p>&nbsp;<br />&nbsp;<br />&nbsp;<br />&nbsp;<br /></p>
+  </body>
+</html>

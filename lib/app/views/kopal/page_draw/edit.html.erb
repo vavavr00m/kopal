@@ -1,0 +1,56 @@
+<%= render :partial => 'kopal/home/navigation' %>
+
+<p class="description"> Editing profile page <em><%=h @page.page_name %></em> &mdash; </p>
+
+<p class="helper">
+  <%= link_to "Rename page", {:action => 'rename_page', :page => @page.page_name}, {:title => "Rename this page."} %>
+  <%= link_to 'View page', Kopal.route.page(params[:page]), {:title => 'View this page.'} %>
+</p>
+
+<h2><%= @page.page_name %></h2>
+
+<div class="description"> <%= in_place_editor @page.page_description.blank?() ?
+  "[Click to edit description.]" : @page.page_description, "PageDescription",
+   Kopal.route.page_draw(:action => 'update_page_description_aj', :page_id => @page.id),
+   :rows => 5, :click_to_edit_text => 'Click to edit description' %> </div>
+
+
+<p> Insert new &raquo; 
+	<% insr = []
+		insr << ['Note/Text', 'text']
+		insr << ['List', 'list']
+		insr << ['To-do list', 'todo']
+		insr << ['Paired list', 'pair']
+		insr << ['Separator', 'separator']
+		ins = []
+		insr.each{ |i|
+	%>
+	<% ins << link_to_remote( i[0], :url => {:action => 'insert_element_' + i[1], :page_id => @page.id},
+    :before => "spinner_page_edit = kopal.spinner('PageEdit', 'Before')",
+    :complete => "Element.remove(spinner_page_edit)")  %>
+<% } %>
+	<%= ins.to_sentence(:connector => ' or ', :skip_last_comma => true) %>
+</p>
+
+
+<div id="PageEdit">
+	<%= @already_present_elements %>
+	<%= sortable_element 'PageEdit', :tag => 'div',
+    :url => {:action => 'sort_element', :page_id => @page.id} %>
+</div>
+
+<hr />
+<p align="right"> <!-- <%= link_to 'Edit this page',
+  {:action => 'edit_nj', :page => @page.page_name},
+  {:title => 'Click here if you can not edit the page here.',
+    :style => 'font-size:16px;'} %> &nbsp; &nbsp; -->
+
+<%= link_to_remote 'Delete this page',
+		{
+			:url => {:action => 'delete_page', :page_id => @page.id},
+			:confirm => 'Are you sure about deleting this page?',
+			:method => 'post',
+			:before => "kopal.spinner({element_id : 'page_delete_link', insert_at : 'Top', wait_text : 'Deleting page....'})"
+		},
+		{:title => 'Delete this page', :style => 'font-size:16px;', :id => 'page_delete_link'} %> 
+</p>

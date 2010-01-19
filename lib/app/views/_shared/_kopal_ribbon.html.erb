@@ -1,0 +1,27 @@
+<style type="text/css">
+  div#KopalRibbon {
+    position: fixed;
+    bottom: 0;
+    background: #EEEEEE;
+    width: 100%;
+    margin: 0;
+    margin-left: -20px;
+    height: 20px;
+    padding: 4px;
+  }
+  div#KopalRibbon span.OnRight {
+    padding-right: 8px;
+    float:right;
+  }
+</style>
+<div id="KopalRibbon">
+  <strong>kopal</strong>
+  <%#= link_to "Next", 'http://search.dhaani.net/person/next/', "Browse a random profile." %>
+  <span class="OnRight">
+    <% unless @visiting_user.signed? %>
+      <%= link_to "Sign-In", @kopal_route.home(:action => 'foreign', :subject => 'signin'),
+        :title => "Sign-In to Kopal" %>
+    <% else %>
+    <% end %>
+  </span>
+</div>
