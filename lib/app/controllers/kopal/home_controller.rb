@@ -61,6 +61,7 @@ class Kopal::HomeController < Kopal::ApplicationController
   #Redirects to Visitor's Profile Homepage.
   def foreign
     @_page.title <<= "Foreign Affairs"
+    params[:returnurl].blank? || session[:kopal][:returnurl] = params[:returnurl]
     if request.post?
       identity = Kopal::Identity.new(params[:identity])
       case params[:subject]
@@ -68,6 +69,7 @@ class Kopal::HomeController < Kopal::ApplicationController
         redirect_to identity.friendship_request_url
         return
       when 'signin'
+        redirect_to identity.signin_request_url session[:kopal].delete :returnurl
       else
         flash.now[:notice] = "Unidentified value for <code>subject</code>"
       end
@@ -94,6 +96,7 @@ class Kopal::HomeController < Kopal::ApplicationController
   #Sign-in page for profile user.
   def signin
     session[:kopal][:return_after_signin] ||= params[:and_return_to] || @kopal_route.root(:only_path => false)
+    params[:via_kopal_connect].blank? || session[:kopal][:signing_via_kopal_connect] = params[:via_kopal_connect]
     @_page.title <<= "Sign In"
 
     if Kopal.delegate_signin_to_application?
@@ -108,6 +111,13 @@ class Kopal::HomeController < Kopal::ApplicationController
         when 'simple':
           if Kopal::KopalPreference.verify_password(@profile_user.account.id, params[:password])
             session[:kopal][:signed_kopal_identity] = @profile_user.kopal_identity.to_s
+            if session[:kopal].delete :signing_via_kopal_connect
+              uri = Kopal::Url.new session[:kopal].delete :return_after_signin
+              uri.query_hash.update :"kopal.visitor" => @profile_user.kopal_identity.escaped_uri
+              uri.build_query
+              redirect_to uri.to_s
+              return
+            end
             redirect_to session[:kopal].delete :return_after_signin
             return
           end
@@ -115,6 +125,21 @@ class Kopal::HomeController < Kopal::ApplicationController
         flash.now[:notice] = "Wrong password."
       end
     end
+  end
+
+  def signin_for_visitor
+    if params[:openid_identifier].blank?
+      redirect_to @kopal_route.home(:action => 'foreign', :subject => 'signin-request')
+      return
+    end
+    authenticate_with_openid { |result|
+      if result.successful?
+        session[:kopal][:signed_kopal_identity] = result.identifier
+      else
+        flash[:notice] = "OpenID verification failed for #{params[:openid_identifier]}"
+      end
+    }
+    redirect_to(params[:return_path] || @kopal_route.root) unless send :'performed?'
   end
 
   #Signs out user. To sign-out a user, use - +Kopal.route.signout+
@@ -149,7 +174,7 @@ class Kopal::HomeController < Kopal::ApplicationController
   def openid
     authenticate_with_openid { |result|
       if result.successful?
-        render :text => 'success'
+        redirect_to
       else
         render :text => 'failed. ' + result.message
       end
