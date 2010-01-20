@@ -38,7 +38,8 @@ module Kopal
 end
 
 #Wrapper around named routes.
-#Should deprecate it, and install all routes in rails/routing instead?
+#Should deprecate it, and use all routes from rails/routing instead?
+#Do we really need a wrapper class? Justify.
 class Kopal::Routing
   #include ActionController::Routing::Routes.named_routes.instance_variable_get :@module
   ActionController::Routing::Routes.named_routes.install self

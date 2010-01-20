@@ -3,6 +3,7 @@
     position: fixed;
     bottom: 0;
     background: #EEEEEE;
+    border-top:1px gray solid;
     width: 100%;
     margin: 0;
     margin-left: -20px;
@@ -15,11 +16,11 @@
   }
 </style>
 <div id="KopalRibbon">
-  <strong>kopal</strong>
+  <strong style="font-size: 16px;">kopal</strong>
   <%#= link_to "Next", 'http://search.dhaani.net/person/next/', "Browse a random profile." %>
   <span class="OnRight">
     <% unless @visiting_user.signed? %>
-      <%= link_to "Sign-In", @kopal_route.home(:action => 'foreign', :subject => 'signin'),
+      <%= link_to "Sign-In", @kopal_route.home(:action => 'foreign', :subject => 'signin', :returnurl => request.url),
         :title => "Sign-In to Kopal" %>
     <% else %>
     <% end %>

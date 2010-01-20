@@ -10,6 +10,11 @@ class Kopal::ConnectController < Kopal::ApplicationController
     #Nothing to write.
   end
 
+  def signin_request
+    redirect_to @kopal_route.signin :return_after_signin => params[:"kopal.returnurl"],
+      :via_kopal_connect => true
+  end
+
 
   #* Check if request is a duplicate request.
   #* Send a 'friendship-state' request
