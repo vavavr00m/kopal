@@ -11,9 +11,10 @@ module Kopal::OpenID
   module ControllerHelper
     def authenticate_with_openid &block
       if params[:openid_complete].nil?
+        session[:openid_return_url] = request.url
         k = Kopal::OpenID::Consumer.begin(params, session, &block)
         redirect_to(k.openid_request.redirect_url(
-          Kopal.identity.to_s, Kopal.route.openid_consumer_complete)) unless
+          @kopal_route.root(:only_path => false), session[:openid_return_url])) unless
           k.error?
       else
         Kopal::OpenID::Consumer.complete(params, request, session, &block)
