@@ -83,17 +83,24 @@ private
 
     @kopal_route = Kopal::Routing.new self
     @profile_user.route = @kopal_route
+    I18n.locale = params[:culture]
+    set_response_headers
+    authenticate_visiting_user if params[:"kopal.visitor"]
+    @_page = Kopal::PageView.new @profile_user
     @visiting_user = Kopal::VisitingUser.new session[:kopal][:signed_kopal_identity],
       @profile_user.kopal_identity.to_s == session[:kopal][:signed_kopal_identity]
-    I18n.locale = params[:culture]
-    @_page = Kopal::PageView.new @profile_user
-    set_response_headers
     set_page_variables
     actions_for_signed_user_visiting_homepage if @visiting_user.homepage?
   end
 
   def set_response_headers
     response.headers['X-XRDS-Location'] = @kopal_route.xrds
+  end
+
+  def authenticate_visiting_user
+    return if params[:"kopal.visitor"] == session[:kopal][:signed_kopal_identity]
+    redirect_to @kopal_route.home :action => 'signin_for_visitor', :openid_identifier =>
+      params[:'kopal.visitor'], :return_path => url_for(:only_path => true)
   end
 
   def set_page_variables
