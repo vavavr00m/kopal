@@ -124,6 +124,21 @@ class Kopal::HomeController < Kopal::ApplicationController
     end
   end
 
+  def signin_for_visitor
+    if params[:openid_identifier].blank?
+      redirect_to @kopal_route.home(:action => 'foreign', :subject => 'signin-request')
+      return
+    end
+    authenticate_with_openid { |result|
+      if result.successful?
+        session[:kopal][:signed_kopal_identity] = result.identifier
+      else
+        flash[:notice] = "OpenID verification failed for #{params[:openid_identifier]}"
+      end
+    }
+    redirect_to(params[:return_path] || @kopal_route.root) unless send :'performed?'
+  end
+
   #Signs out user. To sign-out a user, use - +Kopal.route.signout+
   def signout
     session[:kopal][:signed_kopal_identity] = false
@@ -156,7 +171,7 @@ class Kopal::HomeController < Kopal::ApplicationController
   def openid
     authenticate_with_openid { |result|
       if result.successful?
-        render :text => 'success'
+        redirect_to
       else
         render :text => 'failed. ' + result.message
       end

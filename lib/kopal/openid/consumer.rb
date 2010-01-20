@@ -62,7 +62,7 @@ class << self
   def complete params, request, session
     @session = session
     parameters = params.reject{|k,v|request.path_parameters[k]}
-    @openid_response = consumer.complete(parameters, Kopal.route.openid_consumer_complete)
+    @openid_response = consumer.complete(parameters, session[:openid_return_url])
     case @openid_response.status
     when OpenID::Consumer::SUCCESS
       yield Result.new(:successful, @openid_response.display_identifier)
