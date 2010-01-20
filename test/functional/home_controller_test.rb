@@ -88,9 +88,8 @@ class Kopal::HomeControllerTest < ActionController::TestCase
     assert_equal "can't be blank", assigns(:profile_comment).errors[:name]
 
     old_size = Kopal::ProfileComment.find(:all).size
-    time = Time.now
     post :comment, {:profile_comment => {:name => "John Doe", 
-        :comment_text => "Hello, world! #{time}", :email => 'something@example.org' }}
+        :comment_text => "Hello, world!", :email => 'something@example.org' }}
     new_size = Kopal::ProfileComment.find(:all).size
     assert assigns(:profile_comment).valid?, assigns(:profile_comment).errors.inspect
     assert_equal old_size+1, new_size
@@ -99,6 +98,22 @@ class Kopal::HomeControllerTest < ActionController::TestCase
     assert_equal "Comment submitted successfully.", flash[:highlight]
     last_row = Kopal::ProfileComment.find(:last)
     assert_equal 'John Doe', last_row.name
-    assert_equal "Hello, world! #{time}", last_row.comment_text
+    assert_equal "Hello, world!", last_row.comment_text
+    assert_equal false, last_row.kopal_identity?
+  end
+
+  def test_posting_comment_by_signed_user
+    old_size = Kopal::ProfileComment.find(:all).size
+    post :comment, {:profile_comment => {:comment_text => "Hello, world!"}},
+      {:kopal => { :signed_kopal_identity => "http://bob.example.org"}}
+    new_size = Kopal::ProfileComment.find(:all).size
+    assert_equal old_size+1, new_size
+    assert_redirected_to assigns(:kopal_route).profile_comment
+    last_row = Kopal::ProfileComment.find(:last)
+    assert_equal "Hello, world!", last_row.comment_text
+    assert_equal "Comment submitted successfully.", flash[:highlight]
+    assert_nil last_row.name
+    assert_nil last_row.email
+    assert_equal true, last_row.kopal_identity?
   end
 end
