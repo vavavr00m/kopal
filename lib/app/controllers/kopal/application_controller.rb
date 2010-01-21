@@ -66,8 +66,10 @@ private
     self.prepend_view_path Kopal.root.join('lib', 'app', 'views').to_s
     if Kopal.multiple_profile_interface?
       if kopal_determine_profile_identifier
+        identifier, identity = kopal_determine_profile_identifier
         @profile_user = Kopal::ProfileUser.new Kopal::KopalAccount.
-          find_by_identifier_from_application kopal_determine_profile_identifier
+          find_by_identifier_from_application identifier
+        @profile_user.kopal_identity = identity
       else
         if params[:controller] == 'kopal/home' and params[:action] == 'index' and Kopal.redirect_for_home
           redirect_to Kopal.redirect_for_home
