@@ -62,7 +62,7 @@ class Kopal::HomeController < Kopal::ApplicationController
   def foreign
     @_page.title <<= "Foreign Affairs"
     params[:returnurl].blank? || session[:kopal][:returnurl] = params[:returnurl]
-    if request.post?
+    if params[:identity]
       identity = Kopal::Identity.new(params[:identity])
       case params[:subject]
       when 'friendship-request'
@@ -70,6 +70,12 @@ class Kopal::HomeController < Kopal::ApplicationController
         return
       when 'signin'
         redirect_to identity.signin_request_url session[:kopal].delete :returnurl
+        #TODO: Not yet implemented. Needs that while signing-in using OpenID,
+        #profiles know that request comes from a Kopal Identity and so they can
+        #manage a list of Kopal Identities which requested signin and then send signout request
+        #to all of them.
+      when 'signout'
+        redirect_to :action => :signout_for_visitor
       else
         flash.now[:notice] = "Unidentified value for <code>subject</code>"
       end
@@ -99,34 +105,33 @@ class Kopal::HomeController < Kopal::ApplicationController
     params[:via_kopal_connect].blank? || session[:kopal][:signing_via_kopal_connect] = params[:via_kopal_connect]
     @_page.title <<= "Sign In"
 
-    if Kopal.delegate_signin_to_application?
-      result = kopal_profile_signin
-      return unless result
-      session[:kopal][:signed_kopal_identity] = @profile_user.kopal_identity.to_s
-      redirect_to session[:kopal].delete :return_after_signin
-      return
-    else
-      if request.post?
-        case @profile_user[:authentication_method]
-        when 'simple':
-          if Kopal::KopalPreference.verify_password(@profile_user.account.id, params[:password])
-            session[:kopal][:signed_kopal_identity] = @profile_user.kopal_identity.to_s
-            if session[:kopal].delete :signing_via_kopal_connect
-              uri = Kopal::Url.new session[:kopal].delete :return_after_signin
-              uri.query_hash.update :"kopal.visitor" => @profile_user.kopal_identity.escaped_uri
-              uri.build_query
-              redirect_to uri.to_s
-              return
-            end
-            redirect_to session[:kopal].delete :return_after_signin
+    if request.post?
+      case @profile_user[:authentication_method]
+      when 'simple':
+        if Kopal::KopalPreference.verify_password(@profile_user.account.id, params[:password])
+          session[:kopal][:signed_kopal_identity] = @profile_user.kopal_identity.to_s
+          if session[:kopal].delete :signing_via_kopal_connect
+            uri = Kopal::Url.new session[:kopal].delete :return_after_signin
+            uri.query_hash.update :"kopal.visitor" => @profile_user.kopal_identity.escaped_uri
+            uri.build_query
+            redirect_to uri.to_s
             return
           end
+          redirect_to session[:kopal].delete :return_after_signin
+          return
         end
-        flash.now[:notice] = "Wrong password."
       end
+      flash.now[:notice] = "Wrong password."
     end
   end
 
+  #Signs out user. To sign-out a user, use - +Kopal.route.signout+
+  def signout
+    session[:kopal][:signed_kopal_identity] = false
+    redirect_to(params[:and_return_to] || @kopal_route.root)
+  end
+
+  #TODO: Extend OpenID to send/recieve request/response that it comes/serves from a Kopal Identity.
   def signin_for_visitor
     if params[:openid_identifier].blank?
       redirect_to @kopal_route.home(:action => 'foreign', :subject => 'signin-request')
@@ -142,10 +147,10 @@ class Kopal::HomeController < Kopal::ApplicationController
     redirect_to(params[:return_path] || @kopal_route.root) unless send :'performed?'
   end
 
-  #Signs out user. To sign-out a user, use - +Kopal.route.signout+
-  def signout
-    session[:kopal][:signed_kopal_identity] = false
-    redirect_to(params[:and_return_to] || @kopal_route.root)
+  def signout_for_visitor
+    session[:kopal].delete :signed_kopal_identity
+    session[:kopal].delete :signed_user_name
+    redirect_to @kopal_route.root
   end
 
   #ajax-spinner.gif. Credit - http://www.ajaxload.info/
@@ -182,6 +187,7 @@ class Kopal::HomeController < Kopal::ApplicationController
   end
 
   #OpenID server for user's OpenID Identifier.
+  #TODO: Extend OpenID to send/recieve request/response that it comes/serves from a Kopal Identity.
   def openid_server
     hash = {:signed => @signed, :openid_request => session.delete(:openid_last_request),
       :params => params.dup

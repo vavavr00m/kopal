@@ -58,9 +58,17 @@ class Kopal::ProfileUser < Kopal::KopalUser
     @signed = false
   end
 
+  def kopal_identity= value
+    @kopal_identity = Kopal::Identity.new value
+  end
+
   def kopal_identity
-    self[:kopal_identity] ||= route.root :only_path => false
-    Kopal::Identity.new self[:kopal_identity]
+    #LATER: Maybe we shouldn't be storing Kopal Identity in database and should
+    #always calculate from current url. What purpose does it serve by storing in database?
+    #
+    #self[:kopal_identity] ||= route.root :only_path => false
+    #Kopal::Identity.new self[:kopal_identity]
+    @kopal_identity ||= Kopal::Identity.new route.root :only_path => false
   end
   alias profile_identity kopal_identity
   alias profile_homepage kopal_identity

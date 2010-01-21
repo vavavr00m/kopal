@@ -54,7 +54,6 @@ module Kopal
   PLATFORM = "kopal.googlecode.com"
   @@initialised = false
   @@multi_mode = false
-  @@delegated_signin = false
   @@delegated_preferences = []
 
 class << self
@@ -81,15 +80,6 @@ class << self
   end
 
   alias multi_mode? multiple_profile_interface?
-
-  #Not necessarily in only multi mode.
-  def delegate_signin_to_application!
-    @@delegated_signin = true
-  end
-
-  def delegate_signin_to_application?
-    @@delegated_signin
-  end
 
   def preferences_delegated_to_application
     @@delegated_preferences

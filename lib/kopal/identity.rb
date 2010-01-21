@@ -20,6 +20,13 @@ class Kopal::Identity
     URI.escape to_s
   end
 
+  #Removes http(s):// and trailing slash if only domain.
+  def simplified
+    r = to_s.gsub(/^[^\.]*:\/\//, '')
+    r[-1] = '' if r.index('/') == r.size-1 #same as r.count('/') == 1
+    r
+  end
+
   def profile_image_url
     connect_url + '&kopal.subject=image'
   end
