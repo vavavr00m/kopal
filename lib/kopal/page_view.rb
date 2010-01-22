@@ -1,8 +1,8 @@
 #Class which holds information (mainly markup) of the page being displayed.
 class Kopal::PageView
 
-  LAST_VERSION_PROTOTYPE = '1.6'
-  LAST_VERSION_SCRIPTACULOUS = '1.8'
+  NEWEST_VERSION_PROTOTYPE = '1.6' #or latest?
+  NEWEST_VERSION_SCRIPTACULOUS = '1.8'
 
   def initialize profile_user
     @profile_user = profile_user
@@ -117,23 +117,15 @@ class Kopal::PageView
     @included_scriptaculous = true
   end
 
-  def include_google_analytics?
-    !!google_analytics_code
-  end
-
-  def google_analytics_code
-    @profile_user[:widget_google_analytics_code]
-  end
-
 private
 
   def ajaxlib_prototype_path version = nil
-    version ||= LAST_VERSION_PROTOTYPE
+    version ||= NEWEST_VERSION_PROTOTYPE
     "http://ajax.googleapis.com/ajax/libs/prototype/#{version}/prototype.js"
   end
 
   def ajaxlib_scriptaculous_path version = nil
-    version ||= LAST_VERSION_SCRIPTACULOUS
+    version ||= NEWEST_VERSION_SCRIPTACULOUS
     "http://ajax.googleapis.com/ajax/libs/scriptaculous/#{version}/scriptaculous.js"
   end
 

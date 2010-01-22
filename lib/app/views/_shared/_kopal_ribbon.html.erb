@@ -10,15 +10,28 @@
     height: 20px;
     padding: 4px;
   }
-  div#KopalRibbon span.OnRight {
+  div#KopalRibbon span.on_left a.name_kopal {
+    font-weight: bold;
+    font-size: 16px;
+    color: inherit;
+    text-decoration: inherit;
+  }
+  div#KopalRibbon span.on_left a.name_kopal:hover {
+    text-decoration: none;
+    background: none;
+  }
+  div#KopalRibbon span.on_right {
     padding-right: 8px;
     float:right;
   }
 </style>
 <div id="KopalRibbon">
-  <strong style="font-size: 16px;">kopal</strong>
+  <span class="on_left">
+    <a href="http://code.google.com/p/kopal/" class="name_kopal"
+       title="Kopal — Decentralised Social Networking">kopal</a>
+  </span>
   <%#= link_to "Next", 'http://search.dhaani.net/person/next/', "Browse a random profile." %>
-  <span class="OnRight">
+  <span class="on_right">
     <% unless @visiting_user.signed? %>
       [<%= link_to "Sign-In", @kopal_route.home(:action => 'foreign', :subject => 'signin', :returnurl => request.url),
         :title => "Sign-In to Kopal" %>]

@@ -34,7 +34,8 @@ class Kopal::KopalPreference < Kopal::KopalModel
     #value is serialised and ActiveRecord screws up and replaces "\n"
     #with " ".
     :kopal_encoded_private_key,
-    :widget_google_analytics_code,
+    #Use Kopal::Theme#filters instead.
+    #:widget_google_analytics_code,
     #:meta_something # names starting with 'meta_' are common to all, and are always
     #stored only for 'kopal_account_id' as 0. Modify validate , get_field to do so (not save_field).
   ]
