@@ -43,7 +43,7 @@ class Kopal::KopalPreference < Kopal::KopalModel
     :example_deprecated_field => "You're using example_deprecated_field.",
   }
   DEFAULT_VALUE = {
-    :authentication_method => 'simple',
+    :authentication_method => 'password',
     :feed_show_gender => 'yes',
   }
 
@@ -62,6 +62,7 @@ class Kopal::KopalPreference < Kopal::KopalModel
   def validate
     name = self.preference_name = self.preference_name.to_s.downcase
     text = self.preference_text
+    errors.add('preference_name', 'is delegated to application.') if self.class.delegated? name
     case name
     when /account_password_(hash|salt)/:
         errors.add_to_base("Password hash/salt length must be 512 bit.") unless
@@ -72,7 +73,7 @@ class Kopal::KopalPreference < Kopal::KopalModel
       errors.add_to_base('Real name must not be blank') if text.blank?
     when "feed_email":
       begin
-        e = TMail::Address.parse(text)
+        e = TMail::Address.parse(text.to_s) #nil to ''
         self.preference_text = e.address # Vi <vi@example.net> => vi@example.net
       rescue TMail::SyntaxError
         errors.add_to_base('"feed_email" is not a valid Email')
@@ -110,6 +111,11 @@ class Kopal::KopalPreference < Kopal::KopalModel
   #Migration script should call this function.
   #Does not raises exception if key is not found or is deprecated. Return false then.
   def self.get_field_without_raise kopal_account_id, preference_name
+    if delegated? preference_name
+      m = Kopal.delegated_preference_method
+      return m[:class].constantize.send m[:accessor],
+        Kopal::KopalAccount.find(kopal_account_id).identifier_from_application, preference_name.to_s
+    end
     s = self.find_by_kopal_account_id_and_preference_name(kopal_account_id, preference_name.to_s)
     return( s ? s.preference_text : DEFAULT_VALUE[preference_name.to_sym])
   end
@@ -118,6 +124,11 @@ class Kopal::KopalPreference < Kopal::KopalModel
   #Also available as <tt>Kopal::ProfileUser#[]=</tt>
   def self.save_field kopal_account_id, preference_name, preference_text
     check_preference_name! preference_name
+    if delegated? preference_name
+      m = Kopal.delegated_preference_method
+      return m[:class].constantize.send m[:mutator],
+        Kopal::KopalAccount.find(kopal_account_id).identifier_from_application, preference_name.to_s, preference_text
+    end
     s = self.find_or_initialize_by_kopal_account_id_and_preference_name(kopal_account_id, preference_name)
     s.preference_text = preference_text;
     s.save!
@@ -138,6 +149,10 @@ class Kopal::KopalPreference < Kopal::KopalModel
   def self.deprecated? name
     return false unless DEPRECATED_FIELDS.has_key? name.to_sym
     DEPRECATED_FIELDS[name.to_sym]
+  end
+
+  def self.delegated? preference_name
+    Kopal.preferences_delegated_to_application.include? preference_name.to_sym
   end
 
   def self.save_password kopal_account_id, password
