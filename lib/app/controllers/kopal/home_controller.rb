@@ -107,7 +107,7 @@ class Kopal::HomeController < Kopal::ApplicationController
 
     if request.post?
       case @profile_user[:authentication_method]
-      when 'simple':
+      when 'password':
         if Kopal::KopalPreference.verify_password(@profile_user.account.id, params[:password])
           session[:kopal][:signed_kopal_identity] = @profile_user.kopal_identity.to_s
           if session[:kopal].delete :signing_via_kopal_connect
@@ -120,8 +120,8 @@ class Kopal::HomeController < Kopal::ApplicationController
           redirect_to session[:kopal].delete :return_after_signin
           return
         end
+        flash.now[:notice] = "Wrong password."
       end
-      flash.now[:notice] = "Wrong password."
     end
   end
 

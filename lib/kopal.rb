@@ -55,6 +55,7 @@ module Kopal
   @@initialised = false
   @@multi_mode = false
   @@delegated_preferences = []
+  @@delegated_preference_method = {}
 
 class << self
   
@@ -81,9 +82,51 @@ class << self
 
   alias multi_mode? multiple_profile_interface?
 
+  #Pass an hash with name of the class as string.
+  #Example:
+  #
+  #    Kopal.delegate_some_preferences_to :class => "SomeModel"
+  #
+  #Optionally names of the getter and setter methods can also be supplied.
+  #Example:
+  #
+  #  Kopal.delegate_some_preferences_to :class => "SomeModel", :accessor => 'get_field', :mutator => 'save_field'
+  #
+  #Default for <tt>:accessor</tt> is +get_field+ while for <tt>:mutator</tt> is +save_field+
+  #
+  #=== Accessor
+  #The accessor method must take two arguments as -
+  #
+  #  accessor_method(profile_identifier, preference_name) # both argument as string
+  #
+  #It should return the value as String and should return +nil+ instead of raising error, if a 
+  #field is empty.
+  #
+  #=== Mutator
+  #Signature for mutator method is -
+  #
+  #  mutator_method(profile_identifier, preference_name, new_preference_value) # all argument as string.
+  #
+  #It should return the saved value and should raise error if can not save.
+  #Saved value shouldn't necessarily be same as provided value. For example, application
+  #may calculate a new string for +account_password_salt+ and may discard supplied one.
+  #
+  def delegate_some_preferences_to hash
+    @@delegated_preference_method = {
+      :class => hash[:class],
+      :accessor => (hash[:accessor] || 'get_field'),
+      :mutator => (hash[:mutator] || 'save_field'),
+    }
+  end
+
   def preferences_delegated_to_application
     @@delegated_preferences
   end
+
+  def delegated_preference_method
+    @@delegated_preference_method
+  end
+
 
   def khelper #helper() is defined for ActionView::Base
     #Need to use "module_function()" in Kopal::KopalHelper,
