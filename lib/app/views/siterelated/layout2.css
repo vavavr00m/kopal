@@ -1,0 +1,39 @@
+/**
+*
+* This file _only_ defines layout and NOT design.
+*
+* HTML should be structured like -
+*
+*   <div id="SurfaceAbove"></div>
+*   <div id="SurfaceBindFront">
+*     <div id="SurfaceFront"></div>
+*   </div>
+*   <div id="SurfaceLeft"></div>
+*   <div id="SurfaceDown"></div>
+*
+*/
+
+div#SurfaceAbove{
+
+}
+
+div#SurfaceBindFront{
+  float: left;
+  width: 100%;
+}
+
+div#SurfaceFront{
+  margin-left: 196px;
+  overflow: auto;
+}
+
+div#SurfaceLeft{
+  float: left;
+  width: 186px;
+  margin-left: -100%;
+  overflow: hidden;
+}
+
+div#SurfaceDown{
+  clear: both;
+}

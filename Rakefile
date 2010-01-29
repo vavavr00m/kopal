@@ -1,6 +1,11 @@
 require 'rake'
 require 'rake/testtask'
-require 'rake/rdoctask'
+require 'rubygems'
+begin
+  require 'hanna/rdoctask'
+rescue LoadError
+  require 'rake/rdoctask'
+end
 
 desc 'Default: run unit tests.'
 task :default => :test

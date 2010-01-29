@@ -3,3 +3,5 @@ I18n.load_path += Dir[File.dirname(__FILE__) + '/lib/culture/*.{rb,yml}']
 I18n.load_path += Dir[File.dirname(__FILE__) + '/lib/culture/code/*/*.{rb,yml}']
 
 require 'kopal'
+
+ActionController::Base.send :include, Kopal::Theme::Filter
