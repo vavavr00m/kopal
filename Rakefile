@@ -7,6 +7,17 @@ rescue LoadError
   require 'rake/rdoctask'
 end
 
+begin
+  require 'yard'
+  
+  desc "Generate documentation using YARD."
+  YARD::Rake::YardocTask.new(:yard) do |yard|
+    #defaults do good.
+  end
+rescue LoadError
+  #skip
+end
+
 desc 'Default: run unit tests.'
 task :default => :test
 
