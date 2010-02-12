@@ -19,6 +19,9 @@ namespace :kopal do
     ENV['VERBOSE'] = prev_state
   end
 
+  #TODO: Use "hg" command if found, so this way we can know the revision number and
+  #update .hg_archival.txt file.
+  #If can't determine the upgraded revision, delete this file.
   desc "Fetches new release from Internet, then updates the plugin.\n" +
     "Pass REVISION for hg revision, default is tip-stable or tip-preview based on the revision installed."
   #Developers, running task will delete everything inside kopal plugin folder. So,

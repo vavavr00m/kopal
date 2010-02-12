@@ -83,6 +83,9 @@ class Kopal::PageView
     @stylesheets << value
   end
 
+  #TODO: If in production mode if hg revision is known, include all static Kopal related JavaScript files 
+  #directly from http://kopal.googlecode.com/hg/lib/app/views/siterelated/home.js?r=revision-id
+  #revision-id can be found from .hg_archival.txt
   def javascripts
     @javascripts ||= [@kopal_route.javascript('dynamic'), @kopal_route.javascript('home')]
   end
