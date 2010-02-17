@@ -11,10 +11,13 @@ begin
   require 'yard'
   
   #TODO: include all classes including vendor, test and everything.
-  #TODO: include Google Analytics. Like if exists? ./.yardoc/.google_analytics then include it.
+  #TODO: include Google Analytics. Like if exists? ./.hg/.doc_google_analytics then include it.
   desc "Generate documentation using YARD."
   YARD::Rake::YardocTask.new(:yard) do |yard|
-    #defaults do good.
+    yard.files = ['**/*.rb']
+    yard.options <<
+      "--title=Kopal API" <<
+      "--files=LICENCE.txt,Attributions.txt"
   end
 rescue LoadError
   #skip
