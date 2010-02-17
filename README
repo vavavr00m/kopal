@@ -1,4 +1,33 @@
 
 = Welcome to Kopal
 
-  This document represents Kopal from technical perspective. For general introduction to Kopal and download links please visit http://kopal.googlecode.com/.
+This document represents Kopal from technical perspective. For general introduction 
+to Kopal and download links please visit {http://kopal.googlecode.com/ Kopal Homepage}.
+
+== About
+
+Kopal is a set of specifications and protocols that define how social-networking 
+services can function in decentralised environment distributed over web.
+
+Kopal at present defines two standards. 
+
+0. Kopal Connect
+0. Kopal Feed
+
+=== Kopal Connect
+
+<tt>Kopal Connect</tt> is a protocol that defines how two Kopal enabled completely 
+indpendent social-profile interact with each other. A complete reference can
+be found at {http://code.google.com/p/kopal/wiki/Kopal_Connect}.
+
+=== Kopal Feed
+
+<tt>Kopal Feed</tt> is a {http://en.wikipedia.org/wiki/Microformat microformat} which conveys social-information in <tt>Kopal Connect</tt>
+protocol. However <tt>Kopal Feed</tt> is designed with complete independency from 
+<tt>Kopal Connect</tt> and can operate in an independent environment. For complete
+reference see - {http://code.google.com/p/kopal/wiki/Kopal_Feed}.
+
+== Getting Started
+
+For a general introduction and for download links please visit {http://code.google.com/p/kopal/}.
+To learn more about Kopal API, see {_index.html}.
