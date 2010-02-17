@@ -181,7 +181,7 @@ class Kopal::HomeController < Kopal::ApplicationController
       if result.successful?
         redirect_to
       else
-        render :text => 'failed. ' + result.message
+        render :text => 'failed. ' + result.message, :status => :bad_request
       end
     }
   end

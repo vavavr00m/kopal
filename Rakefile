@@ -10,6 +10,8 @@ end
 begin
   require 'yard'
   
+  #TODO: include all classes including vendor, test and everything.
+  #TODO: include Google Analytics. Like if exists? ./.yardoc/.google_analytics then include it.
   desc "Generate documentation using YARD."
   YARD::Rake::YardocTask.new(:yard) do |yard|
     #defaults do good.
@@ -26,6 +28,14 @@ Rake::TestTask.new(:test) do |t|
   t.libs << 'lib'
   t.libs << 'test'
   t.pattern = 'test/**/*_test.rb'
+  t.verbose = true
+end
+
+desc 'Tests related with network activity.'
+Rake::TestTask.new(:"test-network") do |t|
+  t.libs << 'lib'
+  t.libs << 'test'
+  t.pattern = 'test/network/*_test.rb'
   t.verbose = true
 end
 
