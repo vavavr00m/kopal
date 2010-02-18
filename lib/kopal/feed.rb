@@ -19,8 +19,8 @@ class Kopal::Feed
         data = r.body_raw
       end
       initialise_from_rexml REXML::Document.new(data)
-    when Hash
-      initialise_from_hash data.symbolize_keys
+    when Hash,Kopal::ProfileUser
+      initialise_from_hash data
     else
       raise ArgumentError, "Unknown type for a Kopal Feed - #{data.class}"
     end
@@ -32,11 +32,6 @@ class Kopal::Feed
 
   def kopal_identity
     @kopal_identity
-  end
-
-  #This Kopal Feed for profile user?
-  def of_profile_user?
-    @of_profile_user
   end
 
   def name
@@ -86,23 +81,6 @@ class Kopal::Feed
   #For only YYYY-MM, DD may have any legal, set <tt>@birth_time_has_day</tt> to
   #<tt>false</tt>, do same for YYYY too.
   def birth_time
-    if of_profile_user?
-      return unless b = Kopal[:feed_birth_time]
-      case Kopal[:feed_birth_time_pref]
-      when 'y'
-        @birth_time_has_month = @birth_time_has_day = false
-        @birth_time = DateTime.new b.year
-      when 'md'
-        @birth_time_has_month = @birth_time_has_day = true
-        @birth_time = DateTime.new 0, b.month, b.day
-      when 'ymd'
-        @birth_time_has_month = @birth_time_has_day = true
-        @birth_time = DateTime.new b.year, b.month, b.day
-      when 'nothing'
-        @birth_time_has_month = @birth_time_has_day = false
-        @birth_time = nil
-      end
-    end
     return @birth_time
   end
 
@@ -170,8 +148,6 @@ class Kopal::Feed
   def city_name
     return @city_name ||= if city_has_code?
       city_list[city_code.to_sym]
-    elsif of_profile_user?
-      Kopal[:feed_city]
     end
   end
 
@@ -287,6 +263,24 @@ private
     @country_living_code = hash[:feed_country_living_code].to_s.upcase
     if 'yes' == hash[:feed_city_has_code]
       @city_code = hash[:feed_city]
+    else
+      @city_name = hash[:feed_city]
+    end
+    if(b = hash[:feed_birth_time])
+      case hash[:feed_birth_time_pref]
+      when 'y'
+        @birth_time_has_month = @birth_time_has_day = false
+        @birth_time = DateTime.new b.year
+      when 'md'
+        @birth_time_has_month = @birth_time_has_day = true
+        @birth_time = DateTime.new 0, b.month, b.day
+      when 'ymd'
+        @birth_time_has_month = @birth_time_has_day = true
+        @birth_time = DateTime.new b.year, b.month, b.day
+      when 'nothing'
+        @birth_time_has_month = @birth_time_has_day = false
+        @birth_time = nil
+      end
     end
   end
 
