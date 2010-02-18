@@ -4,6 +4,7 @@ class Kopal::KopalAccount < Kopal::KopalModel
   DEFAULT_PROFILE_ACCOUNT_ID = 0
 
   has_many :preferences, :class_name => 'Kopal::KopalPreference'
+  #@deprecated.
   has_many :preferences_for_feed, :class_name => 'Kopal::KopalPreference', :conditions => 'preference_name LIKE \'feed_%\'' # no '"' for LIKE!
   has_many :comments, :class_name => 'Kopal::ProfileComment'
   has_many :recent_comments, :class_name => 'Kopal::ProfileComment', :order => 'created_at DESC', :limit => 20

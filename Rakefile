@@ -30,7 +30,7 @@ desc 'Test the Kopal plugin.'
 Rake::TestTask.new(:test) do |t|
   t.libs << 'lib'
   t.libs << 'test'
-  t.pattern = 'test/**/*_test.rb'
+  t.pattern = 'test/{kopal,functional,unit}/*_test.rb'
   t.verbose = true
 end
 

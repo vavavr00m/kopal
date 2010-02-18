@@ -88,9 +88,10 @@ class Kopal::ProfileUser < Kopal::KopalUser
   end
 
   def feed
-    @kopal_feed ||= Kopal::Feed.new preferences_for_feed
+    @kopal_feed ||= Kopal::Feed.new self
   end
 
+  #@deprecated. Unnecessary.
   def preferences_for_feed
     r = {}
     account.preferences_for_feed.
@@ -126,15 +127,15 @@ class Kopal::ProfileUser < Kopal::KopalUser
 
   #delegate to Feed and deprecate it.
   def dob_string
-    unless Kopal[:feed_birth_time].blank?
-      year = Kopal[:feed_birth_time].year
-      return case Kopal[:feed_birth_time_pref]
+    unless self[:feed_birth_time].blank?
+      year = self[:feed_birth_time].year
+      return case self[:feed_birth_time_pref]
       when 'y':
         year.to_s
       when 'md':
-        Kopal[:feed_birth_time].to_time.strftime("%d-%b")
+        self[:feed_birth_time].to_time.strftime("%d-%b")
       when 'ymd':
-        Kopal['feed_birth_time'].to_time.strftime("%d-%b-%Y")
+        self['feed_birth_time'].to_time.strftime("%d-%b-%Y")
       end
     end
     return ''
@@ -147,7 +148,7 @@ class Kopal::ProfileUser < Kopal::KopalUser
     unless feed.birth_time.blank?
       #age_string = " (#{age} #{t(:year, :count => year).downcase})"
       age_string = " (#{feed.age} years)"
-      return case Kopal[:feed_birth_time_pref]
+      return case self[:feed_birth_time_pref]
       when /y|md/:
         dob_string + age_string
       when /md/:

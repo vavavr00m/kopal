@@ -83,6 +83,7 @@ class Kopal::OrganiseController < Kopal::ApplicationController
         flash.now[:notice] = e.message
         return
       end
+
       @profile_user[:feed_birth_time] = DateTime.new(params[:feed_birth_time]['(1i)'].to_i,
         params[:feed_birth_time]['(2i)'].to_i, params[:feed_birth_time]['(3i)'].to_i)
       #better method exists?
@@ -98,7 +99,8 @@ class Kopal::OrganiseController < Kopal::ApplicationController
         end
       }
       @profile_user[:feed_city] = params[:feed_city] if @profile_user[:feed_city_has_code] == "no"
-      flash.now[:highlight] = "Profile updated!" if flash[:notice].blank?
+      flash[:highlight] = "Profile updated!" if flash[:notice].blank?
+      redirect_to @kopal_route.home
     end
   end
 
