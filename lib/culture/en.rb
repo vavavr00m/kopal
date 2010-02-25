@@ -35,7 +35,7 @@
     :status_message => "Status message",
     :back_to_homepage => "Back to homepage",
     :go_back_to_homepage => "Go back to homepage.",
-    :user_has_not_yet_created_her_identity => "User has not yet creater her identity.",
+    :user_has_not_yet_created_her_identity => "User has not yet created her identity.",
     :year => { :one => "Year", :other => "Years"}
   }
 }
