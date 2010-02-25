@@ -62,6 +62,13 @@ class Kopal::ApplicationController < ApplicationController
   end
   
 private
+
+  #TODO: Save Kopal Identity in database, and next time if
+  # <tt>@kopal_route.root</tt> doesn't match <tt>@profile_user.kopal_identity</tt>
+  # then generate error saying that "This Kopal Identity is meant to be accessed from
+  # #{@profile_user.kopal_identity}.". This will prevent potential errors arising
+  # from presence/absemce of 'www' in domain or other minor changes in URI that
+  # may interfare with Kopal Connect as Kopal Identity is an integrated part of it.
   def initialise_for_kopal
     session[:kopal] = {} unless session[:kopal].is_a? Hash
     Kopal.initialise
