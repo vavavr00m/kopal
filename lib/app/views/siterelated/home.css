@@ -156,6 +156,11 @@ a.cloud:hover{
 	text-decoration:none;
 	}
 
+input.openid_identifier {
+    background:url(http://openid.net/favicon.ico) no-repeat;
+    padding-left:20px;
+}
+
 /* ---- Profile Pages ------------------------------------------------------- */
 #PageEdit{
 	background-color:rgb(254, 254, 254);
