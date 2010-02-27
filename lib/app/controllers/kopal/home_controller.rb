@@ -100,7 +100,7 @@ class Kopal::HomeController < Kopal::ApplicationController
   end
 
   #Sign-in page for profile user.
-  def signin
+  def signin_for_profile_user
     session[:kopal][:return_after_signin] ||= params[:and_return_to] || @kopal_route.root(:only_path => false)
     params[:via_kopal_connect].blank? || session[:kopal][:signing_via_kopal_connect] = params[:via_kopal_connect]
     @_page.title <<= "Sign In"
@@ -123,6 +123,7 @@ class Kopal::HomeController < Kopal::ApplicationController
         flash.now[:notice] = "Wrong password."
       end
     end
+    render :signin
   end
 
   #Signs out user. To sign-out a user, use - +Kopal.route.signout+
@@ -132,7 +133,7 @@ class Kopal::HomeController < Kopal::ApplicationController
   end
 
   #TODO: Extend OpenID to send/recieve request/response that it comes/serves from a Kopal Identity.
-  def signin_for_visitor
+  def signin_for_visiting_user
     if params[:openid_identifier].blank?
       redirect_to @kopal_route.home(:action => 'foreign', :subject => 'signin-request')
       return
