@@ -40,8 +40,10 @@ class Kopal::Identity
     connect_url + '&kopal.subject=discovery'
   end
 
-  def friendship_request_url
-    connect_url + '&kopal.subject=friend'
+  def friendship_request_url requester_identity
+    build_connect_url :"kopal.identity" => requester_identity,
+      :"kopal.subject" => 'friendship-request'
+    
   end
 
   def friendship_state_url requester_identity
@@ -53,16 +55,15 @@ class Kopal::Identity
       state + '&kopal.friendship-key=' + friendship_key.to_s
   end
 
+  #TODO: Deprecate it. Sigin-In is part of OpenID not Kopal Connect.
   def signin_request_url returnurl = nil
-    uri = new_connect_url
-    uri.query_hash.update :"kopal.subject" => 'signin-request'
+    query_hash = { :"kopal.subject" => 'signin-request',}
     #RUBYBUG: URI.escape() returns same value for http://example.org/?a=b&c=d without second argument
     #  or passing it as URI::REGEXP::UNSAFE.
     #URI.escape 'http://example.org/?a=b&c=d' #=> "http://example.org/?a=b&c=d"
     #URI.escape 'http://example.org/?a=b&c=d', URI::REGEXP::UNSAFE #=> "http://example.org/?a=b&c=d"
-    uri.query_hash.update :'kopal.returnurl' => URI.escape(returnurl, '?=&#:/') unless returnurl.blank?
-    uri.build_query
-    uri.to_s
+    query_hash.update :'kopal.returnurl' => URI.escape(returnurl, '?=&#:/') unless returnurl.blank?
+    build_connect_url query_hash
   end
 
 private
@@ -72,6 +73,14 @@ private
     uri = identity_uri.dup
     uri.query_hash.update :"kopal.connect" => 'true'
     uri
+  end
+
+  def build_connect_url query_hash
+    uri = identity_uri.dup
+    uri.query_hash.update :"kopal.connect" => 'true'
+    uri.query_hash.update query_hash
+    uri.build_query
+    uri.to_s
   end
   
   def connect_url

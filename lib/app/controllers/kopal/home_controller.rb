@@ -59,6 +59,7 @@ class Kopal::HomeController < Kopal::ApplicationController
   end
 
   #Redirects to Visitor's Profile Homepage.
+  #TODO: Don't ask if user is signed.
   def foreign
     @_page.title <<= "Foreign Affairs"
     params[:returnurl].blank? || session[:kopal][:returnurl] = params[:returnurl]
@@ -66,7 +67,7 @@ class Kopal::HomeController < Kopal::ApplicationController
       identity = Kopal::Identity.new(params[:identity])
       case params[:subject]
       when 'friendship-request'
-        redirect_to identity.friendship_request_url
+        redirect_to identity.friendship_request_url @profile_user.kopal_identity
         return
       when 'signin'
         redirect_to identity.signin_request_url session[:kopal].delete :returnurl
@@ -99,9 +100,13 @@ class Kopal::HomeController < Kopal::ApplicationController
     end
   end
 
+  def signin
+    session[:kopal][:return_after_signin] = params[:and_return_to] ||
+      session[:kopal][:return_after_signin] || @kopal_route.root(:only_path => false)
+  end
+
   #Sign-in page for profile user.
   def signin_for_profile_user
-    session[:kopal][:return_after_signin] ||= params[:and_return_to] || @kopal_route.root(:only_path => false)
     params[:via_kopal_connect].blank? || session[:kopal][:signing_via_kopal_connect] = params[:via_kopal_connect]
     @_page.title <<= "Sign In"
 

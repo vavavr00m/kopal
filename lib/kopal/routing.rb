@@ -199,6 +199,9 @@ class Kopal::Routing
     home hash
   end
 
+  #@deprecated. Use organise(:action => 'friend') instead.
+  #Originally thought that API should be independent of
+  #uri i.e., knowing name of action etc, but that is overkill.
   def organise_friend hash = {}
     hash[:action] = 'friend'
     organise hash
