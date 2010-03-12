@@ -16,6 +16,10 @@ class Kopal::ConnectController < Kopal::ApplicationController
   end
 
 
+  #TODO: Document the fact that to Kopal Connect to work a server must be
+  #able to handle two simultaneous requests or design it in such a way that
+  #there never are two simultaneous requests.
+  #
   #* Check if request is a duplicate request.
   #* Send a 'friendship-state' request
   #* Check is friendship state is 'waiting'
@@ -31,9 +35,9 @@ class Kopal::ConnectController < Kopal::ApplicationController
     render_kopal_error 0x1201 and return if #Duplicate friendship request
       Kopal::ProfileFriend.find_by_friend_kopal_identity(friend_identity)
     @friend = Kopal::ProfileFriend.new
-    @friend.kopal_identity = friend_identity
+    @friend.friend_kopal_identity = friend_identity
     begin
-      f_s = Kopal::Antenna.broadcast(Kopal::Signal::Request.new @friend.kopal_identity.friendship_state_url @profile_user.kopal_identity)
+      f_s = Kopal::Antenna.fetch( @friend.friend_kopal_identity.friendship_state_url @profile_user.kopal_identity)
     rescue Kopal::Antenna::FetchingError => e
       render_kopal_error e.message
       return
@@ -41,11 +45,19 @@ class Kopal::ConnectController < Kopal::ApplicationController
     render_kopal_error "Invalid Kopal Connect" and return unless f_s.kopal_connect?
     friendship_state = f_s.body_xml.root.elements["FriendshipState"].
       attributes["state"]
+    if friendship_state == 'none'
+      #No friendship. Initiate.
+      redirect_to @kopal_route.organise(:action => 'friend',
+        :identity => friend_identity.to_s, :action2 => 'start')
+      return
+    end
     unless friendship_state == 'waiting'
       if Kopal::ProfileFriend::ALL_FRIENDSHIP_STATES.map{|x| x.to_s}.include? friendship_state
-        render_kopal_error 0x1202 #Invalid friendship state.
+        #TODO: render_kopal_error 0x1202, :state => friendship_state
+        render_kopal_error 0x1202, "Invalid friendship state <#{friendship_state}>" #Invalid friendship state.
       else #extreme?
-        render_kopal_error 0x1203 #Unknown friendship state.
+        #TODO: render_kopal_error 0x1203, :state => friendship_state
+        render_kopal_error 0x1203, "Unknown friendship state <#{friendship_state}>" #Unknown friendship state.
       end
       return
     end
@@ -90,7 +102,8 @@ class Kopal::ConnectController < Kopal::ApplicationController
       :"kopal.friendship-key" => true,
       :"kopal.identity" => Proc.new {|x| normalise_kopal_identity(x); true}
     )
-    @friend = Kopal::ProfileFriend.find_by_friend_kopal_identity normalise_url params[:"kopal.identity"]
+    @friend = @profile_user.account.all_friends.
+      find_by_friend_kopal_identity normalise_url params[:"kopal.identity"]
     render_kopal_error 0x1205 and return unless @friend
     render_kopal_error 0x1204 and return unless
       @friend.friendship_key == params[:"kopal.friendship-key"]
@@ -111,7 +124,8 @@ class Kopal::ConnectController < Kopal::ApplicationController
     required_params(
       :"kopal.identity" => Proc.new {|x| normalise_kopal_identity(x); true}
     )
-    @friend ||= Kopal::ProfileFriend.find_or_initialise_readonly normalise_url params[:"kopal.identity"]
+    @friend ||= Kopal::ProfileFriend.find_or_initialise_readonly @profile_user.account.id,
+      normalise_kopal_identity(params[:"kopal.identity"])
     render :friendship_state #necessary, since called by other methods.
   end
 

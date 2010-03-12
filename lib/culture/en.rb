@@ -20,7 +20,7 @@
     :female => "Female",
     :separate_aliases_by_newline => "Separate aliases by newline.",
     :home => "Home",
-    :friend => {:one => 'Friend', :other => 'Friends'},
+    :friend => {:one => 'Friend ({{count}})', :other => 'Friends ({{count}})'},
     :view_friends_of_person => "View friends of {{person}}.",
     :profile_homepage_of_person => "Profile homepage of {{person}}.",
     :sign_in => "Sign-in",

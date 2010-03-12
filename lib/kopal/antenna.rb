@@ -9,11 +9,17 @@ class Kopal::Antenna
   REDIRECT_LIMIT = 5
   TIMEOUT = 60
 
-  #Signal is a Kopal::Signal::Request
+  #As per Wikipedia, broadcasting is one-to-many, so I've been an idiot.
+  #@deprecated. Use fetch() instead.
+  def self.broadcast signal #or receive()?
+    fetch signal
+  end
+
+  #Signal is a Kopal::Signal::Request or uri string.
   #Returns a Kopal::Signal::Response
   #TODO: Support HTTPS
-  #Rename to +fetch+ and make accept url strings.
-  def self.broadcast signal #or receive()?
+  def self.fetch signal
+    signal = Kopal::Signal::Request.new(signal) if signal.is_a? String
     raise ArgumentError, "Expected an object of Kopal::Signal::Request but is " +
       signal.class.to_s unless signal.is_a? Kopal::Signal::Request
     signal.headers['User-agent'] ||= USER_AGENT

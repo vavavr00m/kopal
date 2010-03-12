@@ -4,7 +4,6 @@ module Kopal
   class KopalIdentityInvalid < KopalError; end;
   class KopalXmlError < KopalError; end;
   class KopalConnectInvalid < KopalXmlError; end;
-  class KopalFeedInvalid < KopalXmlError; end;
 
   #LATER: This should list only very small number of very specific errors,
   #which must be understood by machine for a good functioning of protocol.
@@ -20,8 +19,8 @@ module Kopal
     0x1101 => "Invalid public key.",
     0x1200 => "Kopal Connect friendship error.",
     0x1201 => "Duplicate friendship request.",
-    0x1202 => "Invalid friendship state {state}.",
-    0x1203 => "Unknown friendship state {state}.",
+    0x1202 => "Invalid friendship state <{{state}}>.",
+    0x1203 => "Unknown friendship state <{{state}}>.",
     0x1204 => "Invalid friendship key.",
     0x1205 => "Unknown friend Kopal Identity {identity}.",
     0x1210 => "Method not supported.",

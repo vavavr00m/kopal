@@ -36,6 +36,8 @@ class Kopal::ApplicationController < ApplicationController
   #render_kopal_error("This is my error message")
   #render_kopal_error(0x1234)
   #render_kopal_error(0x1234, "show this error message instead of default with this error code")
+  #TODO: Implement following.
+  #render_kopal_error(0x1202, {:state => 'invalid'})
   def render_kopal_error id_or_message = 0x0000, message_with_id = nil
     case id_or_message
     when Integer

@@ -196,7 +196,7 @@ class Kopal::ProfileUser < Kopal::KopalUser
   end
 
   def friends
-    Kopal::ProfileFriend.find_all_by_friendship_state("friend")
+    DeprecatedMethod.here 'use .account.friends instead.'
   end
 
   #Returns false if not friend, else the friendship state

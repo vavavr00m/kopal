@@ -5,6 +5,8 @@
 class Kopal::Feed
   include Kopal::KopalHelper
 
+  class FeedInvalid < Kopal::KopalXmlError; end;
+
   def initialize data = nil
     @of_profile_user = false
     case data
@@ -15,7 +17,7 @@ class Kopal::Feed
     when String
       #String can be a URI or valid XML string.
       if data =~ /^https?:\/\//
-        r = Kopal.fetch data
+        r = Kopal::Antenna.fetch data
         data = r.body_raw
       end
       initialise_from_rexml REXML::Document.new(data)
@@ -160,8 +162,9 @@ class Kopal::Feed
   end
 
   def to_xml_string
-    if of_profile_user?
-      Kopal.fetch(Kopal::ProfileUser.new.kopal_identity.feed_url).body_raw
+    unless @_rexml_object
+      #TODO: Get kopal identity, @profile_user is not defined.
+      Kopal::Antenna.fetch(@profile_user.kopal_identity.feed_url).body_raw
     else
       @_rexml_object.to_s
     end
@@ -170,7 +173,7 @@ class Kopal::Feed
 
 private
 
-  def initialise_for_rexml object
+  def initialise_from_rexml object
     @of_profile_user = false
     @_rexml_object = object
     raise KopalFeedInvalid, "Argument is not a valid Kopal Feed." unless
@@ -204,15 +207,17 @@ private
         ie["Gender"].text =~ /^(M|Fem)ale$/
       @gender = ie["Gender"].text
     end
-    if ie["Email"]
+    #TODO: Later implementations should not allow an empty field in Kopal Feed
+    #If a element is present it must have value.
+    if ie["Email"] and ie['Email'].text
       begin
         e = TMail::Address.parse(ie["Email"].text)
         @email = e.address # Vi <vi@example.net> => vi@example.net
       rescue TMail::SyntaxError
-        raise KopalFeedInvalid, "Email does not has a valid syntax."
+        raise FeedInvalid, "Email does not has a valid syntax."
       end
     end
-    if ie["BirthTime"]
+    if ie["BirthTime"] and !ie["BirthTime"].text.blank? #TODO: Do not allow empty fields.
       case ie["BirthTime"].text
       when /^[0-9]{4}$/ #YYYY
         @birth_time_has_month = @birth_time_has_day = false
@@ -229,21 +234,21 @@ private
       when /^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{2,}Z$/
         #TODO: Write me.
       else
-        raise KopalFeedInvalid, "BirthTime does not has a valid syntax."
+        raise FeedInvalid, "BirthTime does not has a valid syntax."
       end
     end
     address_e = ie["Address"]
     if address_e && (country_e = ie["Address"].elements["Country"]) &&
-    (living_e = country_e.elements["Living"])
+    (living_e = country_e.elements["Living"]) && !living_e.text.blank?
       @country_living_code = living_e.text
-      raise KopalFeedInvalid, "Identity.Address.Country.Living " +
+      raise FeedInvalid, "Identity.Address.Country.Living " +
         "\"#{@country_living_code}\" is not valid country code." unless
       country_living
     end
     if(address_e && (city_e = address_e.elements["City"]))
       city_e.attributes["standard"] == "un/locode" ?
         @city_code = city_e.text : @city_name = city_e.text
-      raise KopalFeedInvalid, "Unknown city code #{@city_code}" unless
+      raise FeedInvalid, "Unknown city code #{@city_code}" unless
           city_name if city_has_code?
     end
   end
