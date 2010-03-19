@@ -190,9 +190,9 @@ class Kopal::ProfileUser < Kopal::KopalUser
   #Encode Private key before saving to database. Since private key starts with "--" and
   #value is serialised ActiveRecord screws up and replaces "\n"
   #with " ".
-  def regenerate_private_key!
+  def regenerate_private_key! length = private_key_length
     self[:kopal_encoded_private_key] =
-      Base64::encode64(OpenSSL::PKey::RSA.new(private_key_length).to_pem)
+      Base64::encode64(OpenSSL::PKey::RSA.new(length).to_pem)
   end
 
   def friends

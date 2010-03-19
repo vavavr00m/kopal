@@ -39,8 +39,8 @@ class Designer
   
 end
 
-Dir[RAILS_ROOT + '/test/designer/*_designer.rb'].sort.each { |f|
-  #puts "Designer: requiring #{f}"
+Dir[File.dirname(__FILE__) + '/designer/*_designer.rb'].sort.each { |f|
+  puts "Designer: requiring #{f}"
   require f
 }
 

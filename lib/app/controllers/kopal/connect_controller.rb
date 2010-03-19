@@ -2,14 +2,21 @@ class Kopal::ConnectController < Kopal::ApplicationController
   layout 'kopal_connect.xml.builder'
   before_filter :connect_initialise
 
+  SUPPORTED_NS = [ #Index 0 should always be the revision of the responses.
+    'http://spec.kopal.googlecode.com/hg/connect/0.2.draft/'
+  ]
+
   def index
     redirect_to @kopal_route.root
   end
 
   def discovery
-    #Nothing to write.
+    kc_render_or_redirect :mode => 'success', :identity => @profile_user.kopal_identity,
+      :name => @profile_user.feed.name, :'public-key' => @profile_user.public_key.to_pem
+    #:'public-key-algorithm (or spec)' => 'PKCS#1'
   end
 
+  #@deprecated
   def signin_request
     redirect_to @kopal_route.signin :return_after_signin => params[:"kopal.returnurl"],
       :via_kopal_connect => true
@@ -28,85 +35,86 @@ class Kopal::ConnectController < Kopal::ApplicationController
   #* Get the 'kopal-feed' of the requester and save it.
   #* Publish the friendship state.
   def friendship_request
-    required_params(
+    logger.debug("In function - friendship-request")
+    
+    return unless required_params(
       :'kopal.identity' => Proc.new {|x| normalise_kopal_identity(x); true}
     )
-    friend_identity = normalise_kopal_identity(params[:'kopal.identity'])
-    render_kopal_error 0x1201 and return if #Duplicate friendship request
-      Kopal::ProfileFriend.find_by_friend_kopal_identity(friend_identity)
-    @friend = Kopal::ProfileFriend.new
-    @friend.friend_kopal_identity = friend_identity
+
+    logger.info "Friendship request arrived from #{params[:'kopal.identity']}."
+
+    @friend = @profile_user.account.all_friends.build :friend_kopal_identity => params[:"kopal.identity"]
+
+    if @profile_user.account.all_friends.find_by_friend_kopal_identity(@friend.friend_kopal_identity.to_s)
+      logger.debug("Duplicate friendship request from #{@friend.friend_kopal_identity}")
+      kc_render_or_redirect :mode => 'error', :error_id => "0x1201"
+      return
+    end
+
+    #TODO: Try &&ing all statements. Make sure that all of them return !nil/false if success.
+
+    @friendship_state_response = fr_fetch_friendship_state
+    return if ror_already?
+    
+    kc_verify_k_connect @friendship_state_response
+    return if ror_already?
+    
+    fr_verify_friendship_state @friendship_state_response
+    return if ror_already?
+    
+    @friend.friendship_key = fr_decrypt_friendship_key @friendship_state_response
+    return if ror_already?
+    
+    @discovery_response = fr_fetch_kopal_discovery
+    return if ror_already?
+    
+    kc_verify_k_connect @discovery_response
+    return if ror_already?
+    
+    kc_verify_kc_discovery @discovery_response 
+    return if ror_already?
+    
+    @friend.friend_public_key = @discovery_response.response_hash['kopal.public-key']
+
+    @kopal_feed_response = fr_fetch_kopal_feed
+    return if ror_already?
+
+    kc_verify_k_feed @kopal_feed_response
+    return if ror_already?
+
+    logger.debug("Saving record to database.")
     begin
-      f_s = Kopal::Antenna.fetch( @friend.friend_kopal_identity.friendship_state_url @profile_user.kopal_identity)
-    rescue Kopal::Antenna::FetchingError => e
-      render_kopal_error e.message
-      return
-    end
-    render_kopal_error "Invalid Kopal Connect" and return unless f_s.kopal_connect?
-    friendship_state = f_s.body_xml.root.elements["FriendshipState"].
-      attributes["state"]
-    if friendship_state == 'none'
-      #No friendship. Initiate.
-      redirect_to @kopal_route.organise(:action => 'friend',
-        :identity => friend_identity.to_s, :action2 => 'start')
-      return
-    end
-    unless friendship_state == 'waiting'
-      if Kopal::ProfileFriend::ALL_FRIENDSHIP_STATES.map{|x| x.to_s}.include? friendship_state
-        #TODO: render_kopal_error 0x1202, :state => friendship_state
-        render_kopal_error 0x1202, "Invalid friendship state <#{friendship_state}>" #Invalid friendship state.
-      else #extreme?
-        #TODO: render_kopal_error 0x1203, :state => friendship_state
-        render_kopal_error 0x1203, "Unknown friendship state <#{friendship_state}>" #Unknown friendship state.
-      end
-      return
-    end
-    begin
-      @friend.friendship_key = @profile_user.private_key!.private_decrypt(
-        Base64.decode64 f_s.body_xml.root.elements["FriendshipKey"].text
-      )
-    rescue OpenSSL::PKey::RSAError
-      render_kopal_error "Invalid encrypted friendship key."
-      return
-    end
-    begin
-      f_d = Kopal.fetch(@friend.kopal_identity.discovery_url)
-    rescue Kopal::Antenna::FetchingError => e
-      render_kopal_error e.message
-      return
-    end
-    render_kopal_error f_d.response_uri + " is not a valid Kopal Connect discovery." and
-      return unless f_d.kopal_connect_discovery?
-    @friend.public_key = f_d.kopal_connect_discovery.elements["PublicKey"].text
-    begin
-      f_f = Kopal.fetch(@friend.kopal_identity.feed_url)
-    rescue Kopal::Antenna::FetchingError => e
-      render_kopal_error e
-      return
-    end
-    render_kopal_Error "Invalid Kopal Feed." and return unless f_f.kopal_feed?
-    begin
-      @friend.kopal_feed = Kopal::Feed.new f_f.body_xml
+      @friend.friend_kopal_feed = Kopal::Feed.new @kopal_feed_response.body_xml
       @friend.friendship_state = 'pending'
       @friend.save!
-    rescue Kopal::KopalFeedInvalid, ActiveRecord::RecordInvalid => e
-      render_kopal_error "Invalid Kopal Feed at #{fd.response_uri}. " +
-        "Message recieved - \n" + e.message
+    rescue Kopal::Feed::FeedInvalid, ActiveRecord::RecordInvalid => e
+      kc_render_or_redirect :mode => 'error', :error_id => '0x0000',
+        :error_message => "Invalid Kopal Feed at #{@kopal_feed_response.response_uri}. " +
+        "Message recieved - " + e.message
       return
     end
+    logger.debug("Finished saving record to database.")
+    
     friendship_state
   end
 
   def friendship_update
-    required_params( :"kopal.friendship-state" => true,
+    logger.debug("In function - friendship_update")
+    return unless required_params( :"kopal.friendship-state" => true,
       :"kopal.friendship-key" => true,
       :"kopal.identity" => Proc.new {|x| normalise_kopal_identity(x); true}
     )
     @friend = @profile_user.account.all_friends.
       find_by_friend_kopal_identity normalise_url params[:"kopal.identity"]
-    render_kopal_error 0x1205 and return unless @friend
-    render_kopal_error 0x1204 and return unless
-      @friend.friendship_key == params[:"kopal.friendship-key"]
+    unless @friend
+      kc_render_or_redirect :mode => 'error', :error_id => '0x1205'
+      return
+    end
+    unless @friend.friendship_key == params[:'kopal.friendship-key']
+      kc_render_or_redirect :mode => 'error', :error_id => '0x1204'
+      return
+    end
+    
     case params[:"kopal.friendship-state"]
     when 'friend'
       @friend.friendship_state = 'friend'
@@ -114,22 +122,37 @@ class Kopal::ConnectController < Kopal::ApplicationController
     when 'rejected'
       @friend.destroy
     else
-      render_kopal_error 0x1202 #Invalid friendship key.
+      #Invalid friendship state.
+      kc_render_or_redirect :mode => 'error', :error_id => '0x1202'
       return
     end
+    
     friendship_state
   end
 
   def friendship_state
-    required_params(
+    logger.debug('In function - friendship_state')
+    return unless required_params(
       :"kopal.identity" => Proc.new {|x| normalise_kopal_identity(x); true}
     )
+    logger.debug("RECORDS OF PROFILE FRIEND - #{Kopal::ProfileFriend.find(:all)}")
     @friend ||= Kopal::ProfileFriend.find_or_initialise_readonly @profile_user.account.id,
       normalise_kopal_identity(params[:"kopal.identity"])
-    render :friendship_state #necessary, since called by other methods.
+    return_hash = {:mode => 'success', :'friendship-state' => @friend.friendship_state,
+      'identity' => @friend.friend_kopal_identity.to_s }
+    if @friend.friendship_state == 'waiting'
+      logger.debug("Encrypting string #{@friend.friendship_key} with #{@friend.friend_public_key.to_pem}")
+      encrypted = Base64.encode64 @friend.friend_public_key.public_encrypt(@friend.friendship_key)
+      logger.debug("Encrypted friendship key is #{encrypted}")
+      return_hash[:'friendship-key-encrypted'] = encrypted
+    end
+    kc_render_or_redirect return_hash
   end
 
 private
+
+  def connect_initialise
+  end
 
   #Checks parameters if they are valid.
   #Pass a Hash of parameter name as key and required value as value. Value can be a
@@ -142,19 +165,20 @@ private
   #OPTIMIZE: Instead of throwing exception, show an Error message in XML template.
   #TODO: Suppress exceptions of Proc.
   def required_params a
+    message = nil
     a.each { |k,v|
       case v
       when String:
-        raise ArgumentError, "Value of GET parameter #{k} must be #{v}." unless
+        message =  "Value of GET parameter #{k} must be #{v}." unless
           v == params[k]
       when Regexp:
-        raise ArgumentError, "GET parameter #{k} has invalid syntax." unless
+        message = "GET parameter #{k} has invalid syntax." unless
           params[k] =~ v
       when true:
-        raise ArgumentError, "GET parameter #{k} must be present." if
+        message = "GET parameter #{k} must be present." if
           params[k].blank?
       when Proc:
-        raise ArgumentError, "GET parameter #{k} has invalid syntax." unless
+        message = "GET parameter #{k} has invalid syntax." unless
           begin
             true == v.call(params[k])
           rescue
@@ -162,9 +186,205 @@ private
           end
       end
     }
+    if message
+      kc_render_or_redirect :mode => 'error', :error_id => '0x1000',
+        :error_message => message
+      return false
+    end
+    true #all good.
   end
 
-  #TODO: Make header content-type to "application/x-kopal-discovery+xml"
-  def connect_initialise
+  def rendered_or_redirected_already?
+    @rendered_or_redirected_already
+  end
+
+  alias ror_already? rendered_or_redirected_already?
+
+  #+render_or_redirect+ sounds quite generic, say if Rails implements it in future.
+  def kc_render_or_redirect hash
+    logger.debug("In function -  kc_render_or_redirect.")
+    logger.debug("Hash is #{hash.inspect}")
+
+    @rendered_or_redirected_already = true
+
+    hash['connect'] ||= SUPPORTED_NS[0]
+
+    if hash[:error_id]
+      message = Kopal::KOPAL_ERROR_CODE_PROTOTYPE[hash[:error_id].to_i(16)]
+      if hash[:error_message].empty?
+        hash[:error_message] = message
+      elsif hash[:error_message].is_a? Hash
+        hash[:error_message] = message % hash[:error_message]
+      end
+    end
+
+    if params[:'kopal.return_to']
+      begin
+        #Must be an absolute url.
+        unless params[:'kopal.return_to'] =~ /^https?:\/\//
+          raise URI::InvalidURIError
+        end
+        URI.parse params[:'kopal.return_to']
+        kc_redirect hash
+        return
+      rescue URI::InvalidURIError => e
+        kc_render :mode => 'error', :error_id => '0x0000',
+          :error_message => "Invalid kopal.return_to URL."
+        return
+      end
+    end
+    kc_render hash
+  end
+
+  #Indirect communication
+  def kc_redirect hash
+    logger.debug("In function - kc_redirect")
+
+    return_to = Kopal::Url.new params[:'kopal.return_to']
+    hash.each { |k,v|
+      return_to.query_hash["kopal.#{k}"] = v
+    }
+    return_to.build_query
+    #is status code right?
+    redirect_to return_to.to_s, :status => 300 #Multiple choices
+  end
+
+  #Direct communication
+  def kc_render hash
+    logger.debug("In function - kc_render")
+
+    #Doesn't work
+    #response.status = 400 if hash[:mode] == 'error'
+    response.content_type = 'text/plain'
+    
+    response2 = ''
+
+    hash.each { |k,v|
+      response2 << "kopal.#{k}: #{CGI.escape(v.to_s)}\n"
+    }
+
+    if hash[:mode] == 'error'
+      render :text => response2, :status => 400
+    else
+      render :text => response2
+    end
+  end
+
+  def fr_fetch_friendship_state
+    url = @friend.friend_kopal_identity.friendship_state_url @profile_user.kopal_identity
+    logger.debug("Fetching friendship-state from #{url}")
+    begin
+      response2 = Kopal::Antenna.fetch(url)
+      logger.debug("Finished fetching friendship-state from #{url}.")
+    rescue Kopal::Antenna::FetchingError => e
+      kc_render_or_redirect :mode => 'error', :error_message => e.message
+      return
+    end
+    return response2
+  end
+
+  def fr_verify_friendship_state response2
+    logger.debug("In function - fr_verify_friendship_state")
+    
+    friendship_state = response2.response_hash['kopal.friendship-state']
+    logger.debug("friendship-state is #{friendship_state}.")
+
+    if friendship_state == 'none'
+      kc_render_or_redirect :mode => 'error', :error_id => '0x1202',
+        :error_message => "#{@friend.friend_kopal_identity} did not initiate friendship."
+      return
+    end
+    unless friendship_state == 'waiting'
+      if Kopal::ProfileFriend::ALL_FRIENDSHIP_STATES.map{|x| x.to_s}.include? friendship_state
+        kc_render_or_redirect :mode => 'error', :error_id => 0x1202,
+          :error_message => {:state => friendship_state} #Invalid friendship state.
+        return
+      else #extreme?
+        kc_render_or_redirect :mode => 'error', :error_id => 0x1203,
+        :error_message => {:state => friendship_state} #Unknown friendship state.
+        return
+      end
+    end
+  end
+
+  def fr_decrypt_friendship_key response2
+    logger.debug("In function - fr_decrypt_friendship_key")
+    begin
+      logger.debug("Transmitted friendship key is #{response2.response_hash['kopal.friendship-key-encrypted']}")
+      logger.debug("Decrypting frienship key with private key! of public key #{@profile_user.private_key!.public_key}.")
+       friendship_key = @profile_user.private_key!.private_decrypt(
+        Base64.decode64 response2.response_hash['kopal.friendship-key-encrypted']
+      )
+      logger.debug("Finished decrypting friendship key.")
+    rescue OpenSSL::PKey::RSAError => e
+      kc_render_or_redirect :mode => 'error', :error_id => '0x1204',
+        :error_message => "Can not decrypt friendship-key. #{e.message}."
+      return
+    end
+    return friendship_key
+  end
+
+  def fr_fetch_kopal_discovery
+    logger.debug("In function - fr_fetch_kopal_discovery")
+    url = @friend.friend_kopal_identity.discovery_url
+    logger.debug("Fetching Kopal Connect Discovery from #{url}")
+    begin
+      response2 = Kopal::Antenna.fetch(url)
+    rescue Kopal::Antenna::FetchingError => e
+      kc_render_or_redirect :mode => 'error', :error_id => '0x1100',
+        :error_message => e.message
+      return
+    end
+    return response2
+  end
+
+  def kc_verify_kc_discovery response2
+    logger.debug("Checking if response if valid Kopal Connect Discovery?")
+    unless response2.kopal_connect_discovery?
+      kc_render_or_redirect :mode => 'error', :error_id => '0x1100',
+        :error_message => "#{response2.response_uri} is not a valid Kopal Connect Discovery."
+      return
+    end
+  end
+
+  def fr_fetch_kopal_feed
+    url = @friend.friend_kopal_identity.feed_url
+    logger.debug("Fetching Kopal Feed from #{url}")
+    begin
+      response2 = Kopal::Antenna.fetch(url)
+    rescue Kopal::Antenna::FetchingError => e
+      kc_render_or_redirect :mode => 'error', :error_id => '0x2000',
+        :error_message => e.message
+      return
+    end
+    return response2
+  end
+
+  def kc_verify_k_connect response2
+    logger.debug("In function - kc_verify_response")
+
+    #Content-Type SHOULD be text/plain.
+    logger.debug("Response content-type is #{response2.headers[:content_type]}")
+    logger.debug("Response Kopal Connect response is #{CGI.unescape(response2.body_raw)}")
+
+    logger.debug("Checking if Kopal Connect revision is supported.")
+    if response2.kopal_connect?
+      unless SUPPORTED_NS.include? response2.response_hash['kopal.connect']
+        kc_render_or_redirect :mode => 'error', :error_id => '0x1010'
+        return
+      end
+    else
+      kc_render_or_redirect :mode => 'error', :error_message => 'Invalid Kopal Connect'
+      return
+    end
+  end
+
+  def kc_verify_k_feed response2
+    logger.debug("Checking if response if valid Kopal Feed.")
+    unless response2.kopal_feed?
+      kc_render_or_redirect :mode => 'error', :error_id => '0x2000',
+        :error_message => "#{response2.response_uri} is not a valid Kopal Feed."
+      return
+    end
   end
 end

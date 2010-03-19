@@ -39,7 +39,7 @@ module Kopal::KopalHelper
   #  normalise_url(normalise_url(id)) = normalise_url(id)
   def normalise_url identifier
     identifier = identifier.to_s.strip
-    identifier = "http://#{identifier}" unless identifier =~ /^[^.\?#]+:\/\//i
+    identifier = "http://#{identifier}" unless identifier =~ /^[^.:\/\?#]+:\/\//i
     raise URI::InvalidURIError unless
       identifier =~ /^[^.]+:\/\/[^\/]+\.[^\/]+/i unless
         identifier =~ /^[^.]+:\/\/localhost/i
@@ -48,28 +48,14 @@ module Kopal::KopalHelper
     identifier = uri.normalize.to_s
   end
 
-  #Must be _identity function_ after first normalise_kopal_identity(id).
-  #i.e.,
-  #  normalise_kopal_identity(normalise_kopal_identity(id)) = normalise_kopal_identity(id)
-  #TODO: Write tests.
   def normalise_kopal_identity identifier
-    begin
-      identifier = normalise_url identifier
-      identifier.gsub!(/\#(.*)$/, '') # strip any fragments
-      identifier += '/' unless identifier[-1].chr == '/'
-      raise URI::InvalidURIError if identifier['?'] #No query string
-      #What about "localhost"?
-      #URLs must have atleast on dot.
-      #raise URI::InvalidURIError unless identifier =~
-        #/^[^.]+:\/\/[0-9a-z]+\.[0-9a-z]+/i #Internationalised domains?, IPv6 addresses?
-    rescue URI::InvalidURIError
-      raise Kopal::KopalIdentityInvalid, "#{identifier} is not a valid Kopal Identity."
-    end
-    return identifier
+    DeprecatedMethod.here "Use Kopal::Identity.normalise() instead.", false
+    Kopal::Identity.normalise_identity identifier
   end
 
   #Doesn't understands XRI as of now.
   def normalise_openid_identifier identifier
+    DeprecatedMethod.here "Use Kopal::OpenID.normalise_identifier() instead.", false
     Kopal::OpenID.normalise_identifier identifier
   end
 

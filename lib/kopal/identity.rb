@@ -4,8 +4,30 @@ class Kopal::Identity
   attr_reader :identity, :identity_uri
   alias to_s identity
 
+  #Must be _identity function_ after first normalise_kopal_identity(id).
+  #i.e.,
+  #  normalise_kopal_identity(normalise_kopal_identity(id)) = normalise_kopal_identity(id)
+  #TODO: Write tests.
+  #
+  #@return [String] normalised Kopal Identity
+  def self.normalise_identity identifier
+    begin
+      identifier = Kopal::KopalHelperWrapper.new.normalise_url identifier
+      identifier.gsub!(/\#(.*)$/, '') # strip any fragments
+      identifier += '/' unless identifier[-1].chr == '/'
+      raise URI::InvalidURIError if identifier['?'] #No query string
+      #What about "localhost"?
+      #URLs must have atleast on dot.
+      #raise URI::InvalidURIError unless identifier =~
+        #/^[^.]+:\/\/[0-9a-z]+\.[0-9a-z]+/i #Internationalised domains?, IPv6 addresses?
+    rescue URI::InvalidURIError
+      raise Kopal::KopalIdentityInvalid, "#{identifier} is not a valid Kopal Identity."
+    end
+    return identifier
+  end
+
   def initialize url
-    @identity = normalise_url(url)
+    @identity = self.class.normalise_identity(url)
     @identity_uri = Kopal::Url.new @identity
   end
 
@@ -62,7 +84,9 @@ class Kopal::Identity
     #  or passing it as URI::REGEXP::UNSAFE.
     #URI.escape 'http://example.org/?a=b&c=d' #=> "http://example.org/?a=b&c=d"
     #URI.escape 'http://example.org/?a=b&c=d', URI::REGEXP::UNSAFE #=> "http://example.org/?a=b&c=d"
-    query_hash.update :'kopal.returnurl' => URI.escape(returnurl, '?=&#:/') unless returnurl.blank?
+    #
+    #query_hash.update :'kopal.returnurl' => URI.escape(returnurl, '?=&#:/') unless returnurl.blank?
+    query_hash.update :'kopal.returnurl' => CGI.escape(returnurl) unless returnurl.blank?
     build_connect_url query_hash
   end
 

@@ -48,7 +48,7 @@ class Kopal::ProfileFriend < Kopal::KopalModel
 
   def validate
     begin
-      normalise_kopal_identity(self[:friend_kopal_identity])
+      Kopal::Identity.normalise_identity(self[:friend_kopal_identity])
     rescue Kopal::KopalIdentityInvalid
       errors.add(:friend_kopal_identity, "is not a valid Kopal Identity.")
     end

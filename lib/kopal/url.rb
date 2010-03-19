@@ -9,7 +9,7 @@ class Kopal::Url < URI::HTTP
     extract_query_hash
   end
 
-  #Accepts both string and symbols for both keys and values.
+  #Keys should be +String+.
   attr_accessor :query_hash
   alias super_query query
 
@@ -41,6 +41,12 @@ class Kopal::Url < URI::HTTP
     self.query = build_query_from_hash
   end
 
+  #@return [String] final url after building the query parameters.
+  def to_s
+    build_query
+    super
+  end
+
 
 private
 
@@ -53,7 +59,10 @@ private
   end
 
   def build_query_from_hash
-    query_hash.to_a.map{|p| p.join '=' }.join('&')
+    #Should escape? or leave to parent class?
+    #query_hash.to_a.map{|p| p.join '=' }.join('&')
+    #ESCAPE as parent class won't.
+    query_hash.to_a.map{|p| p.map{|q| CGI.escape(q.to_s)}.join '=' }.join('&')
   end
   
 end
