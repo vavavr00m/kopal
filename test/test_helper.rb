@@ -23,6 +23,11 @@ Rake::Task['db:migrate:reset'].invoke
 #This line is being called 2 times, while above rake task executes only once!
 Kopal::KopalModel.perform_first_time_tasks unless Kopal::KopalAccount.find_by_id(0)
 
+require 'designer'
+
 class ActiveSupport::TestCase
   # Add more helper methods to be used by all tests here...
 end
+
+module Kopal::Test; end
+

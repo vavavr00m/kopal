@@ -11,16 +11,19 @@ module Kopal
   #specific (or generic?) errors. Also the error codes should be assigned in a technical
   #fashion, for example doing an |, ^ or something something on two error codes
   #produces an error code that contains both errors for example.
-  KOPAL_ERROR_CODE = {}
+  
+  KOPAL_ERROR_CODE = {} #with this RENAME kopal.error_id to kopal.error_number
+  
   KOPAL_ERROR_CODE_PROTOTYPE = {
     0x0000 => "Generic Kopal error.",
     0x1000 => "Kopal Connect error.",
-    0x1100 => "Kopal Connect discovery error.",
+    0x1010 => "Invalid Kopal namespace.",
+    0x1100 => "Kopal Connect Discovery error.",
     0x1101 => "Invalid public key.",
     0x1200 => "Kopal Connect friendship error.",
     0x1201 => "Duplicate friendship request.",
-    0x1202 => "Invalid friendship state <{{state}}>.",
-    0x1203 => "Unknown friendship state <{{state}}>.",
+    0x1202 => "Invalid friendship state <%{state}>.",
+    0x1203 => "Unknown friendship state <%{state}>.",
     0x1204 => "Invalid friendship key.",
     0x1205 => "Unknown friend Kopal Identity {identity}.",
     0x1210 => "Method not supported.",
