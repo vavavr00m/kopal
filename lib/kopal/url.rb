@@ -58,7 +58,10 @@ private
     }
   end
 
+  #FIXME: Must be called only once to avoid double escaping.
   def build_query_from_hash
+    raise "called second time." if @build_already
+    @build_already = true
     #Should escape? or leave to parent class?
     #query_hash.to_a.map{|p| p.join '=' }.join('&')
     #ESCAPE as parent class won't.
