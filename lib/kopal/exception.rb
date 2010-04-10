@@ -25,7 +25,7 @@ module Kopal
     0x1202 => "Invalid friendship state <%{state}>.",
     0x1203 => "Unknown friendship state <%{state}>.",
     0x1204 => "Invalid friendship key.",
-    0x1205 => "Unknown friend Kopal Identity {identity}.",
+    0x1205 => "Unknown friend Kopal Identity <%{identity}>.",
     0x1210 => "Method not supported.",
     0x1211 => "Identification required.",
     0x1220 => "Can not update friendship state.",

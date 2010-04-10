@@ -27,7 +27,7 @@
   <% else %>
     <li><%= link_to(t(:sign_in), @kopal_route.signin, {:title => t(:sign_in)}) %></li>
     <li><%= link_to("Add as friend", @kopal_route.home(:action => 'foreign',
-      :subject => 'friendship-request'),
+      :subject => 'request-friendship'),
       {:title => "Add #{@profile_user.feed.name} as your friend."}) %></li>
     <!-- <li><%= link_to("Send a message") %></li> -->
   <% end %>

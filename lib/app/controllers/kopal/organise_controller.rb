@@ -105,6 +105,12 @@ class Kopal::OrganiseController < Kopal::ApplicationController
   end
 
   def friend
+
+    if request.get?
+      #ask for confirmation.
+    elsif request.post?
+      #do stuff
+    end
     re = Proc.new {
       redirect_to @kopal_route.friend
       return
@@ -124,7 +130,7 @@ class Kopal::OrganiseController < Kopal::ApplicationController
         re.call
       when 'pending'
         Kopal::Antenna.fetch(friend.friend_kopal_identity.friendship_update_url('friend',
-          friend.friendship_key))
+          friend.friendship_key, @profile_user.kopal_identity))
         #TODO: Validations according to specs.
         friend.friendship_state = 'friend'
         friend.save!
@@ -135,14 +141,14 @@ class Kopal::OrganiseController < Kopal::ApplicationController
         re.call
       else
         begin
-          r = Kopal::Antenna.fetch friend.friend_kopal_identity.discovery_url
+          response = Kopal::Antenna.fetch friend.friend_kopal_identity.discovery_url
         rescue Kopal::Antenna::FetchingError => e
           flash[:notice] = "Error making discovery on #{friend.friend_kopal_identity}"
           re.call
         end
-        flash[:notice] = "Invalid Kopal Connect URI #{r.response_uri}" and re.call unless
-          r.kopal_connect_discovery?
-        friend.friend_public_key = r.kopal_connect_discovery.elements["PublicKey"].text
+        flash[:notice] = "Invalid Kopal Connect URI #{response.response_uri}" and re.call unless
+          response.kopal_connect_discovery?
+        friend.friend_public_key = response.response_hash['kopal.public-key']
         begin
           friend.friend_kopal_feed = Kopal::Feed.new friend.friend_kopal_identity.feed_url
         rescue Kopal::Antenna::FetchingError => e
@@ -152,9 +158,11 @@ class Kopal::OrganiseController < Kopal::ApplicationController
         friend.friendship_state = 'waiting'
         friend.assign_key!
         friend.save!
-        r = Kopal::Antenna.fetch(friend.friend_kopal_identity.friendship_request_url @profile_user.kopal_identity.to_s)
-        if r.kopal_connect_discovery?
-          state = r.body_xml.root.elements["FriendshipState"].attributes["state"]
+        #This has been the reason for simultaneous request to a server and creating deadlock.
+        #Should redirect instead.
+        response = Kopal::Antenna.fetch(friend.friend_kopal_identity.friendship_request_url @profile_user.kopal_identity.to_s)
+        if response.kopal_connect_discovery?
+          state = response.response_hash['kopal.friendship-state']
           flash[:notice] = "FriendshipState has invalid value." and re.call unless
             ['pending', 'friend', 'rejected'].include? state
           if state == 'rejected'

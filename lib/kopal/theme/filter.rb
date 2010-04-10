@@ -19,6 +19,9 @@
 #
 #=== Anything written from here on is only concept and does NOT work.
 #
+#TODO: Theme filters should also be available at per user level along with site-wide filters. Such
+#  filters content can be saved in database.
+#
 #All methods accept
 #
 #string::  Determined as the text to be displayed.

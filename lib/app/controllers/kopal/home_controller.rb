@@ -15,7 +15,7 @@ class Kopal::HomeController < Kopal::ApplicationController
       params.delete :controller
       params.delete :"kopal.connect"
       params.delete :"kopal.subject"
-      #Kopal.route.connect(params) won't work. Got to change string keys to symbols.
+      #@kopal_route.connect(params) won't work. Got to change string keys to symbols.
       redirect_to @kopal_route.connect Hash[*(params.map { |k,v| [k.to_sym, v] }.flatten)]
     end
     @comments = Kopal::ProfileComment.find(:all, :order => 'created_at DESC', :limit => 20)
@@ -66,8 +66,8 @@ class Kopal::HomeController < Kopal::ApplicationController
     if params[:identity]
       identity = Kopal::Identity.new(params[:identity])
       case params[:subject]
-      when 'friendship-request'
-        redirect_to identity.friendship_request_url @profile_user.kopal_identity
+      when 'request-friendship'
+        redirect_to identity.request_friendship_url @profile_user.kopal_identity
         return
       when 'signin'
         redirect_to identity.signin_request_url session[:kopal].delete :returnurl
