@@ -61,6 +61,7 @@ class Kopal::ConnectControllerTest < ActionController::TestCase
     get :friendship_request, :"kopal.identity" => @url
     #Server at @url needs to be restarted everytime tests are run. Since it doesn't seem to
     #pickup database changes. And OpenSSAL::PKey::RSAError - padding check failed.
+    #Or set <tt>config.cache_classes = false</tt> in <tt>config/environments/test.rb</tt>
     assert_equal 2, Kopal::ProfileFriend.count, CGI.unescape(@response.body)
 
     assert_equal 'waiting', assigns(:friendship_state_response).response_hash['kopal.friendship-state']

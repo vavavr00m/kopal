@@ -6,12 +6,9 @@ class Kopal::Url < URI::HTTP
     #Kind of kopal_url_object = (Kopal::Url) uri_http_object (From C/C++)
     super *[uri.scheme, uri.userinfo, uri.host, uri.port, uri.registry,
       uri.path, uri.opaque, uri.query, uri.fragment]
+    @query_hash = {}
     extract_query_hash
   end
-
-  #Keys should be +String+.
-  attr_accessor :query_hash
-  alias super_query query
 
   #returns a new object instead of in-place replacement.
   def make_https
@@ -25,20 +22,28 @@ class Kopal::Url < URI::HTTP
     self
   end
 
-  def query
-    build_query_from_hash
-  end
-
+  #No escaping is done. Same behaviour as super. (Will also result in double escaping).
   def query= *args
     super *args
     extract_query_hash
   end
 
-  #Need to call after modifying query_hash.
-  #LATER: Make this procedure done automatically after modification of query_hash.
-  #One method will be adding methods like - <tt>add_queries</tt> <tt>delete_query</tt>
-  def build_query
-    self.query = build_query_from_hash
+  #@return [String] Returns new URL
+  def update_parameters hash
+    hash.each {|k,v|
+      @query_hash[CGI.escape(k.to_s)] = CGI.escape(v.to_s)
+    }
+    to_s
+  end
+
+  #If passed no arguments, will delete all parameters
+  #@return [String] returns new URL
+  def delete_parameters *args
+    return @build_query = {} if args.size.zero?
+    args.each {|a|
+      @build_query.delete a.to_s
+    }
+    to_s
   end
 
   #@return [String] final url after building the query parameters.
@@ -52,20 +57,21 @@ private
 
   def extract_query_hash
     @query_hash = {}
-    super_query.blank? || super_query.split('&').each { |parameter|
+    query.blank? || query.split('&').each { |parameter|
       k,v = parameter.split('=')
       @query_hash[k] = v
     }
   end
 
-  #FIXME: Must be called only once to avoid double escaping.
+  def build_query
+    self.query = build_query_from_hash
+  end
+
   def build_query_from_hash
-    raise "called second time." if @build_already
-    @build_already = true
     #Should escape? or leave to parent class?
-    #query_hash.to_a.map{|p| p.join '=' }.join('&')
+    @query_hash.to_a.map{|p| p.join '=' }.join('&') #Escaping happens in calling methods.
     #ESCAPE as parent class won't.
-    query_hash.to_a.map{|p| p.map{|q| CGI.escape(q.to_s)}.join '=' }.join('&')
+    #query_hash.to_a.map{|p| p.map{|q| CGI.escape(q.to_s)}.join '=' }.join('&')
   end
   
 end

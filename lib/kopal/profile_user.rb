@@ -51,7 +51,7 @@ class Kopal::ProfileUser < Kopal::KopalUser
   end
 
   def signed?
-    DeprecatedMethod.here "Use @visiting_user.homepage?() instead."
+    DeprecatedMethod.here "Use @visiting_user.homepage?() instead.", true
   end
 
   def signed_out!

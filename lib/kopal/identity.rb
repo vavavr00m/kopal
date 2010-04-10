@@ -1,8 +1,9 @@
 class Kopal::Identity
   include Kopal::KopalHelper
 
-  attr_reader :identity, :identity_uri
+  attr_reader :identity, :identity_url
   alias to_s identity
+  alias identity_uri identity_url #Will think about the difference later.
 
   #Must be _identity function_ after first normalise_kopal_identity(id).
   #i.e.,
@@ -28,12 +29,12 @@ class Kopal::Identity
 
   def initialize url
     @identity = self.class.normalise_identity(url)
-    @identity_uri = Kopal::Url.new @identity
+    @identity_url = Kopal::Url.new @identity
   end
 
   #Checks if the given url is a valid Kopal Identity.
   #Ends with "!" since performs a network activity.
-  def validate!
+  def validate_over_network!
     #TODO: Write me
     raise NotImplementedError
   end
@@ -50,31 +51,38 @@ class Kopal::Identity
   end
 
   def profile_image_url
-    connect_url + '&kopal.subject=image'
+    build_kc_url :"kopal.subject" => 'image'
   end
 
   def feed_url
-    identity + '?kopal.feed=true'
+    identity_url.dup.update_parameters :"kopal.feed" => 'true'
   end
   alias kopal_feed_url feed_url
 
   def discovery_url
-    connect_url + '&kopal.subject=discovery'
+    build_kc_url :"kopal.subject" => 'discovery'
+  end
+
+  def request_friendship_url sender_identity
+    build_kc_url :"kopal.identity" => sender_identity,
+      :"kopal.subject" => 'request-friendship'
   end
 
   def friendship_request_url requester_identity
-    build_connect_url :"kopal.identity" => requester_identity,
+    build_kc_url :"kopal.identity" => requester_identity,
       :"kopal.subject" => 'friendship-request'
     
   end
 
   def friendship_state_url requester_identity
-    connect_url_with_identity(requester_identity) + '&kopal.subject=friendship-state'
+    build_kc_url :"kopal.identity" => requester_identity,
+      :'kopal.subject' => 'friendship-state'
   end
 
   def friendship_update_url state, friendship_key, requester_identity
-    connect_url_with_identity(requester_identity) + '&kopal.subject=friendship-update&kopal.state=' +
-      state + '&kopal.friendship-key=' + friendship_key.to_s
+    build_kc_url :"kopal.identity" => requester_identity,
+      :"kopal.subject" => 'friendship-update', :'kopal.state' => state,
+      :'kopal.friendship-key' => friendship_key
   end
 
   #TODO: Deprecate it. Sigin-In is part of OpenID not Kopal Connect.
@@ -87,32 +95,15 @@ class Kopal::Identity
     #
     #query_hash.update :'kopal.returnurl' => URI.escape(returnurl, '?=&#:/') unless returnurl.blank?
     query_hash.update :'kopal.returnurl' => CGI.escape(returnurl) unless returnurl.blank?
-    build_connect_url query_hash
+    build_kc_url query_hash
   end
 
 private
 
-  #prefix "new_" signifies that for each call, it will return a new object.
-  def new_connect_url
+  def build_kc_url query_hash
     uri = identity_uri.dup
-    uri.query_hash.update :"kopal.connect" => 'true'
-    uri
-  end
-
-  def build_connect_url query_hash
-    uri = identity_uri.dup
-    uri.query_hash.update :"kopal.connect" => 'true'
-    uri.query_hash.update query_hash
-    uri.build_query
-    uri.to_s
-  end
-  
-  def connect_url
-    identity + '?kopal.connect=true'
-  end
-
-  def connect_url_with_identity requester_identity
-    connect_url + '&kopal.identity=' + requester_identity.to_s
+    uri.update_parameters :"kopal.connect" => 'true'
+    uri.update_parameters query_hash
   end
   
 end

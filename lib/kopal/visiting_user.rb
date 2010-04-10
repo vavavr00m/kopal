@@ -18,6 +18,8 @@ class Kopal::VisitingUser < Kopal::KopalUser
     @homepage
   end
 
+  alias self? homepage?
+
   #Is the visitor recognised and has a valid Kopal Identity?
   #+Not+ same as <tt>Kopal::ProfileUser#signed?</tt>
   def signed?
