@@ -7,6 +7,8 @@ class Kopal::Feed
 
   class FeedInvalid < Kopal::KopalXmlError; end;
 
+  #TODO: Add support for Nokogiri
+  #@param [String,REXML::Document,Kopal::SignalResponse,Hash,Kopal::ProfileUser,NilClass]
   def initialize data = nil
     @of_profile_user = false
     case data
@@ -23,6 +25,8 @@ class Kopal::Feed
       initialise_from_rexml REXML::Document.new(data)
     when Hash,Kopal::ProfileUser
       initialise_from_hash data
+    when nil
+      nil
     else
       raise ArgumentError, "Unknown type for a Kopal Feed - #{data.class}"
     end

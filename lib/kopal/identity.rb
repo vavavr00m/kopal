@@ -50,39 +50,56 @@ class Kopal::Identity
     r
   end
 
-  def profile_image_url
-    build_kc_url :"kopal.subject" => 'image'
+  def profile_image_url hash = {}
+    build_kc_url hash.update :"kopal.subject" => 'image'
   end
 
-  def feed_url
-    identity_url.dup.update_parameters :"kopal.feed" => 'true'
+  def feed_url hash = {}
+    identity_url.dup.update_parameters hash.update :"kopal.feed" => 'true'
   end
   alias kopal_feed_url feed_url
 
-  def discovery_url
-    build_kc_url :"kopal.subject" => 'discovery'
+  def discovery_url hash = {}
+    build_kc_url hash.update :"kopal.subject" => 'discovery'
   end
 
-  def request_friendship_url sender_identity
-    build_kc_url :"kopal.identity" => sender_identity,
-      :"kopal.subject" => 'request-friendship'
+  def request_friendship_url hash = {}
+    unless hash.is_a? Hash
+      DeprecatedMethod.here "Pass an Hash instead of String."
+      hash = { :'kopal.identity' => hash}
+    end
+    required_params(hash, :'kopal.identity')
+    build_kc_url hash.update :"kopal.subject" => 'request-friendship'
   end
 
-  def friendship_request_url requester_identity
-    build_kc_url :"kopal.identity" => requester_identity,
-      :"kopal.subject" => 'friendship-request'
+  def friendship_request_url hash = {}
+    unless hash.is_a? Hash
+      DeprecatedMethod.here "Pass an Hash instead of String."
+      hash = { :'kopal.identity' => hash}
+    end
+    required_params(hash, :'kopal.identity')
+    build_kc_url hash.update :"kopal.subject" => 'friendship-request'
     
   end
 
-  def friendship_state_url requester_identity
-    build_kc_url :"kopal.identity" => requester_identity,
-      :'kopal.subject' => 'friendship-state'
+  def friendship_state_url hash = {}
+    unless hash.is_a? Hash
+      DeprecatedMethod.here "Pass an Hash instead of string."
+      hash = { :'kopal.identity' => hash}
+    end
+    required_params(hash, :'kopal.identity')
+    build_kc_url hash.update :'kopal.subject' => 'friendship-state'
   end
 
-  def friendship_update_url state, friendship_key, requester_identity
-    build_kc_url :"kopal.identity" => requester_identity,
-      :"kopal.subject" => 'friendship-update', :'kopal.state' => state,
-      :'kopal.friendship-key' => friendship_key
+  #In deprecated benhaviour, hash is state.
+  def friendship_update_url hash = {}, friendship_key = '', requester_identity = ''
+    unless hash.is_a? Hash
+      DeprecatedMethod.here "Pass an Hash instead of string."
+      hash = { :'kopal.state' => hash, :'kopal.identity' => requester_identity,
+        :'kopal.friendship-key' => friendship_key}
+    end
+    required_params(hash, :'kopal.identity', :'kopal.state', :'kopal.friendship-key')
+    build_kc_url hash.update :"kopal.subject" => 'friendship-update'
   end
 
   #TODO: Deprecate it. Sigin-In is part of OpenID not Kopal Connect.
@@ -104,6 +121,12 @@ private
     uri = identity_uri.dup
     uri.update_parameters :"kopal.connect" => 'true'
     uri.update_parameters query_hash
+  end
+
+  def required_params params, *args
+    args.each { |p|
+      raise ArgumentError, "Expect #{p} to be present" if params[p].blank?
+    }
   end
   
 end

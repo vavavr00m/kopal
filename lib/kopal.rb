@@ -25,6 +25,8 @@
 # * +:page_bottom_content+
 # * +:surface_right_content+
 
+require 'core_extension/require'
+
 KOPAL_ROOT = File.expand_path(File.dirname(__FILE__) + '/..')
 
 #Gems and plugins
@@ -32,7 +34,6 @@ require 'will_paginate'
 require KOPAL_ROOT + '/vendor/recaptcha/init'
 
 #Kopal libraries
-require_dependency 'core_extension'
 require_dependency KOPAL_ROOT + '/config_dependency'
 require_dependency 'kopal/exception'
 require_dependency 'kopal/openid'

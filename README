@@ -31,3 +31,11 @@ reference see - {http://code.google.com/p/kopal/wiki/Kopal_Feed}.
 
 For a general introduction and for download links please visit {http://code.google.com/p/kopal/}.
 To learn more about Kopal API, see {_index.html}.
+
+== Abbreviations and Acronyms
+
+Throughout the code, some identifiers have been shortened. Here is a reference list.
+   ki   = Kopal Identity
+   kc   = Kopal Connect
+   kf   = Kopal Feed
+   fki  = Friend's Kopal Identity

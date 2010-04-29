@@ -105,82 +105,54 @@ class Kopal::OrganiseController < Kopal::ApplicationController
   end
 
   def friend
+    re = Proc.new {
+      redirect_to @kopal_route.friend
+      return
+    }
+    re.call if params[:identity].blank?
+    @identity = Kopal::Identity.new params[:identity]
 
     if request.get?
       #ask for confirmation.
     elsif request.post?
       #do stuff
     end
-    re = Proc.new {
-      redirect_to @kopal_route.friend
-      return
-    }
-    re.call if params[:identity].blank?
-    identity = normalise_kopal_identity(params[:identity])
-    if @profile_user.account.all_friends.exists? :friend_kopal_identity => identity
-      friend = @profile_user.account.all_friends.find_by_friend_kopal_identity identity
-    else
-      friend = @profile_user.account.all_friends.build :friend_kopal_identity => identity
-    end
+
+    #TODO: It all shall be in request.post?
+    @friend = @profile_user.account.all_friends.find_or_initialize_by_friend_kopal_identity @identity.to_s
+    
     case params[:action2]
     when 'start'
-      case friend.friendship_state
+      case @friend.friendship_state
       when 'friend'
-        flash[:highlight] = "#{friend.friend_kopal_identity} is already your friend."
+        flash[:highlight] = "#{@friend.friend_kopal_identity.simplified} is already your friend."
         re.call
       when 'pending'
-        Kopal::Antenna.fetch(friend.friend_kopal_identity.friendship_update_url('friend',
-          friend.friendship_key, @profile_user.kopal_identity))
-        #TODO: Validations according to specs.
-        friend.friendship_state = 'friend'
-        friend.save!
-        flash[:highlight] = "#{friend.friend_kopal_identity} is now your friend."
-        re.call
+        session[:kopal][:kc_authorisation_code] = random_hexadecimal
+        redirect_to @kopal_route.connect(:action => 'n_approve_pending_friendship_requests',
+          :ki => @identity.to_s,
+          :kc_authorisation_code => session[:kopal][:kc_authorisation_code]
+        )
+        return
       when 'waiting'
-        flash[:highlight] = "Waiting for approval from #{friend.friend_kopal_identity}"
+        flash[:highlight] = "Waiting for approval from #{@friend.friend_kopal_identity.simplified}"
         re.call
       else
-        begin
-          response = Kopal::Antenna.fetch friend.friend_kopal_identity.discovery_url
-        rescue Kopal::Antenna::FetchingError => e
-          flash[:notice] = "Error making discovery on #{friend.friend_kopal_identity}"
-          re.call
-        end
-        flash[:notice] = "Invalid Kopal Connect URI #{response.response_uri}" and re.call unless
-          response.kopal_connect_discovery?
-        friend.friend_public_key = response.response_hash['kopal.public-key']
-        begin
-          friend.friend_kopal_feed = Kopal::Feed.new friend.friend_kopal_identity.feed_url
-        rescue Kopal::Antenna::FetchingError => e
-          flash[:notice] = "Error fetching Kopal Feed for #{friend.friend_kopal_identity}"
-          re.call
-        end
-        friend.friendship_state = 'waiting'
-        friend.assign_key!
-        friend.save!
-        #This has been the reason for simultaneous request to a server and creating deadlock.
-        #Should redirect instead.
-        response = Kopal::Antenna.fetch(friend.friend_kopal_identity.friendship_request_url @profile_user.kopal_identity.to_s)
-        if response.kopal_connect_discovery?
-          state = response.response_hash['kopal.friendship-state']
-          flash[:notice] = "FriendshipState has invalid value." and re.call unless
-            ['pending', 'friend', 'rejected'].include? state
-          if state == 'rejected'
-            friend.destroy
-            flash[:notice] = "Friendship declined by #{friend.friend_kopal_identity}"
-            re.call
-          end
-          friend.state = if state == 'pending' then 'waiting' else 'friend' end
-          friend.save!
-          flash[:highlight] = "Friendship state of #{friend.friend_kopal_identity} is now #{friend.state}"
-          re.call
-        end
+        #Request goes from here, means that it is guaranteed that user is aythenticated.
+        session[:kopal][:kc_authorisation_code] = random_hexadecimal
+        redirect_to @kopal_route.connect(:action => 'n_initiate_friendship',
+          :ki => @identity.to_s,
+          :kc_authorisation_code => session[:kopal][:kc_authorisation_code]
+        )
+        return
       end
     when 'delete'
-      friend.destroy
-      Kopal::Antenna.fetch(friend.friend_kopal_identity.friendship_update_url 'rejected',
-        friend.friendship_key)
-      flash[:highlight] = "Deleted friend #{friend.friend_kopal_identity}"
+      @friend.destroy
+      Kopal::Antenna.fetch(@friend.friend_kopal_identity.friendship_update_url(
+        :'kopal.identity' => @profile_user.kopal_identity,
+        :'kopal.friendship-state' => 'rejected',
+        :'kopal.friendship-key' => @friend.friendship_key))
+      flash[:highlight] = "Deleted friend #{@friend.friend_kopal_identity.simplified}"
       re.call
     end
     re.call
