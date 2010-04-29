@@ -1,5 +1,15 @@
+#Public methods prefixed with "n_" do not relate to a Kopal Connect subject.
 class Kopal::ConnectController < Kopal::ApplicationController
+
+  class InvalidAuthorisationCode < Kopal::ApplicationError; end
+  
   before_filter :connect_initialise
+  before_filter :verify_authorisation_code, :only => [
+    :n_approve_pending_friendship_request,
+    :n_accept_updated_friendship_request,
+    :n_initiate_friendship,
+    :n_accept_response_from_friendship_request
+  ]
 
   SUPPORTED_NS = [ #Index 0 should always be the revision of the responses.
     'http://spec.kopal.googlecode.com/hg/connect/0.2.draft/'
@@ -61,6 +71,10 @@ class Kopal::ConnectController < Kopal::ApplicationController
     end
 
     #TODO: Try &&ing all statements. Make sure that all of them return !nil/false if success.
+    #TODO: Make all of these methods return a Proc, so that they make calling method return
+    #on error like <tt>re.call</tt> in OrganiseController#friend. And we don't have
+    #to perform check after every call.
+    #Example: <tt>fr_fetch_friendship_state().call()</tt> instead of <tt>fr_fetch_friendship_state()<tt>.
 
     @friendship_state_response = fr_fetch_friendship_state
     return if ror_already?
@@ -164,9 +178,110 @@ class Kopal::ConnectController < Kopal::ApplicationController
     kc_render_or_redirect return_hash
   end
 
+  #Shall be a POST request.
+  def n_approve_pending_friendship_request
+    @fki = Kopal::Identity.new params[:ki]
+    @friend = @profile_user.account.pending_friends.find_by_friend_kopal_identity(@fki)
+    #TODO: Validations according to specs.
+    @friend.friendship_state = 'friend'
+    @friend.save!
+    session[:kopal][:kc_authorisation_code] = random_hexadecimal
+    redirect_to @friend.friend_kopal_identity.friendship_update_url(
+      :'kopal.identity' => @profile_user.kopal_identity,
+      :'kopal.state' => 'friend',
+      :'kopal.friendship-key' => @friend.friendship_key,
+      :'kopal.return_to' => @kopal_route.connect(
+        :action => 'n_accept_updated_friendship_request',
+        :kc_authorisation_code => session[:kopal][:kc_authorisation_code],
+        :fki => @friend.friend_kopal_identity.to_s
+      )
+    )
+  end
+
+  def n_accept_updated_friendship_request
+    @friend = @profile_user.account.all_friends.find_by_friend_kopal_identity(params[:fki])
+    #Assumes friendship is updated.
+    flash[:highlight] = "#{@friend.friend_kopal_identity.simplified} is now your friend."
+    redirect_to @kopal_route.friend
+  end
+
+  def n_initiate_friendship
+    #Display message in a user friendly way. Loading layout and with buttons "Continue" etc.
+    #params['kopal.return_to'] = {:action => 'n_display_message_to_user'}
+    @fki = Kopal::Identity.new params[:ki]
+    @friend = @profile_user.account.all_friends.build :friend_kopal_identity => @fki.to_s
+
+    (@discovery_response = fr_fetch_kopal_discovery) &&
+      (kc_verify_k_connect @discovery_response) &&
+      (kc_verify_k_discovery @discovery_response)
+    
+    return if ror_already?
+
+    @friend.friend_public_key = @discovery_response.response_hash['kopal.public-key']
+
+    (@kf_response = fr_fetch_kopal_feed) &&
+      (kc_verify_k_feed @kf_response)
+
+    return if ror_already?
+
+    @friend.friend_kopal_feed = Kopal::Feed.new @kf_response
+    @friend.friendship_state = 'waiting'
+    @friend.assign_key!
+    @friend.save! #What if following redirect fails? Second request won't be possible
+    #because state is already 'waiting'. Design Kopal Connect to be atomic, like
+    #currency transactions.
+
+    session[:kopal][:kc_authorisation_code] = random_hexadecimal
+    redirect_to @friend.friend_kopal_identity.friendship_request_url(
+      :'kopal.identity' => @profile_user.kopal_identity,
+      :'kopal.return_to' => @kopal_route.connect(
+        :action => 'n_accept_response_from_friendship_request',
+        :fki => @friend.friend_kopal_identity,
+        :kc_authorisation_code => session[:kopal][:kc_authorisation_code],
+        :only_path => false
+      )
+    )
+  end
+
+  def n_accept_response_from_friendship_request #n_initiate_friendship_request_2
+    @friend = @profile_user.account.waiting_friends.find_by_friend_kopal_identity(params[:fki])
+    @state = params[:'kopal.friendship-state']
+    unless ['pending', 'friend', 'rejected'].include? @state
+      logger.debug("Invalid friendship state - #{@state}")
+      flash[:notice] = "Friendship state has invalid value - #{@state}"
+    else
+      if @state == 'rejected'
+        @friend.destory
+        flash[:highlight] = "Friendship declined by #{@friend.friend_kopal_identity.simplified}"
+      else
+        @friend.friendship_state = if @state == 'pending' then 'waiting' else 'friend' end
+        @friend.save!
+        flash[:highlight] = "Friendship state of #{@friend.friend_kopal_identity.simplified} is now #{@friend.friendship_state}"
+      end
+    end
+    redirect_to @kopal_route.friend
+  end
+
 private
 
   def connect_initialise
+  end
+
+  #For actions that require authentication and permission (collectively authorisation)
+  #It should not be like anyone can forge a request to that action if the profile user is signed in.
+  #Should be a POST/PUT request.
+  #Can achieve with InvalidAuthenticityToken?
+  #
+  #FIXME: It is possible that an external uri makes request to another action while
+  #the authorisation code is set and some other action is expected. Also store in session
+  #the authorisation code as well as for which action it is with what params expected.
+  #for example params[:fki] must be http://example.net/ for a perticular action with
+  #a perticular authorisation code.
+  def verify_authorisation_code
+    if params[:kc_authorisation_code].blank?() or
+        session[:kopal].delete(:kc_authorisation_code) != params[:kc_authorisation_code]
+      raise InvalidAuthorisationCode
+    end
   end
 
   #Checks parameters if they are valid.
@@ -177,8 +292,12 @@ private
   #[Proc object with one argument] - Proc must return true and not raise any
   #exception for passed parameter value.
   #
-  #OPTIMIZE: Instead of throwing exception, show an Error message in XML template.
   #TODO: Suppress exceptions of Proc.
+  #
+  #Make it return a proc. Which renders or redirects error and returns from the calling
+  #method. Like re.call() in OrganiseController#friend
+  #So that we can use it like <tt>required_params.call(stuff)</tt> and don't have to write
+  #<tt>return unless required_params(stuff)</tt>
   def required_params a
     message = nil
     a.each { |k,v|
@@ -226,7 +345,7 @@ private
 
     if hash[:error_id]
       message = Kopal::KOPAL_ERROR_CODE_PROTOTYPE[hash[:error_id].to_i(16)]
-      if hash[:message].empty?
+      if hash[:message].blank?
         hash[:message] = message
       elsif hash[:message].is_a? Hash
         hash[:message] = message % hash[:message]
@@ -254,12 +373,16 @@ private
   #Indirect communication
   def kc_redirect hash
     logger.debug("In function - kc_redirect")
+    
+    # So, cool!
+    # Second thought, should not rely on values being key (inverting).
+    # Saw on web, not my original.
+    # See also Kopal::HomeController#index
+    # hash = hash.invert.merge(hash.invert) {|k,v| "kopal.#{v}"}.invert
+    hash = hash.hmap { |k,v| ["kopal.#{k}", v]}
 
     return_to = Kopal::Url.new params[:'kopal.return_to']
-    hash.each { |k,v|
-      return_to.query_hash["kopal.#{k}"] = v
-    }
-    return_to.build_query
+    return_to.update_parameters hash
     #is status code right?
     redirect_to return_to.to_s, :status => 300 #Multiple choices
   end

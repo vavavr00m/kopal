@@ -4,6 +4,7 @@ module Kopal
   class KopalIdentityInvalid < KopalError; end;
   class KopalXmlError < KopalError; end;
   class KopalConnectInvalid < KopalXmlError; end;
+  class ApplicationError < KopalError; end;
 
   #LATER: This should list only very small number of very specific errors,
   #which must be understood by machine for a good functioning of protocol.
