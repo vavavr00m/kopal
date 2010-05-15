@@ -10,7 +10,7 @@ class Kopal::ProfileStore < Kopal::Model
   #TODO: Rename "record" to something more meaningful.
   validates_presence_of :record_name
   validates_presence_of :scope
-  validates_uniqueness_of :record_name, :scope => 'widget_key'
+  validates_uniqueness_of :record_name, :scope => :widget_key
 
 private
 
