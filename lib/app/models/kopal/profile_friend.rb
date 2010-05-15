@@ -29,6 +29,10 @@ class Kopal::ProfileFriend < Kopal::KopalModel
   #valid length.
   FRIENDSHIP_KEY_LENGTH = 32..64
 
+  named_scope :pending, :conditions => {:friendship_state => 'pending'}
+  named_scope :waiting, :conditions => {:friendship_state => 'waiting'}
+  named_scope :friend,  :conditions => {:friendship_state => 'friend' }
+
   validates_presence_of :friend_kopal_identity, :friend_kopal_feed, :friendship_state,
     :friendship_key, :friend_public_key
   validates_uniqueness_of :friend_kopal_identity
