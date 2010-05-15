@@ -1,5 +1,5 @@
 #Migrate AMAP code which is not rails-specific to Kopal lib.
-class Kopal::PageDrawController < Kopal::ApplicationController
+class Kopal::PrevPageDrawController < Kopal::ApplicationController
   helper Kopal::Helper::PageDrawHelper
 
 # params[:page_id] has preference over params[:page].
