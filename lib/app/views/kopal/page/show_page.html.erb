@@ -1,0 +1,15 @@
+<%= render :partial => 'kopal/home/navigation' %>
+
+<% if @profile_user.signed? %>
+	<p class="helper"><%= link_to 'Edit this page', Kopal.route.page_edit(@page.page_name),
+    {:title => 'Edit this page.'} %></p>
+<% end %>
+
+<h2> <%= @page %> </h2>
+<div class="Description"> <%= @page.page_description %> </div>
+
+<div id="PageFront">
+<% @page.elements.each {|e| %>
+	<%= render :partial => 'page_element', :locals => { :page_element => e } %>
+<% } %>
+</div>

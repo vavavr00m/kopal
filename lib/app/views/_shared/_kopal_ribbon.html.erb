@@ -1,0 +1,45 @@
+<style type="text/css">
+  div#KopalRibbon {
+    position: fixed;
+    bottom: 0;
+    background: #EEEEEE;
+    border-top:1px gray solid;
+    width: 100%;
+    margin: 0;
+    margin-left: -20px;
+    height: 20px;
+    padding: 4px;
+  }
+  div#KopalRibbon span.on_left a.name_kopal {
+    font-weight: bold;
+    font-size: 16px;
+    color: inherit;
+    text-decoration: inherit;
+  }
+  div#KopalRibbon span.on_left a.name_kopal:hover {
+    text-decoration: none;
+    background: none;
+  }
+  div#KopalRibbon span.on_right {
+    padding-right: 8px;
+    float:right;
+  }
+</style>
+<div id="KopalRibbon">
+  <span class="on_left">
+    <a href="http://code.google.com/p/kopal/" class="name_kopal"
+       title="Kopal — Decentralised Social Networking">kopal</a>
+  </span>
+  <%#= link_to "Next", 'http://search.dhaani.net/person/next/', "Browse a random profile." %>
+  <span class="on_right">
+    <% unless @visiting_user.signed? %>
+      [<%= link_to "Sign-In", @kopal_route.home(:action => 'foreign', :subject => 'signin', :returnurl => request.url),
+        :title => "Sign-In to Kopal" %>]
+    <% else %>
+      <strong><abbr title="<%=h @visiting_user.kopal_identity %>"><%= @visiting_user.kopal_identity.simplified %></abbr></strong>
+      [<%= link_to "Sign-Out", @kopal_route.home(:action => 'foreign', :subject => 'signout',
+          :returnurl => request.url, :identity => @visiting_user.kopal_identity),
+        :title => "Sign-Out from Kopal" %>]
+    <% end %>
+  </span>
+</div>

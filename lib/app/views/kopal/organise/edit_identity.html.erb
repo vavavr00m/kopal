@@ -1,0 +1,77 @@
+<%= render :partial => 'navigation'  %>
+<h2>Edit your identity </h2>
+<% form_tag do %>
+    <table>
+    <tr>
+      <td><%=  t :real_name %></td>
+      <td><%= text_field_tag :feed_real_name, @profile_user[:feed_real_name] %></td>
+    </tr>
+    <tr>
+      <td><%= t :aliases %></td>
+      <td><%= text_area_tag :feed_aliases, @profile_user[:feed_aliases]
+        %></td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+      <td>(<%= t :separate_aliases_by_newline %>)</td>
+    </tr>
+    <tr>
+      <td><%= t :preferred_calling_name %></td>
+      <td><%= select_tag :feed_preferred_calling_name,
+        options_for_select(@profile_user[:feed_aliases].to_s.split("\n").
+          unshift(@profile_user[:feed_real_name].to_s).map {|s| s.strip},
+          @profile_user[:feed_preferred_calling_name]) %></td>
+    </tr>
+    <tr>
+      <td><%= t(:status_message) %></td>
+      <td><%= text_area_tag :profile_status_message, @profile_user["profile_status_message"] %></td>
+    </tr>
+    <tr>
+      <td><%= t :about_me %></td>
+      <td><%= text_area_tag :feed_description, @profile_user["feed_description"] %></td>
+    </tr>
+    <tr>
+      <td><%= t :gender %></td>
+      <td><%= select_tag :feed_gender, options_for_select({t(:male) => :Male, t(:female) => :Female},
+        @profile_user["feed_gender"]) %></td>
+    </tr>
+    <tr>
+      <td><%= t :date_of_birth %></td>
+      <td><%= date_select :feed_birth_time, nil,
+            :order => [:day, :month, :year], :start_year => Time.now.year-140,
+            :end_year => Time.now.year,
+            :default => @profile_user["feed_birth_time"] %></td>
+    </tr>
+    <tr>
+      <td><%= t :show_date_of_birth %>?</td>
+      <td><%= select_tag :feed_birth_time_pref,
+        options_for_select({:ymd => t(:show_full_dob), :y => t(:show_only_age),
+          :md => t(:show_only_month_and_date), :nothing => t(:dont_show)}.invert,
+          @profile_user["feed_birth_time_pref"].blank?() ? :ymd : @profile_user["feed_birth_time_pref"].to_sym) %></td>
+    </tr>
+    <tr>
+      <td><%= t :email %></td>
+      <td><%= text_field_tag :feed_email, @profile_user[:feed_email] %></td>
+    </tr>
+    <tr>
+      <td><%= t :show_email %></td>
+      <td><%= select_tag :feed_show_email,
+        options_for_select({:yes => t(:yes), :no => t(:no)}.invert, 
+        @profile_user['feed_show_email'].blank?() ? :yes : @profile_user['feed_show_email'].to_sym) %></td>
+    </tr>
+    <tr>
+      <td><%= t :country %></td>
+      <td><%= select_tag(:feed_country_living_code, options_for_select(country_list.invert.sort,
+        @profile_user["feed_country_living_code"].blank?() ? nil : @profile_user["feed_country_living_code"].to_sym)) %></td>
+    </tr>
+    <tr>
+      <td><%= t :city %></td>
+      <td><%= text_field_tag :feed_city, @profile_user[:feed_city].blank?() ? nil :
+        city_list[@profile_user[:feed_city].to_sym] || @profile_user[:feed_city] %></td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+      <td><%= submit_tag %></td>
+    </tr>
+  </table>
+<% end %>

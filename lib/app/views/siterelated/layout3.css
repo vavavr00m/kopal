@@ -1,0 +1,30 @@
+/**
+* Requires ./layout2.css
+* TODO: Make me independent.
+*/
+
+/**
+*
+* This file _only_ defines layout and NOT design.
+*
+* HTML should be structured like -
+*
+*   <div id="SurfaceAbove"></div>
+*   <div id="SurfaceBindFront">
+*     <div id="SurfaceFront"></div>
+*   </div>
+*   <div id="SurfaceLeft"></div>
+*   <div id="SurfaceRight"></div>
+*   <div id="SurfaceDown"></div>
+*
+*/
+
+div#SurfaceFront{
+  margin-right: 208px;
+}
+
+div#SurfaceRight{
+  float: left;
+  margin-left: -200px;
+  width: 200px;
+}

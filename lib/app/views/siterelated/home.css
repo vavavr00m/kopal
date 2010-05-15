@@ -1,0 +1,221 @@
+/* Copied from Rails error pages. */
+/* Convention -
+ * * IDs - PascalNotation
+ * * Classes - under_scored
+*/
+body { background-color: #fff; color: #333; margin-left:20px; }
+
+body, p, ol, ul, td {
+  font-family: verdana, arial, helvetica, sans-serif;
+  font-size:   13px;
+  line-height: 18px;
+}
+
+td:first-child {
+  vertical-align:top;
+  text-align:right;
+  padding-right:20px;
+}
+pre {
+  background-color: #eee;
+  padding: 10px;
+  font-size: 11px;
+}
+
+a { color: #000; }
+a:visited { color: #666; }
+a:hover { color: #fff; background-color:#000; }
+a img{
+  border:none;
+}
+
+h2:after{
+  content: " —";
+}
+
+/* Structure */
+div#SurfaceAbove{
+  margin-bottom:25px;
+}
+div#SurfaceFront{
+	min-height:620px;
+  /*position:absolute;*/
+  float:left;
+  margin-left:216px;
+  margin-right:40px;
+	padding:8px;
+  min-width:470px;
+}
+
+div#SurfaceLeft{
+	position:absolute;
+	width:184px;
+	padding-left:4px;
+  padding-top:8px;
+}
+
+div#SurfaceLeft ul{
+	list-style:none;
+	margin-left:0;
+	padding-left:0;
+}
+
+div#SurfaceDown {
+  clear:both;
+  padding-top:40px;
+}
+/* Colours */
+div.flash { /* Copied from redmine */
+  padding: 2px 2px 2px 30px;
+  margin-bottom: 12px;
+  margin-top: 8px;
+  border: 1px solid;
+}
+
+div.highlight {
+  color: #005F00;
+  border-color:#9FCF9F;
+  background: #DFFFDF;
+}
+
+div.notice {
+  color: #550000;
+  border-color: #DD0000;
+  background: #FFE3E3;
+}
+
+div.notification {
+  color: rgb(70,70,70);
+  background: rgb(224,224,242);
+  border-color: gray;
+}
+
+input[type="text"] {
+  width: 270px;
+}
+
+input[type="submit"] {
+  font-weight: bold;
+  padding: 4px 8px;
+  width: auto;
+  overflow: visible;
+}
+
+textarea {
+  width: 270px;
+  height: 80px;
+}
+p.helper {
+  font-family: 'Trebuchet MS',Myriad,Arial,Tahoma,Verdana;
+  font-weight:bold;
+  text-align: right;
+  margin:0;
+  padding:0;
+}
+p.helper a{
+	font-size:14px;
+  color:#484848;
+  letter-spacing:-0.2px;
+	text-decoration:underline;
+	}
+p.helper a:hover {
+  background-color: #333;
+  color:white;
+}
+div.friend-ribbon{
+  border: solid 1px gray;
+  width:570px;
+  padding:7px;
+  margin:4px;
+}
+div.friend-ribbon img{
+  float:left;
+  padding-right:8px;
+}
+div.friend-ribbon span.name{
+  display:block;
+  font-size:17px;
+  padding:0;
+  margin:0;
+}
+div.friend-ribbon span.action{
+  display:block;
+  text-align:right;
+  padding-top:4px;
+}
+
+
+a.cloud{
+	color:rgb(102,86,194);
+	font-weight:normal;
+	letter-spacing:normal;
+	}
+a.cloud:hover{
+	background-color:rgb(92,76,184);
+	color:white;
+	text-decoration:none;
+	}
+
+input.openid_identifier {
+    background:url(http://openid.net/favicon.ico) no-repeat;
+    padding-left:20px;
+}
+
+/* ---- Profile Pages ------------------------------------------------------- */
+#PageEdit{
+	background-color:rgb(254, 254, 254);
+	}
+#PageEdit a{
+	}
+#PageEdit a:hover{
+	}
+#PageEdit .PageElement{
+	background-color:white;
+	border:1px dashed gray;
+	padding:12px 4px;
+	margin:10px 4px;
+	}
+#PageEdit .Heading{
+	font-weight:bold;
+	}
+#PageEdit .List, #PageEdit .Text{
+	padding-left:16px;
+	}
+
+#PageFront{
+	font-family:"lucida grande",verdana,sans-serif;
+	}
+#PageFront h2{
+	background-color:inherit;
+	border-bottom:1px solid rgb(225, 226, 237);
+	color:inherit;
+	font-family:Georgia,"Times New Roman",Times,serif;
+	font-size:19px;
+	font-weight:normal;
+	padding:0;
+	margin:24px 0 0 0;
+	}
+#PageFront h2:after{
+	content:'';
+	}
+#PageFront p, #PageFront li, #PageFront table tr{
+	font-size:14px;
+	padding:0;
+	margin:0 0 0 17px;
+	}
+#PageFront p:first-letter{
+	font-family:"Times new Roman";
+	font-size:21px;
+	}
+#PageFront .seperator{
+	border-bottom:1px solid black;
+	margin:10px 0 26px 0;
+	}
+#PageFront .seperator .heading{
+	position:relative;
+	bottom:-10px;
+	background-color:white;
+	margin-left:24px;
+	font-size:17px;
+	padding:4px;
+	}

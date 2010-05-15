@@ -1,0 +1,32 @@
+<div class="friend-ribbon">
+  <%= image_tag friend.feed.image_path %>
+  <span class="name">Vikrant Chaudhary</span>
+  <%= link_to friend.kopal_identity, friend.kopal_identity.to_s %> <br />
+  <blockquote><%= friend.feed.description %></blockquote>
+  <%= friend.feed.asl %><br />
+  <% if @signed %>
+    <% case friend.friendship_state
+     when 'pending' %>
+      <span class="action">Friendship requested / <%= link_to "Accept",
+      organise_path(:action => 'friend', :action2 => 'start', :identity =>
+      friend.kopal_identity), :title => "Accept friendship request of #{friend.feed.name}"
+      %>.</span>
+    <% when 'friend' %>
+      <span class="action">Friend / <%= link_to "Remove", organise_path(
+      :action => 'friend', :action2 => 'delete', :identity => friend.kopal_identity),
+      :title => "End friendship with #{friend.feed.name}.", :confirm =>
+      "Are you sure you want to end your friendship with #{friend.feed.name}" %>.</span>
+    <% when 'waiting' %>
+      <span class="action">You requested for friendship / <%= link_to "Cancel request",
+      organise_path(:action => 'friend', :action2 => 'delete', :identity =>
+      friend.kopal_identity), :title => "Cancel friendship request for #{friend.feed.name}"
+      %>.</span>
+    <% else %>
+      <%=  #This situation may never arise. Code should never reach here.
+      %>
+    <% end %>
+  <% else %>
+      <span class="action"><%= link_to "Add as friend", nil, {:title =>
+      "Send a friendship request to #{friend.feed.name}."} %>.</span>
+  <% end %>
+</div>

@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  <head>
+    <%= yield :before_page_meta %>
+    <title><%= @_page.show_title %></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	  <meta http-equiv="Content-Language" content="<%= I18n.locale.to_s.upcase %>" />
+	  <% if(fclc = @profile_user["feed_country_living_code"]) %><meta name="geo.country" content="<%= fclc %>" /><% end %>
+	  <% if @_page.description %><meta name="Description" content="<%= @_page.description %>" /><% end %>
+
+    <%= @_page.meta_yadis_discovery %>
+    <%= @_page.meta_openid_discovery %>
+    
+    <% for stylesheet in @_page.stylesheets %>
+      <%= stylesheet_link_tag @kopal_route.stylesheet(stylesheet[:name] || stylesheet),
+        :media => stylesheet[:media] || 'all' %>
+    <% end %>
+
+    <% for javascript in @_page.javascripts %>
+      <%= javascript_include_tag javascript %>
+    <% end %>
+	  
+    <%= yield :after_page_meta %>
+    
+  </head>
+  
+  <body>
+    <%= yield :after_body_start %>
+    <div id="Surface">
+      <div id="SurfaceAbove">
+        <!-- @TODO: Designer just needs to do "yield :page_header" and all three should be included. -->
+        <!-- Also, deprecate personalised names like SurfaceAbove in favour of generic names like PageHeader, since this is going to part of api. -->
+        <%= yield :before_page_header %>
+        <%= yield :surface_above %>
+        <%= yield :after_page_header %>
+      </div>
+      <div id="SurfaceFront">
+        <% if flash[:highlight] -%>
+          <div id="FlashHighlight" class="flash highlight"><%= flash[:highlight] %></div>
+        <% end -%>
+        <% if flash[:notice] -%>
+          <div id="FlashNotice" class="flash notice"><%= flash[:notice] %></div>
+        <% end -%>
+        <% if flash[:notification] -%>
+          <div id="FlashNotification" class="flash notification"><%= flash[:notification] %></div>
+        <% end -%>
+
+        <!-- @TODO: Designer just needs to do "yield" and all three should be included. -->
+        <%= yield :before_page_front %>
+        <%= @content_for_layout %>
+        <%= yield :after_page_front %>
+      </div>
+      <div id="SurfaceLeft">
+        <%= yield :before_page_sidebar %>
+        <%= yield :surface_left %>
+        <%= yield :after_page_sidebar %>
+      </div>
+      <div id="SurfaceDown"> <!-- footer -->
+        <%= yield :before_page_footer %>
+        <%= yield :surface_down %>
+        <p>Social Profile of <%= @profile_user %>. Powered by <a href="http://code.google.com/p/kopal/">Kopal</a>.</p>
+        <%= yield :after_page_footer %>
+
+      </div>
+    </div>
+    <p>&nbsp;<br />&nbsp;<br />&nbsp;<br />&nbsp;<br /></p>
+
+    <%= render :partial => '_shared/kopal_ribbon' %>
+    <%= yield :before_body_close %>
+  </body>
+</html>

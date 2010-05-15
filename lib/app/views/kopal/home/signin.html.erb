@@ -1,0 +1,37 @@
+<%= render :partial => 'navigation' %>
+<h2>Sign In</h2>
+
+<p>
+  <strong>I'm a </strong>
+  <%= select_tag "person", options_for_select(
+    [["Visitor to #{@profile_user.kopal_identity.simplified}", :visiting_user],
+    ["Administrator of #{@profile_user.kopal_identity.simplified}", :profile_user]]) %>
+</p>
+
+<div id="VisitingUserSignIn">
+  Please enter your <!-- <%= image_tag "http://openid.net/favicon.ico" %> -->OpenID.
+  <% form_tag :action => 'signin_for_visiting_user' do %>
+    <%= text_field_tag :openid_identifier,
+      params[:openid_identifier], :class => 'openid_identifier' %> <br />
+    <%= submit_tag "Sign In as Visitor &raquo;" %>
+  <% end %>
+  <strong>Note:</strong> You may also enter your Kopal-ID. <br />
+  Example: <strong>username.kryzen.net</strong> <br />
+  Every Kopal-ID also acts as an OpenID.
+</div>
+
+<div id="ProfileUserSignIn"> <!-- TODO: OpenID signin if selected in preferences. -->
+  <% form_tag :action => 'signin_for_profile_user'do %>
+    Please enter the password -<br />
+    <%= password_field_tag :password %> <br />
+    <%= submit_tag "Sign In for Administrator &raquo;" %>
+  <% end %>
+</div>
+
+<code>
+  TODO: Javascriptify showing only one form. Defaults to params[:person].
+</code>
+
+<script>
+  
+</script>
