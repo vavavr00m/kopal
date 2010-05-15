@@ -6,14 +6,15 @@ class DeprecatedMethod < StandardError
   #2. For next release (message, true)
   def self.here message = 'This method is deprecated.', raise_error_in_development = false
     raise_error_in_development = false if "production" == RAILS_ENV
-    ActiveSupport::Deprecation.warn message
     raise DeprecatedMethod, message if raise_error_in_development
-    #raise and rescue to get the stack and email it in production environment.
-    begin
-      raise DeprecatedMethod, message
-    rescue DeprecatedMethod => e
-      stack = e.backtrace.join("\n")
-      #email => unraised exception message => , stack => 
+    #email it in production environment.
+    #email => unraised exception message => , stack =>
+    #ActiveSupport::Deprecation.warn message, caller
+    message = "DEPRECATION WARNING: #{message}\n#{caller.join("\n")}"
+    if Rails.logger
+      Rails.logger.warn message
+    else
+      puts message
     end
   end
 end
