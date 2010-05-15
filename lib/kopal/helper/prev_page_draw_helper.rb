@@ -1,4 +1,4 @@
-module Kopal::Helper::PageDrawHelper
+module Kopal::Helper::PrevPageDrawHelper
 
   #Pass arguemnts as -> { :key => 'value' }
 	#PARAM: page_id => Database ID of page

@@ -1,4 +1,4 @@
-class Kopal::PageController < Kopal::ApplicationController
+class Kopal::PrevPageController < Kopal::ApplicationController
 
   def index
     page = params[:page][0]
