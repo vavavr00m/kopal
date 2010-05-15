@@ -102,9 +102,6 @@ private
     @_page = Kopal::PageView.new @profile_user
     @visiting_user = Kopal::VisitingUser.new session[:kopal][:signed_kopal_identity],
       @profile_user.kopal_identity.to_s == session[:kopal][:signed_kopal_identity]
-    if @visiting_user.signed?
-      @signed_user = @visiting_user #Just, I like the word "signed user". Shall remove in next commit.
-    end
     set_page_variables
     actions_for_signed_user_visiting_homepage if @visiting_user.homepage?
   end
