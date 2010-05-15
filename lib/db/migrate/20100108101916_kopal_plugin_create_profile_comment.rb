@@ -7,7 +7,7 @@ class KopalPluginCreateProfileComment < ActiveRecord::Migration
   def self.up
     create_table profile_comment_table_name do |t|
       t.references :kopal_account, :null => false
-      t.string :name, :name => 255
+      t.string :name, :length => 255
       t.string :email
       t.string :website_address, :length => 255
       t.integer :is_kopal_identity
