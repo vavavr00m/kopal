@@ -8,10 +8,23 @@ class Kopal::KopalAccount < Kopal::KopalModel
   has_many :preferences_for_feed, :class_name => 'Kopal::KopalPreference', :conditions => 'preference_name LIKE \'feed_%\'' # no '"' for LIKE!
   has_many :comments, :class_name => 'Kopal::ProfileComment'
   has_many :recent_comments, :class_name => 'Kopal::ProfileComment', :order => 'created_at DESC', :limit => 20
-  has_many :all_friends, :class_name => 'Kopal::ProfileFriend'
-  has_many :pending_friends, :class_name => 'Kopal::ProfileFriend', :conditions => ['friendship_state = ?', 'pending']
-  has_many :waiting_friends, :class_name => 'Kopal::ProfileFriend', :conditions => ['friendship_state = ?', 'waiting']
-  has_many :friends, :class_name => 'Kopal::ProfileFriend', :conditions => ['friendship_state = ?', 'friend']
+  #NOTE: There is a caveat, Previous friends() meant present's friends().friend()
+  has_many :friends, :class_name => 'Kopal::ProfileFriend'
+  def pending_friends
+    DeprecatedMethod.here("Use friends().pending() instead.")
+    friends.pending
+  end
+  
+  def waiting_friends
+    DeprecatedMethod.here("Use friends().waiting() instead.")
+    friends.waiting
+  end
+
+  def all_friends
+    DeprecatedMethod.here("Use friends() instead.")
+    friends
+  end
+  has_many :pages, :class_name => 'Kopal::ProfilePage'
   #has_many :profile_visitors
   #Duplicated in ProfileUser#status_message, remove it after one commit.
   has_one :status_message, :class_name => 'Kopal::KopalPreference', :conditions => ['preference_name = ?', 'profile_status_message']
