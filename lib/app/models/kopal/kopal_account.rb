@@ -9,20 +9,20 @@ class Kopal::KopalAccount < Kopal::KopalModel
   has_many :comments, :class_name => 'Kopal::ProfileComment'
   has_many :recent_comments, :class_name => 'Kopal::ProfileComment', :order => 'created_at DESC', :limit => 20
   #NOTE: There is a caveat, Previous friends() meant present's friends().friend()
-  has_many :friends, :class_name => 'Kopal::ProfileFriend'
+  has_many :all_friends, :class_name => 'Kopal::ProfileFriend'
   def pending_friends
-    DeprecatedMethod.here("Use friends().pending() instead.")
-    friends.pending
+    DeprecatedMethod.here("Use all_friends().pending() instead.")
+    all_friends.pending
   end
   
   def waiting_friends
-    DeprecatedMethod.here("Use friends().waiting() instead.")
-    friends.waiting
+    DeprecatedMethod.here("Use all_friends().waiting() instead.")
+    all_friends.waiting
   end
 
-  def all_friends
-    DeprecatedMethod.here("Use friends() instead.")
-    friends
+  def friends
+    DeprecatedMethod.here("Use all_friends().friend() instead.")
+    all_friends.friend
   end
   has_many :pages, :class_name => 'Kopal::ProfilePage'
   #has_many :profile_visitors
