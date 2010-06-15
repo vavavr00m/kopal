@@ -28,10 +28,13 @@
 require 'core_extension/require'
 
 KOPAL_ROOT = File.expand_path(File.dirname(__FILE__) + '/..')
+KOPAL_VENDOR_ROOT = KOPAL_ROOT + '/vendor'
 
 #Gems and plugins
 require 'will_paginate'
-require KOPAL_ROOT + '/vendor/recaptcha/init'
+require KOPAL_VENDOR_ROOT + '/rails-in_place_editing/init.rb'
+#TODO: Make recaptcha available only if application has it installed. remove from kopal/vendor/
+require KOPAL_VENDOR_ROOT + '/recaptcha/init'
 
 #Kopal libraries
 require_dependency KOPAL_ROOT + '/config_dependency'

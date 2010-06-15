@@ -1,0 +1,31 @@
+<%= render :partial => 'kopal/home/navigation' %>
+
+<% if @visiting_user.homepage? %>
+  <% @_page.include_prototype ^ @_page.include_scriptaculous %>
+<% end %>
+
+<h2>Profile Pages</h2>
+<p class="description">Profile pages for <%= @profile_user %>.</p>
+
+<% if @visiting_user.homepage? %>
+  <p class="helper"><%= link_to "Create a new page", @kopal_route.page_create,
+    :title => "Create a new page" %></p>
+<% end %>
+<ul id="page_list">
+  <% @profile_user.visible_pages(@visiting_user.kopal_identity).each do |p| %>
+  <li>
+    <%= link_to p, @kopal_route.page(p.page_name), :title => "#{p}, social profile of #{@profile_user}." %>
+    <% if @visiting_user.homepage? %>
+      (<%= link_to "edit", @kopal_route.page_edit(p.page_name), :title => "Edit page - #{p}" %>)
+      (<%= link_to_remote 'delete',
+		{
+			:url => @kopal_route.page_draw(:action => 'delete_page', :page => p),
+			:confirm => "Are you sure you want to delete this page - #{p}",
+			:method => 'post',
+			:before => "kopal.spinner({element_id : 'page_list', insert_at : 'Top', wait_text : 'Deleting page....'})"
+		},
+		{:title => 'Delete this page'} %> )
+    <% end %>
+  </li>
+  <% end %>
+</ul>

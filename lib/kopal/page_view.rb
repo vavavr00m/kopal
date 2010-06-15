@@ -99,11 +99,7 @@ class Kopal::PageView
   #Fetches files from Google Ajaxlibs if in production environment.
   def include_prototype
     return if @included_prototype
-    add_javascript(if production_env?
-      ajaxlib_prototype_path
-    else
-      'prototype'
-    end)
+    add_javascript prototype_js_url
     @included_prototype = true
   end
 
@@ -112,24 +108,66 @@ class Kopal::PageView
   #Don't forget to include Prototype first.
   def include_scriptaculous
     return if @included_scriptaculous
-    add_javascript(if production_env?
-      ajaxlib_scriptaculous_path
+    add_javascript scriptaculous_js_url
+    @included_scriptaculous = true
+  end
+
+  def include_yui
+    return if @included_yui
+    add_javascript(yui_cdn_yui3_path)
+    @included_yui = true
+  end
+
+  def yui_cdn_yui3_path
+    DeprecatedMethod.here "Use yui3_js_url() instead."
+    yui3_js_url
+  end
+
+  #Or js_yui3_url()?
+  #Like <tt>read_record()</tt> and <tt>write_record()</tt> OR <tt>record_read()</tt>, <tt>record_write()</tt>.
+  #Need to stick to one style. Which one, and why?
+  def yui3_js_url
+    if production_env?
+      yahoo_cdn_yui3_min_url
+    else
+      yahoo_cdn_yui3_debug_url
+    end
+  end
+
+  def prototype_js_url
+    if production_env?
+      ajaxlib_prototype_url
+    else
+      'prototype'
+    end
+  end
+
+  def scriptaculous_js_url
+    if production_env?
+      ajaxlib_scriptaculous_url
     else
       'scriptaculous'
-    end)
-    @included_scriptaculous = true
+    end
   end
 
 private
 
-  def ajaxlib_prototype_path version = nil
+  def ajaxlib_prototype_url version = nil
     version ||= NEWEST_VERSION_PROTOTYPE
     "http://ajax.googleapis.com/ajax/libs/prototype/#{version}/prototype.js"
   end
 
-  def ajaxlib_scriptaculous_path version = nil
+  def ajaxlib_scriptaculous_url version = nil
     version ||= NEWEST_VERSION_SCRIPTACULOUS
     "http://ajax.googleapis.com/ajax/libs/scriptaculous/#{version}/scriptaculous.js"
+  end
+
+  def yahoo_cdn_yui3_min_url
+    "http://yui.yahooapis.com/3.1.1/build/yui/yui-min.js"
+  end
+
+  def yahoo_cdn_yui3_debug_url
+    "http://yui.yahooapis.com/3.1.1/build/yui/yui-debug.js"
   end
 
   def title_postfix

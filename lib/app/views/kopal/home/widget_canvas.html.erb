@@ -1,0 +1,27 @@
+<html>
+  <head>
+    <title>Kopal Widget</title>
+    <!-- OPTIMIZE: These all files are included and hence executed on every iframe. 
+                   Should include only widget.js which communicates to parent if necessary. -->
+    <%= javascript_include_tag @_page.prototype_js_url %>
+    <%= javascript_include_tag @_page.scriptaculous_js_url %>
+    <%= javascript_include_tag @_page.yui3_js_url %>
+    <%= javascript_include_tag @kopal_route.javascript('dynamic') %>
+    <%= javascript_include_tag @kopal_route.javascript('home') %>
+    <%= javascript_include_tag @kopal_route.javascript('page') %>
+    <%= javascript_include_tag @kopal_route.javascript('widget') %>
+    <% javascript_tag do %>
+      YUI().use('event', 'io', 'node', 'selector-css3', function(Y) {
+        Y.on('domready', function() {
+            //Retrieve mode, widget_key, widget_url
+            kopal.widget.RetrieveWidgetParameters();
+            //TODO: Validate that successfully retrieved params.
+            kopal.IncludeScriptTag(kopal.widget.widget_url);
+          });
+        });
+    <% end %>
+  </head>
+  <body>
+    <div id="WidgetCanvas"></div>
+  </body>
+</html>

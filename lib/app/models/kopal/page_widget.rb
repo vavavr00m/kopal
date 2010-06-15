@@ -1,8 +1,11 @@
 class Kopal::PageWidget < Kopal::Model
   set_table_name "#{name_prefix}page_widget"
 
-  belongs_to :page, :class => 'Kopal::ProfilePage'
-  has_many :records, :class => 'Kopal::ProfileStore',
+  belongs_to :page, :class_name => 'Kopal::ProfilePage', :foreign_key => 'page_id'
+  #LATER: Is it possible that only a given widget can access a given private record.
+  #       So that another widget can not access data of a private list just
+  #       because it knows the widget key of widget with which this list belongs and user is signed in.
+  has_many :records, :class_name => 'Kopal::ProfileStore',
     :primary_key => 'widget_key', :foreign_key => 'widget_key',
     :dependent => :destroy
 

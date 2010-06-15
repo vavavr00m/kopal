@@ -14,6 +14,8 @@ class Kopal::VisitingUser < Kopal::KopalUser
 
   #If the current visitor is profile user herself? Or in other words,
   #should we enable administrative tasks?
+  #
+  #Alias for Kopal::ProfileUser#signed?
   def homepage?
     @homepage
   end
@@ -21,7 +23,7 @@ class Kopal::VisitingUser < Kopal::KopalUser
   alias self? homepage?
 
   #Is the visitor recognised and has a valid Kopal Identity?
-  #+Not+ same as <tt>Kopal::ProfileUser#signed?</tt>
+  #+Not+ same as Kopal::ProfileUser#signed?
   def signed?
     !!kopal_identity
   end

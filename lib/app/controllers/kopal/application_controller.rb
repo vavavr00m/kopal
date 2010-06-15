@@ -100,8 +100,8 @@ private
     set_response_headers
     authenticate_visiting_user if params[:"kopal.visitor"]
     @_page = Kopal::PageView.new @profile_user
-    @visiting_user = Kopal::VisitingUser.new session[:kopal][:signed_kopal_identity],
-      @profile_user.kopal_identity.to_s == session[:kopal][:signed_kopal_identity]
+    @profile_user.mark_signed! if @profile_user.kopal_identity.to_s == session[:kopal][:signed_kopal_identity]
+    @visiting_user = Kopal::VisitingUser.new session[:kopal][:signed_kopal_identity], @profile_user.signed?
     set_page_variables
     actions_for_signed_user_visiting_homepage if @visiting_user.homepage?
   end
