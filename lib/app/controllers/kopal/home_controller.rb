@@ -159,6 +159,11 @@ class Kopal::HomeController < Kopal::ApplicationController
     redirect_to @kopal_route.root
   end
 
+  def widget_canvas
+    render :layout => false
+  end
+
+  #TODO: views/siterelated and views/_shared should go to views/kopal
   #ajax-spinner.gif. Credit - http://www.ajaxload.info/
   def stylesheet
     params[:format] ||= 'css'

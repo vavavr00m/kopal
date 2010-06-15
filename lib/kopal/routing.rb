@@ -26,6 +26,10 @@ module Kopal
         :trailing_slash => true
       map.kopal_route_feed "#{Kopal.base_route}/home/feed.kp.xml", :controller => 'kopal/home',
         :action => 'feed', :format => 'xml', :trailing_slash => false
+      map.namespace :kopal do |kopal|
+        kopal.resource :widget_record, :path_prefix => base_route, :controller => 'WidgetRecord',
+          :only => [:show, :create, :update, :destroy], :trailing_slash => true
+      end
     end
   end
 

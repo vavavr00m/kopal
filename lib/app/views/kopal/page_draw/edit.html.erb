@@ -1,0 +1,56 @@
+<%= render :partial => 'kopal/home/navigation' %>
+
+<p class="description"> Editing profile page <em><%=h @page.page_name %></em> &mdash; </p>
+
+<p class="helper">
+  <%= link_to "Rename page", {:action => 'rename_page', :page => @page.page_name}, {:title => "Rename this page."} %>
+  <%= link_to 'View page', @kopal_route.page(params[:page]), {:title => 'View this page.'} %>
+</p>
+
+<h2><%= @page.page_name %></h2>
+
+<div class="description">
+  <% @page.page_description = "[Click to edit description.]" if @page.page_description.blank? %>
+  <%= in_place_editor_field :page, :page_description, {},
+   {:url => @kopal_route.page_draw(:action => 'update_page_description_xhr', :page_id => @page.id),
+   :rows => 5, :click_to_edit_text => 'Click to edit description'} %>
+</div>
+
+<p class="helper"><%= link_to_function('Add new widget', 'kopal.page.ShowSelectWidgetPage();') %></p>
+
+<div id="PageEdit">
+  
+</div>
+
+<hr />
+<p align="right"> <!-- <%= link_to 'Edit this page',
+  {:action => 'edit_nj', :page => @page.page_name},
+  {:title => 'Click here if you can not edit the page here.',
+    :style => 'font-size:16px;'} %> &nbsp; &nbsp; -->
+
+<%= link_to_remote 'Delete this page',
+    {
+      :url => {:action => 'delete_page', :page_id => @page.id},
+      :confirm => 'Are you sure about deleting this page?',
+      :method => 'delete',
+      :before => "kopal.spinner({element_id : 'page_delete_link', insert_at : 'Top', wait_text : 'Deleting page....'})"
+    },
+    {:title => 'Delete this page', :style => 'font-size:16px;', :id => 'page_delete_link'} %>
+</p>
+
+<div id="PageSelectWidgetForm" style="display:none">
+  <h2>Add widget</h2>
+  <% form_tag @kopal_route.page_draw(:action => 'add_widget', :page_id => @page.id) do %>
+    <%= text_field_tag :widget_url, 'http://127.0.0.1:3500/javascripts/widget/note/index.html'%>
+    <br /><%= submit_tag 'Add widget' %>
+  <% end %>
+  <%= link_to_function('Close', 'kopal.page.CloseSelectWidgetPage();') %>
+</div>
+
+<% javascript_tag do %>
+  YUI().use('node-base', function(Y){
+    <% @page.elements.each do |widget| %>
+      Y.on("domready", kopal.page.CreateCanvasForWidget("<%= widget.widget_key %>", "<%= widget.widget_uri %>"));
+    <% end %>
+  })
+<% end %>

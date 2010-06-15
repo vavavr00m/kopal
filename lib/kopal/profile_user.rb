@@ -4,6 +4,8 @@
 #available through getter methods for example method "account" for <tt>Kopal::KopalAccount</tt>.
 class Kopal::ProfileUser < Kopal::KopalUser
 
+  attr_accessor :visiting_user
+
   def initialize kopal_account_or_id
     if kopal_account_or_id.is_a? Kopal::KopalAccount
       @account = kopal_account_or_id
@@ -50,8 +52,16 @@ class Kopal::ProfileUser < Kopal::KopalUser
     @kopal_route = route
   end
 
+  #Mark Profile User as being signed.
+  def mark_signed!
+    @signed = true
+  end
+
+  #Same as Kopal::VisitingUser#homepage?
+  #But different that Kopal::VisitingUser#signed?
+  #TODO: This should be primary and @visiting_user.homepage?() should alias this.
   def signed?
-    DeprecatedMethod.here "Use @visiting_user.homepage?() instead.", true
+    @signed
   end
 
   def signed_out!
@@ -171,6 +181,16 @@ class Kopal::ProfileUser < Kopal::KopalUser
     private_key!.public_key
   end
 
+  def visible_pages ki
+    if ki == kopal_identity
+      account.pages
+    elsif ki.present?() && friend?(ki)
+      account.pages.select { |p| ['public', 'friend'].include? p.visibility.to_s}
+    else
+      account.pages.select { |p| p.visibility == 'public'}
+    end
+  end
+
   #Default is 2048, recommended by RSA see -
   #http://www.rsa.com/rsalabs/node.asp?id=2004#table1
   #http://www.rsa.com/rsalabs/node.asp?id=2218
@@ -201,9 +221,7 @@ class Kopal::ProfileUser < Kopal::KopalUser
 
   #Returns false if not friend, else the friendship state
   def friend? friend_identity
-    f = Kopal::ProfileFriend.find_by_kopal_identity(normalise_url(friend_identity.to_s))
-    return false if f.nil?
-    return f.friendship_state == 'friend'
+    account.all_friends.friend.find_by_friend_kopal_identity(Kopal::Identity.normalise_identity(friend_identity.to_s))
   end
 
   #Validate the friendship state for all or specific friend.

@@ -5,7 +5,7 @@ class Kopal::PageController < Kopal::ApplicationController
     if page.blank?
       list_all
     else
-      @page = Kopal::ProfilePage.find_by_page_name(page)
+      @page = @profile_user.account.pages.find_by_page_name(page)
       if @page
         show_page
       else
