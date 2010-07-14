@@ -1,8 +1,17 @@
 <html>
   <head>
     <title>Kopal Widget</title>
+    <!-- OPTIMIZE: Instead of loading all libraries let widget choose which library it wants
+                   to use. For example kopal.widget.IncludeLibPrototype('1.6') or
+                   kopal.widget.IncludeLibJQuery() etc.  -->
     <!-- OPTIMIZE: These all files are included and hence executed on every iframe. 
-                   Should include only widget.js which communicates to parent if necessary. -->
+                   Should include only widget.js which communicates to parent if necessary.
+                   Is it possible that object can be passed between parent and iframe?
+                   (I guess not), still
+                   if yes then on IncludeLibYUI3(), make available YUI object fetched from
+                   parent instead of loading here again. Also jQuery for IncludeLibJQuery(), but
+                   may not work for Prototype since it has no single namespace but rather
+                   extends core. -->
     <%= javascript_include_tag @_page.prototype_js_url %>
     <%= javascript_include_tag @_page.scriptaculous_js_url %>
     <%= javascript_include_tag @_page.yui3_js_url %>

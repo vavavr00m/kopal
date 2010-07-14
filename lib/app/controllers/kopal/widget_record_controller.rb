@@ -1,5 +1,6 @@
 class Kopal::WidgetRecordController < Kopal::ApplicationController
 
+  #TODO: Make this always return a JSON and should accept and return multiple records in one go.
   def show
     @record = Kopal::ProfileStore.find_by_widget_key_and_record_name(params[:widget_key], params[:name])
     if @record
