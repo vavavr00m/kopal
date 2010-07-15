@@ -41,7 +41,7 @@ class Kopal::KopalAccount < Kopal::KopalModel
       d.identifier_from_application = nil
       d.save!
       d.reload
-      raise "Can not create account with default ID #{DEFAULT_PROFILE_ACCOUNT_ID}. Assigned ID #{d.id}." unless
+      raise "Could not create account with default ID #{DEFAULT_PROFILE_ACCOUNT_ID}. Assigned ID #{d.id}." unless
         DEFAULT_PROFILE_ACCOUNT_ID == d.id
       Kopal::KopalPreference.save_password d.id, Kopal::KopalPreference::DEFAULT_PASSWORD
       return true #and not saved password hash.
