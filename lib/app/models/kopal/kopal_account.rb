@@ -1,7 +1,7 @@
 class Kopal::KopalAccount < Kopal::KopalModel
   set_table_name "#{name_prefix}kopal_account"
 
-  DEFAULT_PROFILE_ACCOUNT_ID = 0
+  DEFAULT_PROFILE_ACCOUNT_ID = 1
 
   has_many :preferences, :class_name => 'Kopal::KopalPreference'
   #@deprecated.
@@ -40,6 +40,9 @@ class Kopal::KopalAccount < Kopal::KopalModel
       d.id = DEFAULT_PROFILE_ACCOUNT_ID
       d.identifier_from_application = nil
       d.save!
+      d.reload
+      raise "Can not create account with default ID #{DEFAULT_PROFILE_ACCOUNT_ID}. Assigned ID #{d.id}." unless
+        DEFAULT_PROFILE_ACCOUNT_ID == d.id
       Kopal::KopalPreference.save_password d.id, Kopal::KopalPreference::DEFAULT_PASSWORD
       return true #and not saved password hash.
     end
