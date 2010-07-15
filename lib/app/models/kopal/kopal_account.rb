@@ -34,7 +34,7 @@ class Kopal::KopalAccount < Kopal::KopalModel
   validates_uniqueness_of :identifier_from_application
 
   def self.create_default_profile_account!
-    raise 'Default profile account already exists!' if self.find_by_id(0)
+    raise 'Default profile account already exists!' if self.find_by_id(DEFAULT_PROFILE_ACCOUNT_ID)
     self.transaction do
       d = self.new
       d.id = DEFAULT_PROFILE_ACCOUNT_ID
