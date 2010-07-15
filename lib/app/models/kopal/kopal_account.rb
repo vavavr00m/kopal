@@ -30,7 +30,7 @@ class Kopal::KopalAccount < Kopal::KopalModel
   has_one :status_message, :class_name => 'Kopal::KopalPreference', :conditions => ['preference_name = ?', 'profile_status_message']
   #has_one :last_seen, :last_signed
 
-  validates_presence_of :identifier_from_application, :unless => Proc.new {|p| p.id == 0}
+  validates_presence_of :identifier_from_application, :unless => Proc.new {|p| p.id == DEFAULT_PROFILE_ACCOUNT_ID}
   validates_uniqueness_of :identifier_from_application
 
   def self.create_default_profile_account!
@@ -55,6 +55,6 @@ class Kopal::KopalAccount < Kopal::KopalModel
   end
 
   def self.default_profile_account
-    self.find(0)
+    self.find(DEFAULT_PROFILE_ACCOUNT_ID)
   end
 end
