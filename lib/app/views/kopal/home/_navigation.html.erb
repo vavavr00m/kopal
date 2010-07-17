@@ -4,6 +4,7 @@
 <div class="surface_above">
   <h1><%= @profile_user.feed.name %></h1>
   <blockquote class="status-message"><%= @profile_user.status_message %></blockquote>
+</div>
 <% end %>
 
 <% content_for :surface_left do %>
@@ -32,5 +33,4 @@
     <!-- <li><%= link_to("Send a message") %></li> -->
   <% end %>
   </ul>
-</div>
 <% end %>
