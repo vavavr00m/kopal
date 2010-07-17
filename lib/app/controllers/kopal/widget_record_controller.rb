@@ -7,6 +7,7 @@ class Kopal::WidgetRecordController < Kopal::ApplicationController
       return unless valid_request_on_scope?(@record, :show)
       render :text => @record.record_text
     else
+      #NOTE: It returns text of length 1 containing whitespace.
       render :nothing => true, :status => 404
     end
   end

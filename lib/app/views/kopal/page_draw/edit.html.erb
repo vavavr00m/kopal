@@ -41,7 +41,7 @@
 <div id="PageSelectWidgetForm" style="display:none">
   <h2>Add widget</h2>
   <% form_tag @kopal_route.page_draw(:action => 'add_widget', :page_id => @page.id) do %>
-    <%= text_field_tag :widget_url, 'http://127.0.0.1:3500/javascripts/widget/note/index.html'%>
+    <%= text_field_tag :widget_url, 'http://127.0.0.1:3500/javascripts/widget/note/index.js'%>
     <br /><%= submit_tag 'Add widget' %>
   <% end %>
   <%= link_to_function('Close', 'kopal.page.CloseSelectWidgetPage();') %>
