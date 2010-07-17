@@ -1,9 +1,10 @@
 /* Copied from Rails error pages. */
+/* Base page layout from http://blog.html.it/layoutgala/LayoutGala31.html */
 /* Convention -
  * * IDs - PascalNotation
  * * Classes - under_scored
 */
-body { background-color: #fff; color: #333; margin-left:20px; }
+body { background-color: #fff; color: #333; margin:0; padding:0; }
 
 body, p, ol, ul, td {
   font-family: verdana, arial, helvetica, sans-serif;
@@ -33,25 +34,31 @@ h2:after{
   content: " —";
 }
 
-/* Structure */
+/* --------------- Structure -------------------------------------------------*/
+
+div#Surface {
+  padding: 4px;
+}
 div#SurfaceAbove{
   margin-bottom:25px;
 }
+
+div#SurfaceFrontWrapper {
+  float: left;
+  width: 100%;
+}
+
 div#SurfaceFront{
-	min-height:620px;
-  /*position:absolute;*/
-  float:left;
-  margin-left:216px;
-  margin-right:40px;
-	padding:8px;
-  min-width:470px;
+  margin-left: 204px;
+  margin-right: 20px;
 }
 
 div#SurfaceLeft{
-	position:absolute;
-	width:184px;
+	float: left;
+  width:184px;
 	padding-left:4px;
   padding-top:8px;
+  margin-left: -100%;
 }
 
 div#SurfaceLeft ul{
@@ -62,9 +69,11 @@ div#SurfaceLeft ul{
 
 div#SurfaceDown {
   clear:both;
-  padding-top:40px;
+  padding:40px 0 0 8px;
 }
-/* Colours */
+
+
+/* --------------- Colours ---------------------------------------------------*/
 div.flash { /* Copied from redmine */
   padding: 2px 2px 2px 30px;
   margin-bottom: 12px;

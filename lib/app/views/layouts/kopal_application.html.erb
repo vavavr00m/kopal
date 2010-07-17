@@ -34,21 +34,23 @@
         <%= yield :surface_above %>
         <%= yield :after_page_header %>
       </div>
-      <div id="SurfaceFront">
-        <% if flash[:highlight] -%>
-          <div id="FlashHighlight" class="flash highlight"><%= flash[:highlight] %></div>
-        <% end -%>
-        <% if flash[:notice] -%>
-          <div id="FlashNotice" class="flash notice"><%= flash[:notice] %></div>
-        <% end -%>
-        <% if flash[:notification] -%>
-          <div id="FlashNotification" class="flash notification"><%= flash[:notification] %></div>
-        <% end -%>
+      <div id="SurfaceFrontWrapper">
+        <div id="SurfaceFront">
+          <% if flash[:highlight] -%>
+            <div id="FlashHighlight" class="flash highlight"><%= flash[:highlight] %></div>
+          <% end -%>
+          <% if flash[:notice] -%>
+            <div id="FlashNotice" class="flash notice"><%= flash[:notice] %></div>
+          <% end -%>
+          <% if flash[:notification] -%>
+            <div id="FlashNotification" class="flash notification"><%= flash[:notification] %></div>
+          <% end -%>
 
-        <!-- @TODO: Designer just needs to do "yield" and all three should be included. -->
-        <%= yield :before_page_front %>
-        <%= @content_for_layout %>
-        <%= yield :after_page_front %>
+          <!-- @TODO: Designer just needs to do "yield" and all three should be included. -->
+          <%= yield :before_page_front %>
+          <%= @content_for_layout %>
+          <%= yield :after_page_front %>
+        </div>
       </div>
       <div id="SurfaceLeft">
         <%= yield :before_page_sidebar %>
