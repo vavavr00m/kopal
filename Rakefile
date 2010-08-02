@@ -47,7 +47,7 @@ Rake::RDocTask.new(:rdoc) do |rdoc|
   rdoc.rdoc_dir = 'doc'
   rdoc.title    = 'Kopal'
   rdoc.options << '--line-numbers' << '--inline-source'
-  rdoc.rdoc_files.include('README.txt')
+  rdoc.rdoc_files.include('README')
   rdoc.rdoc_files.include('**/*.rb')
   rdoc.rdoc_files.exclude(/^(test|vendor|lib\/db)/)
 end
