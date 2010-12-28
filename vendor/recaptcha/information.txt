@@ -1,5 +1,0 @@
-URL: http://github.com/ambethia/recaptcha/tree/master
-Revision: 1b8c52017467a1ae19397320615b63387cef03ba
-Commit Date: 02-June-2009
-Locally Modified Files:
-    ./init.rb

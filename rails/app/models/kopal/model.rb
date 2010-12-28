@@ -1,4 +1,11 @@
 class Kopal::Model < ActiveRecord::Base
+  #Best thing would be to have migrations in schema_migrations as "kopal_1234", but Rails only supports Integer migrations.
+  class Migrator < ActiveRecord::Migrator
+    def schema_migrations_table_name
+      "#{name_prefix}_kopal_schema_migrations"
+    end
+  end
+  
   self.abstract_class = true
   include Kopal::KopalHelper
 class << self
@@ -21,7 +28,7 @@ class << self
       raise "ERROR: Duplicate migration numbers - #{duplicates.to_sentence :last_word_connector => ' and'}"
     end
     ActiveRecord::Migration.verbose = ENV["VERBOSE"] ? ENV["VERBOSE"] == "true" : true
-    ActiveRecord::Migrator.migrate("#{KOPAL_ROOT}/lib/db/migrate/")
+    Migrator.migrate(Kopal.path.migrate.to_s)
     Rake::Task["db:schema:dump"].invoke if schema_format == :ruby
   end
 
@@ -35,7 +42,7 @@ class << self
   end
 
   def all_migration_numbers
-    Dir[Kopal.root.join('lib', 'db', 'migrate', '*.rb')].map {|f|
+    Dir[Kopal.path.migrate.join('*.rb')].map {|f|
       File.basename(f).to_i
     }
   end

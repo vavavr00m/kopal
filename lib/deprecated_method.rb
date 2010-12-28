@@ -5,7 +5,7 @@ class DeprecatedMethod < StandardError
   #1. For first release (message, false)
   #2. For next release (message, true)
   def self.here message = 'This method is deprecated.', raise_error_in_development = false
-    raise_error_in_development = false if "production" == RAILS_ENV
+    raise_error_in_development = false if "production" == Rails.env
     raise DeprecatedMethod, message if raise_error_in_development
     #email it in production environment.
     #email => unraised exception message => , stack =>
