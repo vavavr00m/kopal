@@ -1,4 +1,4 @@
-Copyright (c) 2009 Vikrant Chaudhary (http://vikrant.co.in)
+Copyright (c) 2010 Avik Prgati (http://www.avik.in/)
 
 Copyright information about included code is written in "Attributions.txt".
 

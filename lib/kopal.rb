@@ -15,7 +15,7 @@
 #[<tt>@_page.description</tt>] Description of the page. Goes in +<meta name="Description" />+
 #[<tt>@_page.stylesheets</tt>]
 #  Path of stylesheets for page.
-#  Example Usage - 
+#  Example Usage -
 #  * @_page.add_stylesheet 'home'
 #  * @_page.add_stylesheet {:name => 'home2'}
 #  * @_page.add_stylesheet {:name => 'home2', :media => 'print'}
@@ -25,29 +25,18 @@
 # * +:page_bottom_content+
 # * +:surface_right_content+
 
-require 'core_extension/require'
-
 KOPAL_ROOT = File.expand_path(File.dirname(__FILE__) + '/..')
+KOPAL_RAILS_ROOT = KOPAL_ROOT + "/rails"
 KOPAL_VENDOR_ROOT = KOPAL_ROOT + '/vendor'
 
-#Gems and plugins
-require 'will_paginate'
-require KOPAL_VENDOR_ROOT + '/rails-in_place_editing/init.rb'
-#TODO: Make recaptcha available only if application has it installed. remove from kopal/vendor/
-require KOPAL_VENDOR_ROOT + '/recaptcha/init'
+require KOPAL_ROOT + '/lib/core_extension/require'
+require KOPAL_RAILS_ROOT + '/init' if defined? Rails
 
 #Kopal libraries
-require_dependency KOPAL_ROOT + '/config_dependency'
 require_dependency 'kopal/exception'
 require_dependency 'kopal/openid'
 require_dependency 'kopal/routing'
 
-%w{ models controllers }.each do |dir| 
-  path = File.join(File.dirname(__FILE__), 'app', dir)
-  $LOAD_PATH << path
-  ActiveSupport::Dependencies.load_paths << path
-  ActiveSupport::Dependencies.load_once_paths.delete(path) #if RAILS_ENV == 'development'
-end 
 
 module Kopal
   include KopalHelper
@@ -62,9 +51,9 @@ module Kopal
   @@delegated_preference_method = {}
 
 class << self
-  
+
   attr_accessor :redirect_for_home
-  
+
   #Anything that needs to be run at the startup, goes here.
   def initialise
     return if @@initialised
@@ -74,7 +63,7 @@ class << self
   def initialised?
     @@initialised
   end
-  
+
   def multiple_profile_interface!
     @@multi_mode = true
   end
@@ -103,7 +92,7 @@ class << self
   #
   #  accessor_method(profile_identifier, preference_name) # both argument as string
   #
-  #It should return the value as String and should return +nil+ instead of raising error, if a 
+  #It should return the value as String and should return +nil+ instead of raising error, if a
   #field is empty.
   #
   #=== Mutator
@@ -138,13 +127,17 @@ class << self
     #so need to completely deprecate and remove Kopal::KopalHelperWrapper first.
     @khelper ||= Kopal::KopalHelperWrapper.new
   end
-  
+
   #These four methods sound similar, but have different usages.
   #  Kopal.root (File system path of Kopal plugin).
   #  Kopal.route.root (URL of homepage of Kopal Identity).
   #  Kopal.base_route (Do not use. For internal use only.) [Without postfixed '/']
   def root
-    Pathname.new KOPAL_ROOT
+    path.root
+  end
+
+  def path
+    Kopal::Path
   end
 
   def default_profile_user

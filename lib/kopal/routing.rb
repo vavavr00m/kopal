@@ -46,7 +46,8 @@ end
 #Do we really need a wrapper class? Justify.
 class Kopal::Routing
   #include ActionController::Routing::Routes.named_routes.instance_variable_get :@module
-  ActionController::Routing::Routes.named_routes.install self
+  #ActionController::Routing::Routes.named_routes.install self
+  #include Rails.application.routes.url_helpers
 
   def initialize controller
     raise 'Tried to initialise from a non-kopal controller' unless

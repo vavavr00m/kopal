@@ -1,3 +1,0 @@
-rails-in_place_editing
-    url - http://github.com/rails/in_place_editing
-    revision - git:8c5487e4620fe02074ff48ea27fecac2df6e7f52
