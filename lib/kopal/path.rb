@@ -13,17 +13,5 @@ class Kopal::Path
     def tasks
       lib.join('tasks')
     end
-
-    def rails
-      root.join('rails')
-    end
-
-    def db
-      rails.join('db')
-    end
-
-    def migrate
-      db.join('migrate')
-    end
   end
 end

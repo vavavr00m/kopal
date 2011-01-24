@@ -1,58 +1,17 @@
-module Kopal
-  def self.draw_routes base_route = '/profile'
-    base_route[-1] = ''  if base_route[-1].chr == '/'
-    @@base_route = base_route
-    #Minimum routes should be defined here.
-    ActionController::Routing::Routes.draw do |map|
-      if Kopal.base_route.blank?
-        #Or else it will redirect to http://127.0.0.1:3500//
-        map.kopal_route_root Kopal.base_route, :controller => 'kopal/home', :action => 'index',
-          :trailing_slash => false
-      else
-        map.kopal_route_root Kopal.base_route, :controller => "kopal/home", :action => 'index',
-          :trailing_slash => true
-      end
-      map.kopal_route_home "#{Kopal.base_route}/home/:action/:id", :controller => 'kopal/home',
-        :trailing_slash => true
-      map.kopal_route_home "#{Kopal.base_route}/home/:action/:id.:format",
-        :controller => 'kopal/home', :trailing_slash => false
-      map.kopal_route_page "#{Kopal.base_route}/page/*page", :controller => 'kopal/page',
-        :trailing_slash => false
-      map.kopal_route_page_draw "#{Kopal.base_route}/pagedraw/:action/:id",
-        :controller => 'kopal/page_draw', :trailing_slash => true
-      map.kopal_route_organise "#{Kopal.base_route}/organise/:action/:id", :controller => 'kopal/organise',
-        :trailing_slash => true
-      map.kopal_route_connect "#{Kopal.base_route}/connect/:action/", :controller => 'kopal/connect',
-        :trailing_slash => true
-      map.kopal_route_feed "#{Kopal.base_route}/home/feed.kp.xml", :controller => 'kopal/home',
-        :action => 'feed', :format => 'xml', :trailing_slash => false
-      map.namespace :kopal do |kopal|
-        kopal.resource :widget_record, :path_prefix => base_route, :controller => 'WidgetRecord',
-          :only => [:show, :create, :update, :destroy], :trailing_slash => true
-      end
-    end
-  end
-
-  #This method is intended for internal use only, prefer +Kopal.route.root+ instead.
-  #Path of Kopal relative to host, and without postfixed '/'
-  def self.base_route
-   @@base_route
-  end
-
-end
-
 #Wrapper around named routes.
 #Should deprecate it, and use all routes from rails/routing instead?
 #Do we really need a wrapper class? Justify.
 class Kopal::Routing
   #include ActionController::Routing::Routes.named_routes.instance_variable_get :@module
   #ActionController::Routing::Routes.named_routes.install self
-  #include Rails.application.routes.url_helpers
 
   def initialize controller
-    raise 'Tried to initialise from a non-kopal controller' unless
+    raise "Tried to initialise from a non-kopal controller #{controller.class}" unless
       controller.is_a? Kopal::ApplicationController
     @controller = controller
+    #defined here because "rails console" reports that Rails.application is Nil, which might be
+    #as "rails console" might be trying to load this class before it has initalised Rails.application.
+    self.class.instance_eval { include Rails.application.routes.url_helpers }
   end
 
   #Homepage of Kopal profile.
@@ -63,10 +22,8 @@ class Kopal::Routing
   #Homepage of Kopal profile by default. Accpets actions of Kopal::HomeController
   def home hash = {}
     hash[:controller] = 'kopal/home'
-    #FIXME: By default it goes false, in route_organise it stays true.
-    hash[:trailing_slash].nil?() ? hash[:trailing_slash] = true : nil
     return root if hash[:action].blank? or hash[:action] == 'index'
-    kopal_route_home_path hash
+    kopal_route_home_path hash.update :trailing_slash => true
   end
 
   def profile_comment hash = {}
@@ -214,6 +171,8 @@ class Kopal::Routing
 
 private
 
+  #In Rails 3, removing this will raise error -
+  #Missing host to link to! Please provide :host parameter or set default_url_options[:host]
   def url_for options = {}
     @controller.url_for options
   end

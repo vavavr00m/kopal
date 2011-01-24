@@ -10,18 +10,18 @@ end
   
 require 'test/unit'
 require environment_file
-require 'test_help'
+require 'rails/test_help'
 require 'rake'
 require 'rake/testtask'
 require 'rake/rdoctask'
-require 'tasks/rails'
 
+Rails.application.load_tasks
 #TODO: Test on multiple DBMSes.
 
 Rake::Task['db:migrate:reset'].invoke
 #puts "BEING CALLED"
 #This line is being called 2 times, while above rake task executes only once!
-Kopal::KopalModel.perform_first_time_tasks unless Kopal::KopalAccount.find_by_id(0)
+Kopal::KopalModel.perform_first_time_tasks unless Kopal::KopalAccount.default_profile_account?
 
 require 'designer'
 
