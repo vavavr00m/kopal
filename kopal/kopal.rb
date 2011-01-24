@@ -152,5 +152,3 @@ class << self
   end
 end
 end
-
-require Kopal.path.root.join('init.rb')
