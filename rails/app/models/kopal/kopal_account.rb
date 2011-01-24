@@ -57,4 +57,8 @@ class Kopal::KopalAccount < Kopal::KopalModel
   def self.default_profile_account
     self.find(DEFAULT_PROFILE_ACCOUNT_ID)
   end
+
+  def self.default_profile_account?
+    self.find_by_id(DEFAULT_PROFILE_ACCOUNT_ID)
+  end
 end

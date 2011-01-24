@@ -1,4 +1,4 @@
-profile_user = Kopal::ProfileUser.new 0
+profile_user = Kopal::ProfileUser.new 1
 
 Designer.profile_friend('test_host', :class => 'Kopal::ProfileFriend') do |record|
   record.kopal_account_id = profile_user.account.id

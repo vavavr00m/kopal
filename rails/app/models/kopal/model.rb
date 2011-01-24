@@ -42,7 +42,7 @@ class << self
   end
 
   def all_migration_numbers
-    Dir[Kopal.path.migrate.join('*.rb')].map {|f|
+    Dir[Kopal.path.rails.migrate.join('*.rb')].map {|f|
       File.basename(f).to_i
     }
   end

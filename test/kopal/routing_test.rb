@@ -3,11 +3,13 @@ require "#{File.dirname(__FILE__)}/../test_helper"
 class RoutingTest < Test::Unit::TestCase
 
   def setup
-    Kopal.draw_routes '/profile2/'
-    app = ActionController::Integration::Session.new
-    app.host! 'test.host'
-    app.get '/profile2/'
-    @kopal_route = Kopal::Routing.new app.controller
+    Rails.application.config.kopal.base_route = '/profile2/'
+    Kopal.instance_variable_set :@base_route, nil
+    Rails.application.reload_routes!
+    session = ActionController::Integration::Session.new Rails.application
+    session.host! 'test.example'
+    session.get '/profile2/'
+    @kopal_route = Kopal::Routing.new session.controller
   end
 
   def test_kopal_base_route_is_profile2
@@ -62,7 +64,7 @@ class RoutingTest < Test::Unit::TestCase
   end
 
   def test_kopal_route_xrds
-    assert_equal 'http://test.host' + Kopal.base_route + '/home/xrds/',
+    assert_equal 'http://test.example' + Kopal.base_route + '/home/xrds/',
       @kopal_route.xrds
     assert_recognition :get, '/home/xrds/', :controller => 'kopal/home',
       :action => 'xrds', :trailing_slash => true
@@ -75,13 +77,13 @@ class RoutingTest < Test::Unit::TestCase
   end
 
   def test_kopal_route_openid_consumer_complete
-    assert_equal 'http://test.host' + Kopal.base_route + '/home/openid/',
+    assert_equal 'http://test.example' + Kopal.base_route + '/home/openid/',
       @kopal_route.openid_consumer_complete
     #No recognition on this route.
   end
 
   def test_kopal_route_openid_server
-    assert_equal 'http://test.host' + Kopal.base_route + '/home/openid_server/',
+    assert_equal 'http://test.example' + Kopal.base_route + '/home/openid_server/',
       @kopal_route.openid_server
     assert_recognition :get, '/home/openid_server', :controller => 'kopal/home',
       :action => 'openid_server', :trailing_slash => true

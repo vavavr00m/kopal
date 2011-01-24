@@ -25,18 +25,17 @@
 # * +:page_bottom_content+
 # * +:surface_right_content+
 
-KOPAL_ROOT = File.expand_path(File.dirname(__FILE__) + '/..')
-KOPAL_RAILS_ROOT = KOPAL_ROOT + "/rails"
-KOPAL_VENDOR_ROOT = KOPAL_ROOT + '/vendor'
+require 'active_support'
+require 'active_support/dependencies'
 
+KOPAL_ROOT = File.expand_path(File.dirname(__FILE__) + '/..')
 require KOPAL_ROOT + '/lib/core_extension/require'
-require KOPAL_RAILS_ROOT + '/init' if defined? Rails
+ActiveSupport::Dependencies.autoload_paths << KOPAL_ROOT + '/lib'
 
 #Kopal libraries
 require_dependency 'kopal/exception'
 require_dependency 'kopal/openid'
 require_dependency 'kopal/routing'
-
 
 module Kopal
   include KopalHelper
@@ -44,7 +43,7 @@ module Kopal
   #protocol right word? Or standard? sepcification?
   CONNECT_PROTOCOL_REVISION = "0.1.draft"
   FEED_PROTOCOL_REVISION = "0.1.draft"
-  PLATFORM = "kopal.googlecode.com"
+  DEFAULT_PLATFORM = "kopal.googlecode.com"
   @@initialised = false
   @@multi_mode = false
   @@delegated_preferences = []
@@ -133,6 +132,7 @@ class << self
   #  Kopal.route.root (URL of homepage of Kopal Identity).
   #  Kopal.base_route (Do not use. For internal use only.) [Without postfixed '/']
   def root
+    DeprecatedMethod.here "Use path.root instead"
     path.root
   end
 
@@ -140,8 +140,17 @@ class << self
     Kopal::Path
   end
 
+  def base_route
+    return @base_route if @base_route
+    @base_route = Rails.application.config.kopal.base_route
+    @base_route[-1] = ''  if @base_route[-1].chr == '/'
+    @base_route
+  end
+
   def default_profile_user
     @default_profile_user ||= Kopal::ProfileUser.new(0)
   end
 end
 end
+
+require Kopal.path.root.join('init.rb')

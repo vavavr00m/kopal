@@ -74,7 +74,7 @@ private
   def initialise_for_kopal
     session[:kopal] = {} unless session[:kopal].is_a? Hash
     Kopal.initialise
-    self.prepend_view_path Kopal.root.join('lib', 'app', 'views').to_s
+    self.prepend_view_path Kopal.path.rails.views.to_s
     if Kopal.multiple_profile_interface?
       if kopal_determine_profile_identifier
         identifier, identity = kopal_determine_profile_identifier
@@ -107,7 +107,7 @@ private
   end
 
   def set_response_headers
-    response.headers['X-XRDS-Location'] = @kopal_route.xrds
+    response.headers['X-XRDS-Location'] = kopal_route_home_path #@kopal_route.xrds
   end
 
   def authenticate_visiting_user

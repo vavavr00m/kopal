@@ -1,7 +1,11 @@
 require 'active_support/dependencies' #FIXME: Why am I getting "uninitialized constant ActiveSupport::Dependencies" without it?
-require File.dirname(__FILE__) + '/railtie'
+require_dependency Kopal.path.root.join('rails', 'lib', 'kopal', 'rails_path').to_s
 
-ActiveSupport::Dependencies.autoload_paths << File.join(KOPAL_ROOT, 'lib')
+require File.dirname(__FILE__) + '/railtie'
+require File.dirname(__FILE__) + '/engine'
+
+raise "Kopal requires Rails 3" unless Rails::VERSION::MAJOR == 3
+
 #ActiveSupport::Dependencies.autoload_once_paths.delete KOPAL_ROOT unless Rails.env == "production"
 ActiveSupport::Dependencies.explicitly_unloadable_constants << 'Kopal' unless Rails.env == "production"
 
