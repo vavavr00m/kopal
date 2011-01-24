@@ -1,6 +1,6 @@
 
 Gem::Specification.new do |spec|
-  spec.name = "kopal"
+  spec.name = "kopal-rails"
   spec.version = File.read(File.expand_path('../VERSION', __FILE__))
   spec.date = Time.now.utc
   spec.summary = "Distributed and Decentralised Social Networking Platform."
