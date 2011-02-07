@@ -167,6 +167,11 @@ class Kopal::HomeController < Kopal::ApplicationController
   #ajax-spinner.gif. Credit - http://www.ajaxload.info/
   def stylesheet
     params[:format] ||= 'css'
+    if params[:format] == 'js'
+      response.content_type = "text/javascript"
+    elsif params[:format] == 'css'
+      response.content_type = "text/css"
+    end
     params[:format] = "#{params[:format]}.erb" if params[:id] == 'dynamic'
     render :template => "siterelated/#{params[:id]}.#{params[:format]}", :layout => false
   end

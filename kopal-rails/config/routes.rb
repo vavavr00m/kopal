@@ -16,9 +16,8 @@ Rails.application.routes.draw do |map|
 #    :controller => 'kopal/home', :trailing_slash => false
   map.kopal_route_home "#{Kopal.base_route}/home/:action/:id.:format",
     :controller => 'kopal/home', :trailing_slash => true
-  
-  map.kopal_route_page "#{Kopal.base_route}/page/*page", :controller => 'kopal/page',
-    :trailing_slash => false
+
+  match "page(/*page)" => "kopal/page\#index", :as => 'kopal_route_page'
   map.kopal_route_page_draw "#{Kopal.base_route}/pagedraw/:action/:id",
     :controller => 'kopal/page_draw', :trailing_slash => true
   map.kopal_route_organise "#{Kopal.base_route}/organise/:action/:id", :controller => 'kopal/organise',
