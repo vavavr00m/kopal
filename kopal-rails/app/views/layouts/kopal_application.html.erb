@@ -8,8 +8,8 @@
 	  <% if(fclc = @profile_user["feed_country_living_code"]) %><meta name="geo.country" content="<%= fclc %>" /><% end %>
 	  <% if @_page.description %><meta name="Description" content="<%= @_page.description %>" /><% end %>
 
-    <%= @_page.meta_yadis_discovery %>
-    <%= @_page.meta_openid_discovery %>
+    <%= raw @_page.meta_yadis_discovery %>
+    <%= raw @_page.meta_openid_discovery %>
     
     <% for stylesheet in @_page.stylesheets %>
       <%= stylesheet_link_tag @kopal_route.stylesheet(stylesheet[:name] || stylesheet),

@@ -5,7 +5,7 @@ require 'rexml/document' #Host server of its.raining.in is not loading REXML::Do
 #TODO: Place <tt>div#SurfaceLeft</tt> after <tt>div#SurfaceFront</tt> using some
 #      negative margin CSS technique in <tt>layout.html.erb</tt>
 #TODO: Hook in mercurial to run all test successfully before commit.
-require_dependency Kopal.root.join('rails/app/helpers/kopal/application_helper').to_s #no autoloading!
+require_dependency File.join(KOPAL_RAILS_ROOT, 'app', 'helpers', 'kopal', 'application_helper') #no autoloading!
 class Kopal::ApplicationController < ApplicationController
   helper :all # include all helpers, all the time
   helper Kopal::ApplicationHelper
@@ -74,7 +74,7 @@ private
   def initialise_for_kopal
     session[:kopal] = {} unless session[:kopal].is_a? Hash
     Kopal.initialise
-    self.prepend_view_path Kopal.path.rails.views.to_s
+    self.prepend_view_path File.join(KOPAL_RAILS_ROOT, 'app', 'views')
     if Kopal.multiple_profile_interface?
       if kopal_determine_profile_identifier
         identifier, identity = kopal_determine_profile_identifier

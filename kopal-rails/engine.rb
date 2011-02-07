@@ -7,7 +7,7 @@ module Kopal
   class Engine < Rails::Engine
     config.autoload_paths << File.join(KOPAL_ROOT, 'lib')
     config.autoload_paths << File.join(KOPAL_ROOT, 'rails', 'lib')
-    paths.config.routes = Kopal.path.rails.routes.to_s
+    paths.config.routes = File.join(KOPAL_RAILS_ROOT, 'config', 'routes.rb')
 
     config.before_configuration do
       config.kopal = ActiveSupport::OrderedOptions.new

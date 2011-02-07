@@ -42,15 +42,11 @@ class << self
   end
 
   def all_migration_numbers
-    Dir[Kopal.path.rails.migrate.join('*.rb')].map {|f|
-      File.basename(f).to_i
-    }
+    []
   end
 
   def all_migration_numbers_of_application
-    Dir[Rails.root.join('db', 'migrate', '*.rb')].map {|f|
-      File.basename(f).to_i
-    }
+    []
   end
 
   #belongs to Kopal::KopalAccount

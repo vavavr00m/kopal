@@ -28,7 +28,7 @@
 require 'active_support'
 require 'active_support/dependencies'
 
-KOPAL_ROOT = File.expand_path(File.dirname(__FILE__) + '/..')
+KOPAL_ROOT = File.expand_path(File.dirname(__FILE__) + '/..') unless defined? KOPAL_ROOT
 require KOPAL_ROOT + '/lib/core_extension/require'
 ActiveSupport::Dependencies.autoload_paths << KOPAL_ROOT + '/lib'
 
@@ -39,7 +39,7 @@ require_dependency 'kopal/routing'
 
 module Kopal
   include KopalHelper
-  SOFTWARE_VERSION = File.read(KOPAL_ROOT + '/VERSION.txt').strip
+  SOFTWARE_VERSION = File.read(KOPAL_ROOT + '/../VERSION').strip
   #protocol right word? Or standard? sepcification?
   CONNECT_PROTOCOL_REVISION = "0.1.draft"
   FEED_PROTOCOL_REVISION = "0.1.draft"
