@@ -16,5 +16,7 @@ Gem::Specification.new do |spec|
   #"kopal-rails" dependency
   spec.add_dependency('rails', '>= 3')
   spec.add_dependency('ruby-openid', '>= 2.1')
-  spec.add_dependency('will_paginate')
+  spec.add_dependency('mongoid', '>= 2.0.0.rc.7')
+  #"kopal-rails" development dependency
+  spec.add_development_dependency('bson_ext')
 end 

@@ -32,11 +32,6 @@ KOPAL_ROOT = File.expand_path(File.dirname(__FILE__) + '/..') unless defined? KO
 require KOPAL_ROOT + '/lib/core_extension/require'
 ActiveSupport::Dependencies.autoload_paths << KOPAL_ROOT + '/lib'
 
-#Kopal libraries
-require_dependency 'kopal/exception'
-require_dependency 'kopal/openid'
-require_dependency 'kopal/routing'
-
 module Kopal
   include KopalHelper
   SOFTWARE_VERSION = File.read(KOPAL_ROOT + '/../VERSION').strip
@@ -152,3 +147,7 @@ class << self
   end
 end
 end
+
+#Kopal libraries
+require_dependency 'kopal/openid'
+require_dependency 'kopal/routing'

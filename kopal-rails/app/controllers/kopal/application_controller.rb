@@ -91,7 +91,7 @@ private
       end
     else
       check_for_incomplete_migration!
-      @profile_user = Kopal::ProfileUser.new Kopal::KopalAccount.default_profile_account
+      @profile_user = Kopal::ProfileUser.new Kopal::Profile.default_profile
     end
 
     @kopal_route = Kopal::Routing.new self
@@ -136,7 +136,7 @@ private
   end
 
   def check_for_incomplete_migration!
-    if Kopal::KopalModel.migration_needed?
+    if Kopal::Model.migration_needed?
       render :text => "Kopal needs to be updated first.\n" +
         "Please run <code>rake kopal:update RAILS_ENV=#{RAILS_ENV}</code> to update."
     end

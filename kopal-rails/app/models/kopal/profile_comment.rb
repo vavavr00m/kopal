@@ -1,16 +1,12 @@
-#Model fields
-#  email, string, not null
-#  website_address, string, length => 255
-#  is_kopal_identity, boolean
-#  comment_text, text
-#Model indices
-#  none
-class Kopal::ProfileComment < Kopal::KopalModel
-  set_table_name "#{name_prefix}profile_comment"
-
+class Kopal::ProfileComment < Kopal::Model
   DUPLICATE_TIME = 2.minutes #Time within which a duplicate comment can not be saved.
 
-  validates_presence_of :kopal_account_id
+  field :name
+  field :email
+  field :website_address
+  field :is_kopal_identity, :type => Boolean
+  field :comment_text
+
   #Name and email must be present if Website address is not a verified Kopal Identity.
   validates_presence_of :name, :email, :unless => Proc.new { |i| i.kopal_identity?}
   #Website address must be present (of course) if is_kopal_identity is true

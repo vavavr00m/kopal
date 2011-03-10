@@ -1,16 +1,13 @@
-#== UserFriend Fields
-# * <tt>friend_kopal_identity (string, not null, unique)</tt>
-# * <tt>friend_kopal_feed (text, not null)</tt>
-# * <tt>friendship_key (string(32,64), not null)</tt>
-# * <tt>friendship_state (string, not null)</tt>
-# * <tt>friend_public_key (string, not null)</tt>
-# * <tt>friend_group (string / friend ids by comma)</tt>
-#
-#== UserFriend Indices
-# * <tt>kopal_identity, unique</tt>
-#
 class Kopal::ProfileFriend < Kopal::KopalModel
-  set_table_name "#{name_prefix}profile_friend"
+
+  field :friend_kopal_identity
+  field :friend_kopal_feed
+  field :friendship_key
+  field :friendship_state
+  field :friend_public_key
+  field :friend_group
+
+  index :friend_kopal_identity, :unique => true
 
   #Valid friendship states that can go to database.
   FRIENDSHIP_STATES = [

@@ -1,11 +1,13 @@
 class Kopal::ProfilePage < Kopal::KopalModel
-  set_table_name "#{name_prefix}profile_page"
-
   VISIBILITIES = ['public', 'private', 'friend']
 
-  has_many :elements, :class_name => 'Kopal::PageWidget', :dependent => :destroy, :foreign_key => :page_id
+  field :page_name
+  field :page_description
+  field :visibility, :default => 'public'
 
-  before_validation_on_create :fill_visibility
+  index :page_name, :unique => true
+
+  embeds_many :elements, :class_name => 'Kopal::PageWidget'
 
   validates_presence_of :page_name
   validates_presence_of :visibility
@@ -40,10 +42,6 @@ class Kopal::ProfilePage < Kopal::KopalModel
   end
 
 private
-
-  def fill_visibility
-    self[:visibility] = 'public' if visibility.blank?
-  end
 
   def underscored_page_name
 		self[:page_name] = "#{self[:page_name]}"

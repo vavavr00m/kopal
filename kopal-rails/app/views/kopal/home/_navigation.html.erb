@@ -18,7 +18,7 @@
     <li><%= link_to "Profile", @kopal_route.page, {:title => "View profile pages of #{@profile_user}"} %></li>
     <li><%= link_to("Shoutbox", @kopal_route.profile_comment,
       :title => "View profile comments for #{@profile_user.feed.name}") %></li>
-    <li><%= link_to(t(:friend, :count => @profile_user.account.friends.count), @kopal_route.friend,
+    <li><%= link_to(t(:friend, :count => @profile_user.profile.friends.count), @kopal_route.friend,
           :title => t(:view_friends_of_person, :person => @profile_user.feed.name)) %></li>
   </ul>
   <hr />

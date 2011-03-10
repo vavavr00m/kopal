@@ -1,18 +1,20 @@
 class Kopal::PageWidget < Kopal::Model
-  set_table_name "#{name_prefix}page_widget"
 
-  belongs_to :page, :class_name => 'Kopal::ProfilePage', :foreign_key => 'page_id'
+  field :widget_uri
+  field :widget_key
+  field :position, :type => Integer, :default => 0
+
+  #TODO: is it unique across all widgets or just within the page it is embedded to.
+  index :widget_key, :unique => true
+
+  embedded_in :page, :inverse_of => :widgets, :class_name => 'Kopal::ProfilePage'
   #LATER: Is it possible that only a given widget can access a given private record.
   #       So that another widget can not access data of a private list just
   #       because it knows the widget key of widget with which this list belongs and user is signed in.
-  has_many :records, :class_name => 'Kopal::ProfileStore',
-    :primary_key => 'widget_key', :foreign_key => 'widget_key',
-    :dependent => :destroy
+  embeds_many :records, :class_name => 'Kopal::ProfileStore'
 
   before_validation_on_create :assign_widget_key
-  before_validation_on_create :assign_position
 
-  validates_presence_of :page_id
   validates_presence_of :widget_uri
   validates_presence_of :widget_key
   validates_presence_of :position
@@ -27,9 +29,5 @@ private
     begin
       self[:widget_key] = random_hexadecimal
     end while(self.class.find_by_widget_key(widget_key)) if widget_key.blank?
-  end
-
-  def assign_position
-    self[:position] = 0 if position.blank?
   end
 end

@@ -1,23 +1,20 @@
 namespace :kopal do
 
-  Rake::Task["db:migrate"].enhance do
-    Rake::Task["kopal:db:migrate"].invoke
-  end
-
   desc "Performs first time tasks."
   task :first_time => :environment do
-    Rake::Task["kopal:db:migrate"].invoke
+    Rake::Task["db:create_indexes"].invoke
     Kopal::Model.perform_first_time_tasks
-    puts "Your default password has been set as \"#{Kopal::KopalPreference::DEFAULT_PASSWORD}\", " +
+    puts "Your default password has been set as \"#{Kopal::Preference::DEFAULT_PASSWORD}\", " +
       "please change it."
     puts "Thank you for using Kopal."
   end
+  
+  desc "Upgrade database after updating kopal-rails gem"
+  task :upgrade => :environment do
+    Rake::Task["db:create_indexes"].invoke
+  end
 
   namespace :db do
-    #desc "Migrates Kopal specific migrations."
-    task :migrate => :environment do
-      Kopal::Model.migrate!
-    end
 
     #desc "Removes kopal specific tables from the database."
     task :clear do
@@ -33,7 +30,7 @@ namespace :kopal do
       Kopal::Database.restore
     end
 
-    #desc "Revives the database. Clears out all deprecations and errors if any."
+    #desc "Revives the database. Clears out all Kopal::Preference deprecations and errors if any."
     task :revive do
       #Backup the database. (Including password, so not like Kopal::Database.backup).
       #Clear the database.

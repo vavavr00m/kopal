@@ -1,18 +1,24 @@
-class Kopal::Model < ActiveRecord::Base
-  #Best thing would be to have migrations in schema_migrations as "kopal_1234", but Rails only supports Integer migrations.
-  class Migrator < ActiveRecord::Migrator
-    def schema_migrations_table_name
-      "#{name_prefix}_kopal_schema_migrations"
-    end
-  end
+#TODO: Allow Kopal's Mongoid configuration to differ from applications', even
+#allow a different database. Bascially, if application is not using Mongoid,
+#then do not force user to created config/mongoid.yml and if application is
+#using Mongoid, then allow Kopal to have different configurations from 
+#config/mongoid.yml and if possible even a different database.
+class Kopal::Model
   
-  self.abstract_class = true
   include Kopal::KopalHelper
 class << self
 
-  def name_prefix
-    configurations[RAILS_ENV]['kopal_prefix'] ||
-      'kopal_'
+  def inherited subclass
+#    subclass.send :include, Mongoid::Document
+    subclass.instance_eval do
+      include Mongoid::Document
+      include Mongoid::Timestamps
+      self.collection_name = "#{collection_prefix}"
+    end
+  end
+
+  def collection_prefix
+    Rails.application.config.kopal.collection_prefix
   end
 
   #Checks if migrations are needed, only for schema belonging to Kopal.
@@ -54,7 +60,7 @@ class << self
     #Options to choose language.
     #
     #Create default user account.
-    Kopal::KopalAccount.create_default_profile_account!
+    Kopal::KopalAccount.create_default_profile!
   end
 
   #Returns an XML string representing the database. Excludes environment specific
