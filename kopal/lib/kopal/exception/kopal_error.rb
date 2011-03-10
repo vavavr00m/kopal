@@ -1,11 +1,6 @@
-module Kopal
+#Default parent for all exceptions related to Kopal
+class Kopal::Exception::KopalError < StandardError
   
-  class KopalError < StandardError; end;
-  class KopalIdentityInvalid < KopalError; end;
-  class KopalXmlError < KopalError; end;
-  class KopalConnectInvalid < KopalXmlError; end;
-  class ApplicationError < KopalError; end;
-
   #LATER: This should list only very small number of very specific errors,
   #which must be understood by machine for a good functioning of protocol.
   #As of now it is just a prototype and should be redesigned to have only very

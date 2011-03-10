@@ -6,14 +6,11 @@ class Kopal::ProfileUser < Kopal::KopalUser
 
   attr_accessor :visiting_user
 
-  def initialize kopal_account_or_id
-    if kopal_account_or_id.is_a? Kopal::KopalAccount
-      @account = kopal_account_or_id
-    elsif kopal_account_or_id.is_a? Integer #Or else Kopal::KopalAccount.find() will convert automatically to integer.
-      @account = Kopal::KopalAccount.find(kopal_account_or_id)
-    else
-      raise ArgumentError, "Expected an instance of Integer but got instance of #{kopal_account_or_id.class} instead."
+  def initialize kopal_profile
+    unless kopal_profile.is_a? Kopal::Profile
+      raise ArgumentError, "Expected an instance of Kopal::Profile but got instance of #{kopal_profile.class} instead."
     end
+    @profile = kopal_profile
     @pref_cache = {}
     #Enforce single instance.
     #raise "Only one instance allowed." if @@single_instance
@@ -22,8 +19,9 @@ class Kopal::ProfileUser < Kopal::KopalUser
 
   #Indexes KopalPreference
   def [] index
+    return '' #for until preferences stuff is fixed.
     index = index.to_s
-    @pref_cache[index] ||= Kopal::KopalPreference.get_field(account.id, index)
+    @pref_cache[index] ||= Kopal::Preference.get_field(account.id, index)
   end
 
   def []= index, value
@@ -38,9 +36,9 @@ class Kopal::ProfileUser < Kopal::KopalUser
   def to_s
     feed.name
   end
-
-  def account
-    @account
+  
+  def profile
+    @profile
   end
 
   #Make routing available to all classes where @profile_user is accessed. Like <tt>Kopal::PageView</tt>

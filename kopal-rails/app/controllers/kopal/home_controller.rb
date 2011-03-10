@@ -18,7 +18,7 @@ class Kopal::HomeController < Kopal::ApplicationController
       #@kopal_route.connect(params) won't work. Got to change string keys to symbols.
       redirect_to @kopal_route.connect Hash[*(params.map { |k,v| [k.to_sym, v] }.flatten)]
     end
-    @comments = Kopal::ProfileComment.find(:all, :order => 'created_at DESC', :limit => 20)
+    @comments = Kopal::ProfileComment.find(:all, :limit => 20)
 #    @pages_as_cloud = Kopal::ProfilePage.find(:all).map {|p|
 #      { :label => p.to_s, :link => Kopal.route.page(p.page_name),
 #        :title => "\"#{p}\", profile pages of #{@profile_user}",

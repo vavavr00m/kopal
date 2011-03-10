@@ -3,7 +3,7 @@ require 'openid'
 #At present, Kopal's implentation of OpenID is very limited and specific to Kopal's needs.
 #It is expected to grow wide in future.
 module Kopal::OpenID
-  class OpenIDError < Kopal::KopalError; end
+  class OpenIDError < Kopal::Exception::KopalError; end
   class OpenIDInvalid < OpenIDError; end
   class AuthenticationRequired < OpenIDError; end
 

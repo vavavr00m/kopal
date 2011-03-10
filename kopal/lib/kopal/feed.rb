@@ -5,7 +5,7 @@
 class Kopal::Feed
   include Kopal::KopalHelper
 
-  class FeedInvalid < Kopal::KopalXmlError; end;
+  class FeedInvalid < Kopal::Exception::KopalXmlError; end;
 
   #TODO: Add support for Nokogiri
   #@param [String,REXML::Document,Kopal::SignalResponse,Hash,Kopal::ProfileUser,NilClass]

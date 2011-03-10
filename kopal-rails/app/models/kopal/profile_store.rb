@@ -6,12 +6,13 @@
 #
 #TODO: Add field page_scope - only friends can view, or a friend group can view etc.
 class Kopal::ProfileStore < Kopal::Model
-  set_table_name "#{name_prefix}profile_store"
 
-  belongs_to :widget, :class_name => 'Kopal::PageWidget',
-    :primary_key => 'widget_key', :foreign_key => 'widget_key'
+  field :record_name
+  field :record_text
+  field :scope, :type => Integer, :default => 1
+  embedded_in :widget, :inverse_of => :records, :class_name => 'Kopal::PageWidget'
+  index :record_name, :unique => true
 
-  before_validation_on_create :assign_scope
 
   validates_presence_of :widget_key
   #TODO: Rename "record" to something more meaningful.
@@ -21,7 +22,4 @@ class Kopal::ProfileStore < Kopal::Model
 
 private
 
-  def assign_scope
-    self[:scope] = 1 if self[:scope].nil?
-  end
 end
