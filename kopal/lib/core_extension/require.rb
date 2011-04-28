@@ -1,7 +1,8 @@
 
 [
+  'object',
   'hash',
-  'string'
+  'string',
 ].each { |f|
   require File.dirname(__FILE__) + '/' + f
 }

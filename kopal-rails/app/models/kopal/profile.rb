@@ -1,17 +1,19 @@
 class Kopal::Profile < Kopal::Model
-  class DefaultProfileExistsAlready < Kopal::Exception::ApplicationError; end;
   
   field :identifier
+  field :status_message
   index :identifier, :unique => true
 
-  embeds_many :accounts, :class_name => "Kopal::Account"
-  embeds_many :preferences, :class_name => "Kopal::Preference"
-  embeds_many :comments, :class_name => "Kopal::Comment"
-  embeds_many :friends, :class_name => "Kopal::Friend"
-  embeds_many :pages, :class_name => "Kopal::Page"
+  embeds_one :feed_data, :class_name => "Kopal::FeedData", :dependent => :destroy
+  references_many :accounts, :class_name => "Kopal::Account", :dependent => :destroy
+  #references_many :preferences, :class_name => "Kopal::Preference"
+  references_many :comments, :class_name => "Kopal::ProfileComment", :dependent => :destroy
+  references_many :friends, :class_name => "Kopal::ProfileFriend", :dependent => :destroy
+  references_many :pages, :class_name => "Kopal::ProfilePage", :dependent => :destroy
 
   validates_presence_of :identifier
   validates_uniqueness_of :identifier
+  validates_presence_of :feed_data
   
   class << self
     
@@ -20,17 +22,14 @@ class Kopal::Profile < Kopal::Model
         Rails.application.config.kopal.default_profile_identifier).first
     end
     
-    #@returns [self] default profile
-    def create_default_profile!
-      raise DefaultProfileExistsAlready if default_profile
-      Kopal::Account.create!(:superuser => true, 
-        :profile => {:identifier => 'default'}, 
-        :user => {:full_name => "Default user"}
-      )
-    end
   end
   
   def superusers
     accounts.superusers
   end
+  
+  def feed
+    feed_data.to_kopal_feed
+  end
+  
 end

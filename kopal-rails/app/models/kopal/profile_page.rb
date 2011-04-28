@@ -1,4 +1,4 @@
-class Kopal::ProfilePage < Kopal::KopalModel
+class Kopal::ProfilePage < Kopal::Model
   VISIBILITIES = ['public', 'private', 'friend']
 
   field :page_name

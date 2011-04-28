@@ -11,6 +11,9 @@ module Kopal
     config.autoload_paths << File.join(KOPAL_ROOT, 'lib')
     config.autoload_paths << File.join(KOPAL_ROOT, 'rails', 'lib')
     paths.config.routes = File.join(KOPAL_RAILS_ROOT, 'config', 'routes.rb')
+    #I18n::UnknownFileType: can not load translations from <path>/kopal-rails/config/culture, the file type  is not known
+    #paths.config.locales = File.join(KOPAL_RAILS_ROOT, 'config', 'culture')
+    config.i18n.load_path += Dir[File.join(KOPAL_RAILS_ROOT, 'config', 'culture', '*.{rb,yml}')]
 
     config.before_configuration do
       config.kopal = ActiveSupport::OrderedOptions.new

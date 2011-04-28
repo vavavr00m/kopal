@@ -28,33 +28,13 @@ class Kopal::Preference < Kopal::Model
     :account_password_hash => nil,
     #512-bit salt.
     :account_password_salt => nil,
-    :profile_status_message => nil,
-    #Name of the user
-    :feed_real_name => nil,
-    #Aliases of the user separated by "\n"
-    :feed_aliases => nil,
-    :feed_preferred_calling_name => nil,
-    #Description of the user
-    :feed_description => nil,
-    #Email of user.
-    :feed_email => nil,
     #Only <tt>true</tt> or <tt>false</tt> downcase.
     :feed_show_email => nil,
-    #Gender of the user, must be only <tt>male</tt> or <tt>female</tt> downcase.
-    :feed_gender => nil,
     #must be only <tt>true</tt> or <tt>false</tt> downcase.
     :feed_show_gender => "true",
-    #Date of birth of user. Must be an instance of DateTime
-    :feed_birth_time => nil,
     #Value must be one of <tt>ymd</tt> <tt>y</tt> <tt>md</tt>
     #or <tt>nothing</tt>. <tt>y, m, d</tt> stand for <tt>year, month, date</tt> resp.
     :feed_birth_time_pref => nil,
-    #Code for living country.
-    :feed_country_living_code => nil,
-    #Name of the city or its code. Determined by <tt>city_has_code</tt>
-    :feed_city => nil,
-    #Must be either <tt>yes</tt> or <tt>no</tt> downcase.
-    :feed_city_has_code => nil,
     :kopal_identity => nil,
     #Encode Private key with Base64 before saving to database. Since private key starts with "--" and
     #value is serialised and ActiveRecord screws up and replaces "\n"

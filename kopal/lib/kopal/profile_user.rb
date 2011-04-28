@@ -17,18 +17,6 @@ class Kopal::ProfileUser < Kopal::KopalUser
     #@@single_instance = true
   end
 
-  #Indexes KopalPreference
-  def [] index
-    return '' #for until preferences stuff is fixed.
-    index = index.to_s
-    @pref_cache[index] ||= Kopal::Preference.get_field(account.id, index)
-  end
-
-  def []= index, value
-    index = index.to_s
-    @pref_cache[index] = Kopal::KopalPreference.save_field(account.id, index, value)
-  end
-
   def reload_preferences!
     @pref_cache = {}
   end
@@ -92,11 +80,12 @@ class Kopal::ProfileUser < Kopal::KopalUser
   #Identity is the core part of user's profile. (not to be confused with
   #kopal_identity.)
   def created_identity?
-    !!self[:feed_real_name]
+    ActiveSupport::Deprecation.warn nil, caller
+    true    
   end
 
   def feed
-    @kopal_feed ||= Kopal::Feed.new self
+    @kopal_feed ||= profile.feed_data.to_kopal_feed
   end
 
   #@deprecated. Unnecessary.
@@ -110,11 +99,7 @@ class Kopal::ProfileUser < Kopal::KopalUser
   end
 
   def status_message
-    self.[](:profile_status_message)
-  end
-
-  def status_message= value
-    self.[](:profile_status_message, value)
+    profile.status_message
   end
 
   def image_path

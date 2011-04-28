@@ -4,6 +4,7 @@
 #using Mongoid, then allow Kopal to have different configurations from 
 #config/mongoid.yml and if possible even a different database.
 class Kopal::Model
+  class DefaultProfileExistsAlready < Kopal::Exception::ApplicationError; end;
   
   include Kopal::KopalHelper
 class << self
@@ -13,7 +14,7 @@ class << self
     subclass.instance_eval do
       include Mongoid::Document
       include Mongoid::Timestamps
-      self.collection_name = "#{collection_prefix}"
+      subclass.collection_name = "#{collection_prefix}#{subclass.to_s.demodulize.underscore}"
     end
   end
 
@@ -61,6 +62,20 @@ class << self
     #
     #Create default user account.
     Kopal::KopalAccount.create_default_profile!
+  end
+  
+  #@return [Kopal::Profile] returns the "default" profile
+  def create_default_profile_account_and_user!
+    raise DefaultProfileExistsAlready if default_profile
+    profile = Kopal::Profile.create!(
+      :identifier => Rails.application.config.kopal.default_profile_idenfier,
+      :feed_data => {
+        :real_name => "Default profile"
+      }
+    )
+    account = profile.accounts.create!(:superuser => true)
+    user = account.build_user(:full_name => "Default user").save!
+    account.profile.reload
   end
 
   #Returns an XML string representing the database. Excludes environment specific

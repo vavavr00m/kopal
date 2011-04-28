@@ -1,4 +1,4 @@
-class Kopal::ProfileFriend < Kopal::KopalModel
+class Kopal::ProfileFriend < Kopal::Model
 
   field :friend_kopal_identity
   field :friend_kopal_feed
