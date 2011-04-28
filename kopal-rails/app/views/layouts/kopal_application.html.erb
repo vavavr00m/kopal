@@ -5,7 +5,7 @@
     <title><%= @_page.show_title %></title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	  <meta http-equiv="Content-Language" content="<%= I18n.locale.to_s.upcase %>" />
-	  <% if(fclc = @profile_user["feed_country_living_code"]) %><meta name="geo.country" content="<%= fclc %>" /><% end %>
+	  <% if(fclc = @profile_user.profile.feed_data.city.presence) %><meta name="geo.country" content="<%= fclc %>" /><% end %>
 	  <% if @_page.description %><meta name="Description" content="<%= @_page.description %>" /><% end %>
 
     <%= raw @_page.meta_yadis_discovery %>
@@ -48,7 +48,7 @@
 
           <!-- @TODO: Designer just needs to do "yield" and all three should be included. -->
           <%= yield :before_page_front %>
-          <%= @content_for_layout %>
+          <%= yield %>
           <%= yield :after_page_front %>
         </div>
       </div>

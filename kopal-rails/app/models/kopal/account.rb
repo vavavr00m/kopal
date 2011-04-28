@@ -7,7 +7,7 @@ class Kopal::Account < Kopal::Model
   #(for now) only two account types - superuser, normal
   field :superuser, :type => Boolean
 
-  embedded_in :profile, :inverse_of => :accounts, :class_name => "Kopal::Profile"
+  referenced_in :profile, :inverse_of => :accounts, :class_name => "Kopal::Profile"
   references_one :user, :class_name => "Kopal::User"
   
   scope :superusers, where(:superuser => true)

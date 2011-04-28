@@ -12,11 +12,11 @@ Gem::Specification.new do |spec|
   spec.files = Dir["**/*"] & `hg manifest`.split("\n")
 
   #"kopal" dependency
-  spec.add_dependency('activesupport', '>= 3')
+  spec.add_dependency('activesupport', '~> 3.0')
   #"kopal-rails" dependency
-  spec.add_dependency('rails', '>= 3')
-  spec.add_dependency('ruby-openid', '>= 2.1')
-  spec.add_dependency('mongoid', '>= 2.0.0.rc.7')
+  spec.add_dependency('rails', '~> 3.0')
+  spec.add_dependency('ruby-openid', '~> 2.1')
+  spec.add_dependency('mongoid', '~> 2.0')
   #"kopal-rails" development dependency
   spec.add_development_dependency('bson_ext')
 end 
