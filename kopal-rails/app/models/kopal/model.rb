@@ -65,16 +65,17 @@ class << self
   end
   
   #@return [Kopal::Profile] returns the "default" profile
-  def create_default_profile_account_and_user!
-    raise DefaultProfileExistsAlready if default_profile
+  def create_default_profile_account_and_user! full_name, email
+    raise DefaultProfileExistsAlready if Kopal::Profile.default_profile
+    #TODO: Any way to get all following done in one commit?
     profile = Kopal::Profile.create!(
-      :identifier => Rails.application.config.kopal.default_profile_idenfier,
+      :identifier => Rails.application.config.kopal.default_profile_identifier,
       :feed_data => {
-        :real_name => "Default profile"
+        :real_name => full_name
       }
     )
     account = profile.accounts.create!(:superuser => true)
-    user = account.build_user(:full_name => "Default user").save!
+    user = account.build_user(:full_name => full_name, :emails => [email]).save!
     account.profile.reload
   end
 

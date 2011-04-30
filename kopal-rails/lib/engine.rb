@@ -8,8 +8,6 @@ module Kopal
   #TODO: Check on initialisation if Kopal is set-up, if not raise error and ask user
   #      to run kopal:first_time or if updated recently, upgrade automatically if there are stuffs.
   class Engine < Rails::Engine
-    config.autoload_paths << File.join(KOPAL_ROOT, 'lib')
-    config.autoload_paths << File.join(KOPAL_ROOT, 'rails', 'lib')
     paths.config.routes = File.join(KOPAL_RAILS_ROOT, 'config', 'routes.rb')
     #I18n::UnknownFileType: can not load translations from <path>/kopal-rails/config/culture, the file type  is not known
     #paths.config.locales = File.join(KOPAL_RAILS_ROOT, 'config', 'culture')
