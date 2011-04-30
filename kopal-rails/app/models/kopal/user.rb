@@ -16,7 +16,7 @@ class Kopal::User < Kopal::Model
   
   #The first email is always the default one.
   def email
-    emails.first
+    emails.try :first
   end
   
   def calculate_password_hash
