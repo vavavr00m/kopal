@@ -1,6 +1,7 @@
 class Kopal::Profile < Kopal::Model
   
   field :identifier
+  field :name
   field :status_message
   index :identifier, :unique => true
 
@@ -22,6 +23,14 @@ class Kopal::Profile < Kopal::Model
         Rails.application.config.kopal.default_profile_identifier).first
     end
     
+  end
+  
+  def to_s
+    name.to_s
+  end
+  
+  def name
+    self[:name].presence || identifier
   end
   
   def superusers

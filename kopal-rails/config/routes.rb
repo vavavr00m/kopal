@@ -1,10 +1,10 @@
 Rails.application.routes.draw do |map|
   if Kopal.base_route.blank?
     #Or else it will redirect to http://127.0.0.1:3500//
-    map.kopal_route_root Kopal.base_route, :controller => 'kopal/home', :action => 'index',
+    map.kopal_root Kopal.base_route, :controller => 'kopal/home', :action => 'index',
       :trailing_slash => false
   else
-    map.kopal_route_root Kopal.base_route, :controller => "kopal/home", :action => 'index',
+    map.kopal_root Kopal.base_route, :controller => "kopal/home", :action => 'index',
       :trailing_slash => true
   end
   
@@ -26,8 +26,14 @@ Rails.application.routes.draw do |map|
     :trailing_slash => true
   map.kopal_route_feed "#{Kopal.base_route}/home/feed.kp.xml", :controller => 'kopal/home',
     :action => 'feed', :format => 'xml', :trailing_slash => false
-  map.namespace :kopal do |kopal|
-    kopal.resource :widget_record, :path_prefix => Kopal.base_route, :controller => 'WidgetRecord',
+  namespace :kopal do 
+    namespace :sign do
+      get 'in'
+      post 'in_for_visiting_user'
+      post 'in_for_profile_user'
+      delete 'out'
+    end
+    resource :widget_record, :path_prefix => Kopal.base_route, :controller => 'WidgetRecord',
       :only => [:show, :create, :update, :destroy], :trailing_slash => true
   end
 end

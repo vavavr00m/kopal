@@ -101,8 +101,8 @@ class Kopal::HomeController < Kopal::ApplicationController
   end
 
   def signin
-    session[:kopal][:return_after_signin] = params[:and_return_to] ||
-      session[:kopal][:return_after_signin] || @kopal_route.root(:only_path => false)
+    DeprecatedMethod.here "Use sign/in instead."
+    redirect_to kopal_sign_in_path
   end
 
   #Sign-in page for profile user.

@@ -56,26 +56,56 @@ class << self
     []
   end
 
-  #belongs to Kopal::KopalAccount
+  #FIXME: running <tt>rake kopal:first_time</tt> invokes this method twice.
   def perform_first_time_tasks
-    #Options to choose language.
-    #
-    #Create default user account.
-    Kopal::KopalAccount.create_default_profile!
+    puts "**** Welcome to Kopal ****"
+    if Kopal::Profile.default_profile
+      #TODO: More helpful message
+      puts "Default profile is already present"
+      return
+    end
+    #puts "Enter your preferred language. Available languages are - []. default is [en]"
+    name = nil #"name" is already defined and returns "Kopal::Model"
+    while name.blank?
+      puts "Enter your full name"
+      name = $stdin.gets.strip
+    end
+    default_profile = name.split(' ').first.to_s + "'s profile"
+    puts "Enter name of profile. Leave blank for default. Default is #{default_profile.inspect}"
+    profile = $stdin.gets.strip.presence || default_profile
+    email = nil
+    while email.blank?
+      puts "Enter your email"
+      email = $stdin.gets.strip
+    end
+    password = 'secret01' #use "highline" gem?
+    create_default_profile_account_and_user! :full_name => name, :email => email, :password => password, :profile_name => profile
+    puts "Your kopal profile has been created with following information"
+    puts "Name: #{name}"
+    puts "Profile name: #{profile}"
+    puts "Email: #{email}"
+    puts "Password: #{password}"
+    puts "Your password has been set to #{password.inspect}. Please change it by visiting your profile."
   end
   
   #@return [Kopal::Profile] returns the "default" profile
-  def create_default_profile_account_and_user! full_name, email
+  def create_default_profile_account_and_user! options
+    options.to_options!.assert_valid_keys :full_name, :email, :password, :profile_name
     raise DefaultProfileExistsAlready if Kopal::Profile.default_profile
     #TODO: Any way to get all following done in one commit?
     profile = Kopal::Profile.create!(
       :identifier => Rails.application.config.kopal.default_profile_identifier,
+      :name => options[:profile_name],
       :feed_data => {
-        :real_name => full_name
+        :real_name => options[:full_name]
       }
     )
     account = profile.accounts.create!(:superuser => true)
-    user = account.build_user(:full_name => full_name, :emails => [email]).save!
+    user = account.build_user(
+      :full_name => options[:full_name], 
+      :emails => [Kopal::UserEmail.new :string => options[:email]],
+      :password => options[:password]
+    ).save!
     account.profile.reload
   end
 

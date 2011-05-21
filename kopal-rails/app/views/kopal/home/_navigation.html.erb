@@ -23,7 +23,7 @@
   </ul>
   <hr />
   <ul>
-  <% if @visiting_user.homepage? %>
+  <% if @signed_user %>
     <li><%= link_to(t(:sign_out), @kopal_route.signout, {:title => t(:sign_out)}) %></li>
   <% else %>
     <li><%= link_to(t(:sign_in), @kopal_route.signin, {:title => t(:sign_in)}) %></li>

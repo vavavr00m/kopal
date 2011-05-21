@@ -1,0 +1,43 @@
+<%= render :partial => 'kopal/home/navigation' %>
+
+<h2>Sign In</h2>
+
+<p>
+  <strong>I'm a </strong>
+  <%= select_tag "person", options_for_select(
+    [["Visitor to #{@profile_user.profile}", 'visiting_user'],
+    ["Administrator of #{@profile_user.profile}", 'profile_user']], params[:person]) %>
+</p>
+
+<div id="VisitingUserSignIn" style="display:none">
+  Please enter your <!-- <%= image_tag "http://openid.net/favicon.ico" %> --> OpenID.
+  <% form_tag kopal_sign_in_for_visiting_user_path do %>
+    <%= text_field_tag :openid_identifier,
+      params[:openid_identifier], :class => 'openid_identifier' %> <br />
+    <%= submit_tag raw "Sign In as Visitor &raquo;" %>
+  <% end %>
+  <strong>Note:</strong> You may also enter your Kopal-ID. <br />
+  Example: <strong>username.kryzen.net</strong> <br />
+  Every Kopal-ID also acts as an OpenID.
+</div>
+
+<div id="ProfileUserSignIn" style="display:none"> <!-- TODO: OpenID signin if selected in preferences. -->
+  <% form_tag kopal_sign_in_for_profile_user_path do %>
+    Email: <%= text_field_tag :email %> <br />
+    Password: <%= password_field_tag :password %> <br />
+    <%= submit_tag raw "Sign In for Administrator &raquo;" %>
+  <% end %>
+</div>
+
+<script type="text/javascript">
+  $("#person").change(function(){
+    if($(this).val() == 'profile_user') {
+      $("#ProfileUserSignIn").show();
+      $("#VisitingUserSignIn").hide();
+    } else {
+      $("#ProfileUserSignIn").hide();
+      $("#VisitingUserSignIn").show();
+    }
+  });
+  $("#person").triggerHandler('change');
+</script>
