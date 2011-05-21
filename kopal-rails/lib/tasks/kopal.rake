@@ -2,11 +2,8 @@ namespace :kopal do
 
   desc "Performs first time tasks."
   task :first_time => :environment do
-    Rake::Task["db:create_indexes"].invoke
     Kopal::Model.perform_first_time_tasks
-    puts "Your default password has been set as \"#{Kopal::Preference::DEFAULT_PASSWORD}\", " +
-      "please change it."
-    puts "Thank you for using Kopal."
+    Rake::Task["kopal:upgrade"].invoke
   end
   
   desc "Upgrade database after updating kopal-rails gem"

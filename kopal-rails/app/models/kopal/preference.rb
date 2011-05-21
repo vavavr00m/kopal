@@ -1,4 +1,6 @@
 #Preferences related to a profile, account, user or Kopal itself.
+#Should rename this class to "abstract_preference" and make it "abstract" (don't include Mongoid::Document) (maybe just overrride inherited method) and
+#subclasses should be Kopal::PreferenceProfile, Kopal::PreferenceAccount, Kopal::PreferenceUser, Kopal::PreferenceApplication
 class Kopal::Preference < Kopal::Model
   class InvalidFieldName < Kopal::Exception::KopalError; end;
   

@@ -1,4 +1,5 @@
 #Class which holds information (mainly markup) of the page being displayed.
+#TODO: Re-think about this class. Do we really need this (Maybe for themes). And should it go to "kopal" or "kopal-rails"?
 class Kopal::PageView
 
   NEWEST_VERSION_PROTOTYPE = '1.6' #or latest?
@@ -122,6 +123,18 @@ class Kopal::PageView
     DeprecatedMethod.here "Use yui3_js_url() instead."
     yui3_js_url
   end
+  
+  def include_jquery
+    return if @included_jquery
+    add_javascript "https://ajax.googleapis.com/ajax/libs/jquery/1.6.0/jquery.min.js"
+    @included_jquery = true
+  end
+  
+  def include_jquery_ujs
+    return if @included_jquery_ujs
+    add_javascript @kopal_route.javascript('rails-jquery')
+    @included_jquery_ujs = true
+  end
 
   #Or js_yui3_url()?
   #Like <tt>read_record()</tt> and <tt>write_record()</tt> OR <tt>record_read()</tt>, <tt>record_write()</tt>.
@@ -163,11 +176,11 @@ private
   end
 
   def yahoo_cdn_yui3_min_url
-    "http://yui.yahooapis.com/3.1.1/build/yui/yui-min.js"
+    "https://ajax.googleapis.com/ajax/libs/yui/3.3.0/build/yui/yui-min.js"
   end
 
   def yahoo_cdn_yui3_debug_url
-    "http://yui.yahooapis.com/3.1.1/build/yui/yui-debug.js"
+    "https://ajax.googleapis.com/ajax/libs/yui/3.3.0/build/yui/yui-debug.js"
   end
 
   def title_postfix

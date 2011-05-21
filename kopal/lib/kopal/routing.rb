@@ -16,7 +16,7 @@ class Kopal::Routing
 
   #Homepage of Kopal profile.
   def root hash = {}
-    kopal_route_root_path hash
+    kopal_root_path hash
   end
 
   #Homepage of Kopal profile by default. Accpets actions of Kopal::HomeController

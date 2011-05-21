@@ -1,3 +1,4 @@
+//TODO: Prefer YUI over jQquery. I'd like to use YUI but jQuery is what I know now. 
 if(!kopal)
   var kopal = {};
 //I probably need to shift to standardJavaScriptNamingConvention in future for consistency.

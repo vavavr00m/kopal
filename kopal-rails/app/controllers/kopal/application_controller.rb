@@ -90,7 +90,11 @@ private
         return
       end
     else
-      check_for_incomplete_migration!
+      if not Kopal::Profile.default_profile.present?
+        render :text => "Please run <strong><code>rake kopal:first_time</code></strong> to setup Kopal profile. " + 
+          "See <a href='https://code.google.com/p/kopal/wiki/Getting_Started'>this page</a> for more information."
+        return
+      end
       @profile_user = Kopal::ProfileUser.new Kopal::Profile.default_profile
     end
 
@@ -102,8 +106,12 @@ private
     @_page = Kopal::PageView.new @profile_user
     @profile_user.mark_signed! if @profile_user.kopal_identity.to_s == session[:kopal][:signed_kopal_identity]
     @visiting_user = Kopal::VisitingUser.new session[:kopal][:signed_kopal_identity], @profile_user.signed?
+    @signed_user = Kopal::User.find(session[:kopal][:signed_user_id]) if session[:kopal][:signed_user_id].present?
     set_page_variables
     actions_for_signed_user_visiting_homepage if @visiting_user.homepage?
+    @_page.include_jquery
+    @_page.include_jquery_ujs
+    @_page.include_yui
   end
 
   def set_response_headers
@@ -132,13 +140,6 @@ private
     if Kopal::UserFriend.find_by_friendship_state('pending')
       flash.now[:notification] = "You have new friendship requests. <a href=\"" +
         organise_path(:action => 'friend') + "\">View</a>."
-    end
-  end
-
-  def check_for_incomplete_migration!
-    if Kopal::Model.migration_needed?
-      render :text => "Kopal needs to be updated first.\n" +
-        "Please run <code>rake kopal:update RAILS_ENV=#{RAILS_ENV}</code> to update."
     end
   end
 end
