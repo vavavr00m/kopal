@@ -19,9 +19,8 @@ module Kopal::ApplicationHelper
   end
   
   def tk *args
-    if args.last.is_a? Hash
-      args.last[:scope] ||= :kopal
-    end
+    args << {} unless args.last.is_a? Hash
+    args.last[:scope] ||= :kopal
     I18n.translate *args
   end
 end
