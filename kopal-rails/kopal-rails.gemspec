@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.email = "nasa42+kopal@gmail.com"
   spec.homepage = "http://kopal.googlecode.com/"
 
-  spec.files = Dir["**/*"] & `hg manifest`.split("\n").map { |f| f.gsub(/^kopal\//, '') }
+  #spec.files = Dir["**/*"] & `hg manifest`.split("\n").map { |f| f.gsub(/^kopal\//, '') }
 
   spec.add_dependency('kopal', spec.version)
   spec.add_dependency('rails', '~> 3.0')
