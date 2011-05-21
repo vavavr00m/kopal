@@ -21,9 +21,9 @@
       :female => "Female",
       :separate_aliases_by_newline => "Separate aliases by newline.",
       :home => "Home",
-      :friend => {:one => 'Friend ({{count}})', :other => 'Friends ({{count}})'},
-      :view_friends_of_person => "View friends of {{person}}.",
-      :profile_homepage_of_person => "Profile homepage of {{person}}.",
+      :friend_count => {:one => 'Friend (%{count})', :other => 'Friends (%{count})'},
+      :view_friends_of_person => "View friends of %{person}.",
+      :profile_homepage_of_person => "Profile homepage of %{person}.",
       :sign_in => "Sign-in",
       :sign_out => "Sign-out",
       :sign_up => "Sign-up",
@@ -37,7 +37,7 @@
       :back_to_homepage => "Back to homepage",
       :go_back_to_homepage => "Go back to homepage.",
       :user_has_not_yet_created_her_identity => "User has not yet created her identity.",
-      :year => { :one => "Year", :other => "Years"}
+      :year => { :one => "Year", :other => "Years"},
     }
   }
 }
