@@ -37,6 +37,7 @@ class Kopal::ProfileComment < Kopal::Model
   end
 
   #only if new_record?(), calling valid?() on recently saved one shouldn't generate.
+  #TODO: Comment is duplicate when content is same and generated from same origin.
   def duplicate_comment?
     self.class.find_by_kopal_account_id_and_comment_text(
       self[:kopal_account_id], self[:comment_text],
