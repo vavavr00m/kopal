@@ -12,8 +12,9 @@ class Kopal::ApplicationController < ApplicationController
   helper Kopal::KopalHelper #in views
   include Kopal::KopalHelper #in controllers
   include Kopal::OpenID::ControllerHelper
-  before_filter :initialise_for_kopal
   layout "kopal_application"
+  
+  around_filter :kopal_process_wrapper
 
   # Scrub sensitive parameters from your log
   # filter_parameter_logging :password
@@ -63,8 +64,13 @@ class Kopal::ApplicationController < ApplicationController
     render :file => Rails.root.join('public', '404.html'), :status => :not_found
   end
   
-private
-
+protected
+  
+  def kopal_process_wrapper
+    initialise_for_kopal
+    yield
+  end 
+  
   #TODO: Save Kopal Identity in database, and next time if
   # <tt>@kopal_route.root</tt> doesn't match <tt>@profile_user.kopal_identity</tt>
   # then generate error saying that "This Kopal Identity is meant to be accessed from
@@ -106,16 +112,22 @@ private
     @_page = Kopal::PageView.new @profile_user
     @profile_user.mark_signed! if @profile_user.kopal_identity.to_s == session[:kopal][:signed_kopal_identity]
     @visiting_user = Kopal::VisitingUser.new session[:kopal][:signed_kopal_identity], @profile_user.signed?
-    @signed_user = Kopal::User.find(session[:kopal][:signed_user_id]) if session[:kopal][:signed_user_id].present?
+    initialise_signed_user
     set_page_variables
     actions_for_signed_user_visiting_homepage if @visiting_user.homepage?
     @_page.include_jquery
     @_page.include_jquery_ujs
     @_page.include_yui
   end
-
+  
+  def initialise_signed_user
+    @signed_user = if session[:kopal][:signed].present?
+      Kopal::SignedUser.new session[:kopal][:signed]
+    end
+  end
+  
   def set_response_headers
-    response.headers['X-XRDS-Location'] = kopal_route_home_path #@kopal_route.xrds
+    response.headers['X-XRDS-Location'] = kopal_home_xrds_url
   end
 
   def authenticate_visiting_user

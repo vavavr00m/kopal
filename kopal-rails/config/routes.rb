@@ -26,14 +26,17 @@ Rails.application.routes.draw do |map|
     :trailing_slash => true
   map.kopal_route_feed "#{Kopal.base_route}/home/feed.kp.xml", :controller => 'kopal/home',
     :action => 'feed', :format => 'xml', :trailing_slash => false
-  namespace :kopal do 
+  scope Kopal.base_route, :as => 'kopal', :module => 'kopal' do
+    namespace :home do
+      get 'xrds'
+    end
     namespace :sign do
       get 'in'
       post 'in_for_visiting_user'
+      get 'in_for_visiting_user'
       post 'in_for_profile_user'
       delete 'out'
     end
-    resource :widget_record, :path_prefix => Kopal.base_route, :controller => 'WidgetRecord',
-      :only => [:show, :create, :update, :destroy], :trailing_slash => true
+    resource :widget_record, :only => [:show, :create, :update, :destroy], :trailing_slash => true
   end
 end

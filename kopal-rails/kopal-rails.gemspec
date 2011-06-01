@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency('kopal', spec.version)
   spec.add_dependency('rails', '~> 3.0')
-  spec.add_dependency('rack-openid', '~> 1.3')
+  spec.add_dependency('ruby-openid')
   spec.add_dependency('mongoid', '~> 2.0')
 
   spec.add_development_dependency('bson_ext')

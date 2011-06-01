@@ -40,6 +40,10 @@ class Kopal::User < Kopal::Model
     
   end
   
+  def to_s
+    full_name.to_s
+  end
+  
   #The first email is always the default one.
   def email
     emails.try(:first).try(:string)
