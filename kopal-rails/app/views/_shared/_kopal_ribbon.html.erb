@@ -31,14 +31,15 @@
   </span>
   <%#= link_to "Next", 'http://search.dhaani.net/person/next/', "Browse a random profile." %>
   <span class="on_right">
-    <% unless @visiting_user.signed? %>
-      [<%= link_to "Sign-In", @kopal_route.home(:action => 'foreign', :subject => 'signin', :returnurl => request.url),
-        :title => "Sign-In to Kopal" %>]
+    <% unless @signed_user %>
+      [<%= link_to "Sign-In", kopal_sign_in_path(:return_to => request.url), :title => "Sign-In to Kopal" %>]
     <% else %>
-      <strong><abbr title="<%=h @visiting_user.kopal_identity %>"><%= @visiting_user.kopal_identity.simplified %></abbr></strong>
-      [<%= link_to "Sign-Out", @kopal_route.home(:action => 'foreign', :subject => 'signout',
-          :returnurl => request.url, :identity => @visiting_user.kopal_identity),
-        :title => "Sign-Out from Kopal" %>]
+      <% if @signed_user.foreign_visitor? %>
+        <strong><abbr title="<%=h @signed_user.kopal_identity %>"><%= @signed_user.kopal_identity.simplified %></abbr></strong>
+      <% else %>
+        <strong><%= @signed_user %></strong>
+      <% end %>
+      [<%= link_to "Sign-Out", kopal_sign_out_path(:return_to => request.url), :method => :delete, :title => "Sign-Out from Kopal" %>]
     <% end %>
   </span>
 </div>

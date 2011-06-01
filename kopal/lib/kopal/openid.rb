@@ -17,7 +17,10 @@ module Kopal::OpenID
           @kopal_route.root(:only_path => false), session[:openid_return_url])) unless
           k.error?
       else
-        Kopal::OpenID::Consumer.complete(params, request, session, &block)
+        params_ = params
+        params.delete :action
+        params.delete :controller
+        Kopal::OpenID::Consumer.complete(params_, request, session, &block)
       end
     end
   end
