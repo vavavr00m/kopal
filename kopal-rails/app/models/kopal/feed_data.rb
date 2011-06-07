@@ -12,8 +12,14 @@ class Kopal::FeedData < Kopal::Model
   field :city_code_or_name, :type => String
   field :city_has_code, :type => Boolean
   
-  validates_presence_of :real_name
-  validates_inclusion_of :sex, :in => ['Male', 'Female', '']
+  #preferences
+  field :show_email, :type => Boolean
+  field :show_sex, :type => Boolean
+  field :birth_time_display_format, :type => String
+  
+  validates :real_name, :presence => true
+  validates :sex, :inclusion => { :in => ['Male', 'Female', ''] }
+  validates :birth_time_display_format, :inclusion => {:in => ['ymd', 'y', 'md', 'false']}
   
   def city
     #city_has_code? ? get name : city_code_or_name

@@ -1,8 +1,12 @@
 class Kopal::Profile < Kopal::Model
   
-  field :identifier
-  field :name
-  field :status_message
+  field :identifier, :type => String
+  field :name, :type => String
+  field :kopal_identity, :type => String
+  field :status_message, :type => String
+  field :base64_encoded_private_key, :type => String
+  
+  #indices
   index :identifier, :unique => true
 
   embeds_one :feed_data, :class_name => "Kopal::FeedData", :dependent => :destroy

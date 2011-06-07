@@ -7,15 +7,25 @@ class Kopal::User < Kopal::Model
   field :password_hash, :type => String
   field :password_salt, :type => String
   
+  #preferences
+  field :authentication_method, :type => String
+  
   references_many :emails, :class_name => "Kopal::UserEmail", :dependent => :destroy, :autosave => true
   #references_many :openids, :class_name => "Kopal::UserOpenid", :dependent => :destroy
   
   attr_accessor :password, :password_confirmation
 
-  references_many :preferences
-  
-  validates_presence_of :password_hash, :if => :using_password?
-  validates_presence_of :password_salt, :if => :using_password?
+  validates :full_name, :presence => true, :length => {:maximum => 256 }
+  validates_each :email do |record, attr, value|
+    begin 
+      record[attr.to_sym] = Mail::Address.new(value).address
+    rescue Mail::Field::ParseError
+      record.errors.add attr, :invalid
+    end
+  end
+  with_options :if => :using_password? do |x|
+    validates :password_hash, :password_salt, :length => {:in => 512..512}
+  end
   
   class << self
     
