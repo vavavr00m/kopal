@@ -37,6 +37,7 @@ Rails.application.routes.draw do |map|
       post 'in_for_profile_user'
       delete 'out'
     end
+    resources :profile_comments, :path => 'comment'
     resource :widget_record, :only => [:show, :create, :update, :destroy], :trailing_slash => true
   end
 end

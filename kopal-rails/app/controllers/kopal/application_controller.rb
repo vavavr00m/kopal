@@ -80,7 +80,6 @@ protected
   def initialise_for_kopal
     session[:kopal] = {} unless session[:kopal].is_a? Hash
     Kopal.initialise
-    self.prepend_view_path File.join(KOPAL_RAILS_ROOT, 'app', 'views')
     if Kopal.multiple_profile_interface?
       if kopal_determine_profile_identifier
         identifier, identity = kopal_determine_profile_identifier
@@ -112,7 +111,8 @@ protected
     @_page = Kopal::PageView.new @profile_user
     @profile_user.mark_signed! if @profile_user.kopal_identity.to_s == session[:kopal][:signed_kopal_identity]
     @visiting_user = Kopal::VisitingUser.new session[:kopal][:signed_kopal_identity], @profile_user.signed?
-    initialise_signed_user
+    initialise_kopal_profile
+    initialise_kopal_signed_user
     set_page_variables
     actions_for_signed_user_visiting_homepage if @visiting_user.homepage?
     @_page.include_jquery
@@ -120,7 +120,16 @@ protected
     @_page.include_yui
   end
   
-  def initialise_signed_user
+  def initialise_kopal_profile
+    @kopal_profile ||= Kopal::Profile.default_profile
+  end
+  
+  def kopal_profile
+    @kopal_profile
+  end
+  
+  def initialise_kopal_signed_user
+    #TODO: Rename me to "@kopal_signed_user" and prefere method "kopal_signed_user" over variable.
     @signed_user = if session[:kopal][:signed].present?
       Kopal::SignedUser.new session[:kopal][:signed]
     end

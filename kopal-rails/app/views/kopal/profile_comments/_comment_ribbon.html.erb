@@ -1,8 +1,8 @@
 <div id="ProfileComment_<%= comment.id %>" style="border-bottom:1px solid gray; padding-top:8px; min-width:80%">
   <% if comment.website_address.blank? %>
-    <strong><%= h comment.name %></strong>
+    <strong><%= comment.full_name %></strong>
   <% else %>
-    <%= link_to h(comment.name), comment.website_address, {:title => "Go to #{h comment.name}'s homepage."} %>
+    <%= link_to comment.full_name, comment.website_address, {:title => "Go to #{h comment.full_name}'s homepage."} %>
   <% end %>
   (<%= d comment.created_at %>)
   <p><%= h comment.comment_text %></p>

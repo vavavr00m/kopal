@@ -1,9 +1,9 @@
 <%= render :partial => 'navigation' %>
 
 <h2>Identity</h2>
-<% if @visiting_user.homepage? %>
+<% if @signed_user %>
   <p class="helper"><%= link_to("Edit identity", @kopal_route.edit_identity,
-    {:title => t(:edit_your_profile)}) %></p>
+    {:title => tk(:edit_your_profile)}) %></p>
 <% end %>
 <% if @profile_user.created_identity? %>
   <table>
@@ -51,12 +51,12 @@
 
 <h2>Shoutbox</h2>
 
-<p class="helper"><%= link_to "Write &raquo;", @kopal_route.profile_comment(:anchor => 'write'),
+<p class="helper"><%= link_to "Write a comment &raquo;".html_safe, @kopal_route.profile_comment(:anchor => 'write'),
     :title => "Write something for #{@profile_user}" %></p>
 
 <% @comments.each do |c| %>
   <%= render :partial => 'comment_ribbon', :locals => { :comment => c } %>
 <% end %>
 
-<p class="helper"><%= link_to "View more &raquo;", @kopal_route.profile_comment,
+<p class="helper"><%= link_to "View more comments &raquo;".html_safe, @kopal_route.profile_comment,
   :title => "Shoutbox for #{@profile_user}" %></p>

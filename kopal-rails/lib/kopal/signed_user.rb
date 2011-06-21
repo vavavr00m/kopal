@@ -2,6 +2,7 @@
 #It can be a local user, or a signed-in OpenID / Kopal Identity.
 #
 #TODO: For user signed-in with OpenID/Kopal Identity store full/first/last name and email for views to display.
+#TODO: Deprecated this method. And use Kopal::User directly as foreign_visitors will also have User instance.
 class Kopal::SignedUser
   
   def initialize options

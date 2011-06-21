@@ -4,8 +4,14 @@ class Kopal::UserEmail < Kopal::Model
   
   referenced_in :user, :class_name => "Kopal::User"
   
-  validates_presence_of :string
-  validates_uniqueness_of :string
+  validates :string, :presence => true, :uniqueness => true
+  validates_each :string do |record, attr, value|
+    begin 
+      record[attr.to_sym] = Mail::Address.new(value).address
+    rescue Mail::Field::ParseError
+      record.errors.add attr, :invalid
+    end
+  end
   
   def to_s
     string.to_s
