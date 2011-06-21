@@ -1,6 +1,9 @@
 #Users who manage Kopal profiles via an account.
 #LATER: It should be possible that the parent application provides
 #users and permissions to Kopal application.
+#
+#TODO: Everytime a user signs-in using OpenID for first time, create a User account.
+#TODO: If someone just enters their email, website and name while giving a comment, register it as a User record.
 class Kopal::User < Kopal::Model
 
   field :full_name
@@ -16,13 +19,6 @@ class Kopal::User < Kopal::Model
   attr_accessor :password, :password_confirmation
 
   validates :full_name, :presence => true, :length => {:maximum => 256 }
-  validates_each :email do |record, attr, value|
-    begin 
-      record[attr.to_sym] = Mail::Address.new(value).address
-    rescue Mail::Field::ParseError
-      record.errors.add attr, :invalid
-    end
-  end
   with_options :if => :using_password? do |x|
     validates :password_hash, :password_salt, :length => {:in => 512..512}
   end

@@ -1,0 +1,28 @@
+<%= render :partial => 'kopal/home/navigation'  %>
+
+<p class="helper"><%= link_to "Write &raquo;", "\#write",
+    :title => "Write something for #{@profile_user}" %></p>
+  <h2>Shoutbox</h2>
+
+<% @profile_comments.each do |comment| %>
+  <%=  render :partial => 'comment_ribbon', :locals => { :comment => comment } %>
+<% end %>
+
+<a name="write"></a>
+<h2>Write</h2>
+
+<% semantic_form_for @profile_comment do |f| %>
+  <%= f.inputs do %>
+    <% unless @signed_user %>
+      <%= f.input :full_name %>
+      <%= f.input :email %>
+      <%= f.input :website_address %>
+    <% else %>
+      You are signed in as - <%= @signed_user %>
+    <% end %>
+    <%= f.input :comment_text %>
+  <% end %>
+  <%= f.buttons do %>
+    <%= f.commit_button "Post comment!" %>
+  <% end %>
+<% end %>
