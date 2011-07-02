@@ -11,19 +11,19 @@ class Kopal::Routing
     @controller = controller
     #defined here because "rails console" reports that Rails.application is Nil, which might be
     #as "rails console" might be trying to load this class before it has initalised Rails.application.
-    self.class.instance_eval { include Rails.application.routes.url_helpers }
+    self.class.instance_eval { include Kopal::Engine.routes.url_helpers }
   end
 
   #Homepage of Kopal profile.
   def root hash = {}
-    kopal_root_path hash
+    root_path hash
   end
 
   #Homepage of Kopal profile by default. Accpets actions of Kopal::HomeController
   def home hash = {}
     hash[:controller] = 'kopal/home'
     return root if hash[:action].blank? or hash[:action] == 'index'
-    kopal_route_home_path hash.update :trailing_slash => true
+    home_path hash.update :trailing_slash => true
   end
 
   def profile_comment hash = {}

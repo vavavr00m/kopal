@@ -1,3 +1,5 @@
+#DEPRECATION WARNING: I belive that we can do without it. 
+#And since Kopal is now an Engine, paths are available as Kopal::Engine.config.paths if we ever need them which I don't think is likely anyway.
 class Kopal::RailsPath
 
   class << self

@@ -5,14 +5,16 @@ require 'rexml/document' #Host server of its.raining.in is not loading REXML::Do
 #TODO: Place <tt>div#SurfaceLeft</tt> after <tt>div#SurfaceFront</tt> using some
 #      negative margin CSS technique in <tt>layout.html.erb</tt>
 #TODO: Hook in mercurial to run all test successfully before commit.
-require_dependency File.join(KOPAL_RAILS_ROOT, 'app', 'helpers', 'kopal', 'application_helper') #no autoloading!
 class Kopal::ApplicationController < ApplicationController
   helper :all # include all helpers, all the time
   helper Kopal::ApplicationHelper
   helper Kopal::KopalHelper #in views
   include Kopal::KopalHelper #in controllers
+  require_dependency 'kopal/openid'
   include Kopal::OpenID::ControllerHelper
   layout "kopal_application"
+  
+  helper_method :kopal_profile
   
   around_filter :kopal_process_wrapper
 
@@ -109,7 +111,6 @@ protected
     set_response_headers
     authenticate_visiting_user if params[:"kopal.visitor"]
     @_page = Kopal::PageView.new @profile_user
-    @profile_user.mark_signed! if @profile_user.kopal_identity.to_s == session[:kopal][:signed_kopal_identity]
     @visiting_user = Kopal::VisitingUser.new session[:kopal][:signed_kopal_identity], @profile_user.signed?
     initialise_kopal_profile
     initialise_kopal_signed_user
@@ -136,7 +137,7 @@ protected
   end
   
   def set_response_headers
-    response.headers['X-XRDS-Location'] = kopal_home_xrds_url
+    response.headers['X-XRDS-Location'] = xrds_url
   end
 
   def authenticate_visiting_user

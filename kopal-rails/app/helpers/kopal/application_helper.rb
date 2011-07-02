@@ -23,4 +23,15 @@ module Kopal::ApplicationHelper
     args.last[:scope] ||= :kopal
     I18n.translate *args
   end
+  
+  #We need this wrapper because we can not make profile_comments_path(@kopal_profile) to match "/comment".
+  #And if we can do say any day, deprecate this method.
+  #@param, path in single_profile_instance
+  def kp spi_path, *args
+    if Kopal::Engine.spi?
+      send(key, *args)
+    else
+      send("profile_#{key}", kopal_profile, *args)
+    end
+  end
 end

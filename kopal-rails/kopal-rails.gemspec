@@ -11,11 +11,12 @@ Gem::Specification.new do |spec|
   #spec.files = Dir["**/*"] & `hg manifest`.split("\n").map { |f| f.gsub(/^kopal\//, '') } 
 
   spec.add_dependency('kopal', spec.version)
-  spec.add_dependency('rails', '~> 3.0')
-  spec.add_dependency('mongoid', '>= 2.0')
+  spec.add_dependency('rails', '3.1.0.rc4')
+  spec.add_dependency('mongoid', '~> 2.0')
   #How to avoid config conflicts with main application's config/initializers/formtastic.rb config 
   #like custom HTML classes etc? As that might make Kopal's form look weird.
-  #spec.add_dependency('formtastic') #Doesn't seem to be loading automatically - undefined method `semantic_form_for'
+  spec.add_dependency('formtastic')
   #spec.add_dependency('kaminari') #Doesn't seem to be loading - undefined method `page'
   spec.add_development_dependency('bson_ext')
+  spec.add_development_dependency('factory_girl_rails')
 end 

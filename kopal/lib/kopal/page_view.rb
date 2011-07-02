@@ -12,7 +12,7 @@ class Kopal::PageView
 
   #alias for constant +RAILS_ENV+.
   def environment
-    RAILS_ENV
+    Rails.env
     #"production" # uncomment for quick testing.
   end
 
