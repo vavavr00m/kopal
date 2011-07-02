@@ -1,3 +1,5 @@
 kopal-rails/test/debug.log
 doc/
 .redcar/
+Gemfile.lock
+

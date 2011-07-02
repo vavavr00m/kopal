@@ -10,6 +10,6 @@ Gem::Specification.new do |spec|
 
   #spec.files = Dir["**/*"] & `hg manifest`.split("\n").map { |f| f.gsub(/^kopal\//, '') }
 
-  spec.add_dependency('activesupport', '>= 3.0')
+  spec.add_dependency('activesupport')
   spec.add_dependency('ruby-openid')
 end 

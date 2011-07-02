@@ -32,14 +32,14 @@
   <%#= link_to "Next", 'http://search.dhaani.net/person/next/', "Browse a random profile." %>
   <span class="on_right">
     <% unless @signed_user %>
-      [<%= link_to "Sign-In", kopal_sign_in_path(:return_to => request.url), :title => "Sign-In to Kopal" %>]
+      [<%= link_to "Sign-In", sign_in_path(:return_to => request.url), :title => "Sign-In to Kopal" %>]
     <% else %>
       <% if @signed_user.foreign_visitor? %>
         <strong><abbr title="<%=h @signed_user.kopal_identity %>"><%= @signed_user.kopal_identity.simplified %></abbr></strong>
       <% else %>
         <strong><%= @signed_user %></strong>
       <% end %>
-      [<%= link_to "Sign-Out", kopal_sign_out_path(:return_to => request.url), :method => :delete, :title => "Sign-Out from Kopal" %>]
+      [<%= link_to "Sign-Out", sign_out_path(:return_to => request.url), :method => :delete, :title => "Sign-Out from Kopal" %>]
     <% end %>
   </span>
 </div>

@@ -2,42 +2,42 @@
 
 <h2>Identity</h2>
 <% if @signed_user %>
-  <p class="helper"><%= link_to("Edit identity", @kopal_route.edit_identity,
+  <p class="helper"><%= link_to("Edit identity", edit_organise_profile_path(kopal_profile.id),
     {:title => tk(:edit_your_profile)}) %></p>
 <% end %>
 <% if @profile_user.created_identity? %>
   <table>
     <tr>
-      <td><%=  t(:real_name).titlecase %></td>
+      <td><%=  tk(:real_name).to_str.titlecase %></td>
       <td><%= @profile_user.feed.real_name %></td>
     </tr>
     <tr>
-      <td><%= t :aliases %></td>
+      <td><%= tk :aliases %></td>
       <td><%= @profile_user.feed.aliases.join("<br />") %></td>
     </tr>
     <tr>
-      <td><%= t :about_me %></td>
+      <td><%= tk :about_me %></td>
       <td><%= @profile_user.feed.description%></td>
     </tr>
     <tr>
-      <td><%= t :gender %></td>
+      <td><%= tk :gender %></td>
       <td><%= @profile_user.feed.gender %></td>
     </tr>
     <tr>
-      <td><%= t :date_of_birth %></td>
+      <td><%= tk :date_of_birth %></td>
       <td><%= @profile_user.dob_with_age %></td>
     </tr>
     <tr>
-      <td><%= t :country %></td>
+      <td><%= tk :country %></td>
       <td><%= @profile_user.feed.country_living_with_code %></td>
     </tr>
     <tr>
-      <td><%= t :city %></td>
+      <td><%= tk :city %></td>
       <td><%= @profile_user.feed.city_with_code %></td>
     </tr>
   </table>
 <% else %>
-  <p><%= t :user_has_not_yet_created_her_identity %></p>
+  <p><%= tk :user_has_not_yet_created_her_identity %></p>
 <% end %>
 
 <h2>Profile</h2>

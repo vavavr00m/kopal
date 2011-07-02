@@ -1,0 +1,16 @@
+#!/usr/bin/env rake
+
+require 'rubygems'
+# Set up gems listed in the Gemfile.
+ENV['BUNDLE_GEMFILE'] ||= File.expand_path('../Gemfile', __FILE__)
+require 'bundler/setup' if File.exists?(ENV['BUNDLE_GEMFILE'])
+
+require 'rails/all'
+
+# If you have a Gemfile, require the gems listed there, including any gems
+# you've limited to :test, :development, or :production.
+Bundler.require(:default, Rails.env) if defined?(Bundler)
+
+#Doesn't work - wrong number of arguments (0 for 1)
+#/usr/lib/ruby/gems/1.8/gems/railties-3.1.0.rc4/lib/rails/engine.rb:391:in `load_tasks'
+Kopal::Engine.load_tasks
