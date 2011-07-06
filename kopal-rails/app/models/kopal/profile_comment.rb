@@ -38,6 +38,14 @@ class Kopal::ProfileComment < Kopal::Model
     end
   end
   
+  def full_name
+    self[:full_name].presence || user.try(:full_name)
+  end
+  
+  def email
+    self[:email].presence || user.try(:email)
+  end
+  
   #TODO: Comment is duplicate when content is same and generated from same origin.
   def duplicate_comment?
     new_record? && if user.present?

@@ -97,7 +97,7 @@ module Kopal::Helper::PageHelper
       r = date.to_s(:long) #date in future?
     end
     return  r if without_html
-    return "<abbr title=\"#{date.to_s(:rfc822)}\">#{r}</abbr>"
+    return raw "<abbr title=\"#{h date.to_s(:rfc822)}\">#{h r}</abbr>"
   end
   alias d format_date
 end

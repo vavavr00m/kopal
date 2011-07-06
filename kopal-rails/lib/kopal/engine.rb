@@ -1,4 +1,6 @@
-require 'mongoid' #Not loading automatically
+#Not loading automatically
+require 'mongoid'
+require 'formtastic'
 
 Kopal #Load the 'kopal' gem.
 module Kopal
