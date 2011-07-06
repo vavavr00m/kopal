@@ -11,7 +11,7 @@
 
 <div id="VisitingUserSignIn" style="display:none">
   Please enter your <!-- <%= image_tag "http://openid.net/favicon.ico" %> --> OpenID.
-  <% form_tag kopal_sign_in_for_visiting_user_path do %>
+  <%= form_tag sign_in_for_visiting_user_path do %>
     <%= text_field_tag :openid_identifier,
       params[:openid_identifier], :class => 'openid_identifier' %> <br />
     <%= submit_tag raw "Sign In as Visitor &raquo;" %>
@@ -22,7 +22,7 @@
 </div>
 
 <div id="ProfileUserSignIn" style="display:none"> <!-- TODO: OpenID signin if selected in preferences. -->
-  <% form_tag kopal_sign_in_for_profile_user_path do %>
+  <%= form_tag sign_in_for_profile_user_path do %>
     Email: <%= text_field_tag :email %> <br />
     Password: <%= password_field_tag :password %> <br />
     <%= submit_tag raw "Sign In for Administrator &raquo;" %>

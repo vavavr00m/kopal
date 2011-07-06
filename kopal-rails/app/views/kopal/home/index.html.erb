@@ -51,11 +51,11 @@
 
 <h2>Shoutbox</h2>
 
-<p class="helper"><%= link_to "Write a comment &raquo;".html_safe, @kopal_route.profile_comment(:anchor => 'write'),
+<p class="helper"><%= link_to "Write a comment &raquo;".html_safe, kp(:profile_comments_path, :anchor => 'write'),
     :title => "Write something for #{@profile_user}" %></p>
 
-<% @comments.each do |c| %>
-  <%= render :partial => 'comment_ribbon', :locals => { :comment => c } %>
+<% @comments.reverse.each do |c| %>
+  <%= render :partial => 'kopal/profile_comments/comment_ribbon', :locals => { :comment => c } %>
 <% end %>
 
 <p class="helper"><%= link_to "View more comments &raquo;".html_safe, @kopal_route.profile_comment,

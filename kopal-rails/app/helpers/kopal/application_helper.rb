@@ -29,9 +29,9 @@ module Kopal::ApplicationHelper
   #@param, path in single_profile_instance
   def kp spi_path, *args
     if Kopal::Engine.spi?
-      send(key, *args)
+      send(spi_path, *args)
     else
-      send("profile_#{key}", kopal_profile, *args)
+      send("profile_#{spi_path}", kopal_profile, *args)
     end
   end
 end

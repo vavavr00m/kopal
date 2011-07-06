@@ -2,7 +2,7 @@ class Kopal::SignController < Kopal::ApplicationController
   
   def in
     session[:kopal][:return_after_signin] = params[:and_return_to] ||
-      session[:kopal][:return_after_signin] || kopal_root_path
+      session[:kopal][:return_after_signin] || root_path
   end
   
   def in_for_visiting_user
@@ -22,7 +22,7 @@ class Kopal::SignController < Kopal::ApplicationController
     @user = Kopal::User.authenticate :email => params[:email], :password => params[:password]
     if @user
       session[:kopal][:signed] = {:user_id => @user.id}
-      redirect_to kopal_root_path 
+      redirect_to root_path 
       return
     else
       flash[:notice] = "Wrong email or password"
@@ -32,6 +32,6 @@ class Kopal::SignController < Kopal::ApplicationController
   
   def out
     session[:kopal].delete :signed
-    redirect_to kopal_root_path
+    redirect_to root_path
   end
 end

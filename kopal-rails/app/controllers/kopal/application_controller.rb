@@ -8,6 +8,7 @@ require 'rexml/document' #Host server of its.raining.in is not loading REXML::Do
 class Kopal::ApplicationController < ApplicationController
   helper :all # include all helpers, all the time
   helper Kopal::ApplicationHelper
+  include Kopal::ApplicationHelper
   helper Kopal::KopalHelper #in views
   include Kopal::KopalHelper #in controllers
   require_dependency 'kopal/openid'

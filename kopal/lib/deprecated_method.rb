@@ -10,7 +10,7 @@ class DeprecatedMethod < StandardError
     #email it in production environment.
     #email => unraised exception message => , stack =>
     #ActiveSupport::Deprecation.warn message, caller
-    message = "DEPRECATION WARNING: #{message}\n#{caller.join("\n")}"
+    message = "DEPRECATION WARNING: #{message}"
     if Rails.logger
       Rails.logger.warn message
     else
