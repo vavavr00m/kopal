@@ -24,7 +24,7 @@
   <hr />
   <ul>
   <% if @signed_user %>
-    <li><%= link_to(tk(:sign_out), sign_out_path, {:title => tk(:sign_out)}) %></li>
+    <li><%= link_to(tk(:sign_out), sign_out_path, {:title => tk(:sign_out), :method => :delete }) %></li>
   <% else %>
     <li><%= link_to(tk(:sign_in), sign_in_path, {:title => tk(:sign_in)}) %></li>
     <li><%= link_to("Add as friend", @kopal_route.home(:action => 'foreign',
