@@ -12,12 +12,11 @@
     <%= raw @_page.meta_openid_discovery %>
     
     <% for stylesheet in @_page.stylesheets %>
-      <%= stylesheet_link_tag @kopal_route.stylesheet(stylesheet[:name] || stylesheet),
-        :media => stylesheet[:media] || 'all' %>
+      <link href="<%= @kopal_route.stylesheet(stylesheet[:name] || stylesheet) %>" media="<%= stylesheet[:media] || 'all' %>" rel="stylesheet" type="text/css" />
     <% end %>
 
     <% for javascript in @_page.javascripts %>
-      <%= javascript_include_tag javascript %>
+      <script src="<%= javascript %>" type="text/javascript"></script>
     <% end %>
 	  
     <%= yield :after_page_meta %>
