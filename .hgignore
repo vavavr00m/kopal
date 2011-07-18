@@ -2,3 +2,5 @@
 kopal-rails/Gemfile.lock
 example_app/log/
 example_app/tmp/
+example_app/.bundle/
+example_app/vendor/bundle/
