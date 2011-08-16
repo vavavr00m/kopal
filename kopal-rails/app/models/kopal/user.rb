@@ -4,6 +4,9 @@
 #
 #TODO: Everytime a user signs-in using OpenID for first time, create a User account.
 #TODO: If someone just enters their email, website and name while giving a comment, register it as a User record.
+#
+#TODO: We must integrate this model with Kopal::Profile and "profile" and "user" can not be two separate identities (for simplicity, at least for now). 
+#See https://code.google.com/p/kopal/wiki/Authentication
 class Kopal::User < Kopal::Model
 
   field :full_name
@@ -11,10 +14,10 @@ class Kopal::User < Kopal::Model
   field :password_salt, :type => String
   
   #preferences
-  field :authentication_method, :type => String
+  field :authentication_method, :type => String, :default => "any"
   
   references_many :emails, :class_name => "Kopal::UserEmail", :dependent => :destroy, :autosave => true
-  #references_many :openids, :class_name => "Kopal::UserOpenid", :dependent => :destroy
+  references_many :openids, :class_name => "Kopal::UserOpenid", :dependent => :destroy, :autosave => true
   
   attr_accessor :password, :password_confirmation
 
@@ -25,15 +28,22 @@ class Kopal::User < Kopal::Model
   
   class << self
     
+    #Authenticate by email/password
     #@return [User]
     def authenticate options
       #TODO: check preferences.authentication_method
-      options.to_options!.assert_valid_keys :email, :password, :openid
+      options.to_options!.assert_valid_keys :email, :password
       user = Kopal::UserEmail.where(:string => options[:email]).first.try :user
       if user && user.valid_password?(options[:password])
         return user
       end
       return false
+    end
+    
+    def find_or_create_by_openid identifier, options = {}
+      raise "OpenID signin not implemented."
+      Kopal::UserOpenid.where(:string => identifier).first.try(:user) ||
+        create!(:full_name => options.full_name, :authentication_method => 'openid', :openids => [:string => identifier])
     end
     
     def calculate_password_hash salt, password
@@ -55,9 +65,16 @@ class Kopal::User < Kopal::Model
     emails.try(:first).try(:string)
   end
   
+  def authentication_method
+    ActiveSupport::StringInquirer.new self[:authentication_method].to_s
+  end
+  
   def using_password?
-    #preferences.authentication_method == :password
-    true #for now
+    authentication_method.any? or authentication_method.password?
+  end
+  
+  def using_openid?
+    authentication_method.any? or authentication_method.openid?
   end
   
   def password= value

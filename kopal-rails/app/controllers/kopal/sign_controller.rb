@@ -8,20 +8,21 @@ class Kopal::SignController < Kopal::ApplicationController
   def in_for_visiting_user
     authenticate_with_openid { |result|
       if result.successful?
-        session[:kopal][:signed] = {:openid_identifier => result.identifier}
+        @user = User.find_or_create_by_openid(result.identifier)
+        sign_in @user
         flash[:highlight] = "Successfully signed you in."
       else
         flash[:notice] = "OpenID verification failed for #{result.identifier}"
       end
     }
-    redirect_to(params[:return_to] || kopal_root_path) unless send :'performed?'
+    redirect_to(params[:return_to] || root_path) unless send :'performed?'
   end
   
   def in_for_profile_user
     params[:person]  = 'profile_user'
     @user = Kopal::User.authenticate :email => params[:email], :password => params[:password]
     if @user
-      session[:kopal][:signed] = {:user_id => @user.id}
+      sign_in @user
       redirect_to root_path 
       return
     else
@@ -34,4 +35,10 @@ class Kopal::SignController < Kopal::ApplicationController
     session[:kopal].delete :signed
     redirect_to root_path
   end
+  
+  protected
+    
+    def sign_in user
+      session[:kopal][:signed] = @user.id
+    end
 end

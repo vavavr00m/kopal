@@ -78,7 +78,7 @@ class << self
   #TODO: Change to session or database.
   def store
     if @store.nil?
-      dir = Pathname.new(RAILS_ROOT).join('tmp').join('kopal-oidc')
+      dir = Pathname.new(Rails.root).join('tmp').join('kopal-oidc')
       @store = OpenID::Store::Filesystem.new(dir)
     end
   end
